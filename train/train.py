@@ -10,7 +10,7 @@ import numpy as np
 import tensorflow as tf
 from sklearn import metrics
 import os
-from models import MultiGranularityCNN
+from models.MultiGranularityCNN import MultiGranularityCNNModel
 from preprocess.data_load import *
 import models.parameter as param
 
@@ -19,7 +19,7 @@ param_des = 'iniParam'
 save_path = os.path.join(save_dir,param_des+'/checkpoints/best_validation')
 tensorboard_dir = os.path.join(save_dir,param_des+'/tensorboard')
 
-model = MultiGranularityCNN.MultiGranularityCNNModel()
+model = MultiGranularityCNNModel()
 
 if not os.path.exists(save_path):
     os.makedirs(save_path)
