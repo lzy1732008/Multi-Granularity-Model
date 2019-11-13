@@ -12,7 +12,7 @@ sys.path.append('../models')
 sys.path.append('../preprocess')
 
 from preprocess.data_load import *
-import models.MultiGranularityCNN as modelClass
+from models.MultiGranularityCNN import MultiGranularityCNNModel
 import models.parameter as param
 
 save_dir = '../result/model/MultiGranularityCNN'  #修改处
@@ -20,7 +20,7 @@ param_des = 'initParam'
 save_path = os.path.join(save_dir,param_des+'/checkpoints/best_validation')
 tensorboard_dir = os.path.join(save_dir,param_des+'/tensorboard')
 
-model = modelClass.MultiGranularityCNNModel()
+model = MultiGranularityCNNModel()
 
 if not os.path.exists(save_path):
     os.makedirs(save_path)
