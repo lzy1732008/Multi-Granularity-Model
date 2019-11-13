@@ -1,5 +1,4 @@
 #该文件的目标是获取三个数据，1、词向量 2、字向量 ==>3、输入数据的向量化表示，这些内容都存放在一个json文件中
-import numpy as np
 import models.parameter as param
 import json
 import jieba

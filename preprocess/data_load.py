@@ -7,7 +7,7 @@ https://www.github.com/kyubyong/transformer
 '''
 from __future__ import print_function
 import numpy as np
-import preprocess.preprocess as pre
+from preprocess import preprocess as pre
 import tensorflow.contrib.keras as kr
 import models.parameter as param
 

@@ -2,11 +2,8 @@
 #包含5个输入关键参数：inputx,inputx_len,inputy,inputy_len,y
 from __future__ import print_function
 
-
-import sys
 import time
 from datetime import timedelta
-import numpy as np
 import tensorflow as tf
 from sklearn import metrics
 import os
@@ -14,8 +11,8 @@ from models.MultiGranularityCNN import MultiGranularityCNNModel
 from preprocess.data_load import *
 import models.parameter as param
 
-save_dir = 'result/model/MultiGranularityCNN'  #修改处
-param_des = 'iniParam'
+save_dir = '../result/model/MultiGranularityCNN'  #修改处
+param_des = 'initParam'
 save_path = os.path.join(save_dir,param_des+'/checkpoints/best_validation')
 tensorboard_dir = os.path.join(save_dir,param_des+'/tensorboard')
 
@@ -45,14 +42,14 @@ def feed_data(a_word,b_word,y_batch,dropout_rate):
     return feed_dict
 
 
-def evaluate(sess,a_word,a_char,b_word,b_char,y):
+def evaluate(sess,a_word,b_word,y):
     """评估在某一数据上的准确率和损失"""
     data_len = len(a_word)
     batch_eval = get_batch_data_test(a_word, b_word,y, param.BaseConfig.batch_size)
     total_loss = 0.0
     total_acc = 0.0
-    for a_word_batch, a_char_batch, b_word_batch, b_char_batch,y_batch in batch_eval:
-        batch_len = len(a_char_batch)
+    for a_word_batch, b_word_batch ,y_batch in batch_eval:
+        batch_len = len(a_word_batch)
         feed_dict = feed_data(a_word_batch, b_word_batch,y_batch,1.0)
         loss, acc = sess.run([model.loss, model.acc], feed_dict=feed_dict)
         total_loss += loss * batch_len
@@ -82,7 +79,7 @@ def train():
     print("Loading training and validation data...")
     # 载入训练集与验证集
     start_time = time.time()
-    train_data, test_data, val_data = data_load(param.BaseConfig.trainPath,param.BaseConfig.valPath,param.BaseConfig.testPath,model)
+    train_data, test_data, val_data = data_load(param.BaseConfig.trainPath,param.BaseConfig.valPath,None,model)
 
     train_x1_word, train_x2_word,  train_y = train_data
     val_x1_word,  val_x2_word,  val_y = val_data
@@ -109,8 +106,8 @@ def train():
     for epoch in range(param.BaseConfig.num_epochs):
         print('Epoch:', epoch + 1)
         batch_train = get_batch_data(train_x1_word, train_x2_word,  train_y, param.BaseConfig.batch_size)
-        for a_word_batch, a_char_batch, b_word_batch, b_char_batch,y_batch in batch_train:
-            feed_dict = feed_data(a_word_batch,  b_word_batch,y_batch,model.dropout_rate)
+        for a_word_batch, b_word_batch, y_batch in batch_train:
+            feed_dict = feed_data(a_word_batch, b_word_batch,y_batch,model.config.dropout_rate)
 
             if total_batch % param.BaseConfig.save_per_batch == 0:
                 # 每多少轮次将训练结果写入tensorboard scalar
@@ -121,10 +118,8 @@ def train():
                 # 每多少轮次输出在训练集和验证集上的性能
 
                 feed_dict[model.dropout_rate] = 1.0
-                loss_train, acc_train,pre_y, logit, true_y, encodings = session.run([model.loss, model.acc,model.pred_y,model.logit,model.y,model.encoding_1], feed_dict=feed_dict)
+                loss_train, acc_train,pre_y, logit, true_y, = session.run([model.loss, model.acc,model.pred_y,model.logit,model.y], feed_dict=feed_dict)
                 loss_val, acc_val = evaluate(session, val_x1_word,  val_x2_word, val_y)  # 验证当前会话中的模型的loss和acc
-                # for pre_y_, logit_, true_y_ in zip(pre_y,logit,true_y):
-                #     print(pre_y_, logit_, true_y_)
 
 
                 if acc_val > best_acc_val:
@@ -156,7 +151,7 @@ def test():
     print("Loading test data...")
     start_time = time.time()
     test_data = data_load_test(model)
-    test_x1_word, test_x1_char, test_x2_word, test_x2_char, test_y = test_data
+    test_x1_word,  test_x2_word,  test_y = test_data
 
 
     session = tf.Session()
@@ -165,12 +160,12 @@ def test():
     saver.restore(sess=session, save_path=save_path)  # 读取保存的模型
 
     print('Testing...')
-    loss_test, acc_test = evaluate(session, test_x1_word, test_x1_char, test_x2_word, test_x2_char, test_y)
+    loss_test, acc_test = evaluate(session, test_x1_word, test_x2_word,  test_y)
     msg = 'Test Loss: {0:>6.2}, Test Acc: {1:>7.2%}'
     print(msg.format(loss_test, acc_test))
 
     batch_size = param.BaseConfig.batch_size
-    data_len = len(test_x1_char)
+    data_len = len(test_x1_word)
     num_batch = int((data_len) / batch_size)
 
     y_test_cls = np.argmax(test_y, 1)
