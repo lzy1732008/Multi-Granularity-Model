@@ -7,7 +7,9 @@ from datetime import timedelta
 import tensorflow as tf
 from sklearn import metrics
 import os
-
+import sys
+sys.path.append('../models')
+sys.path.append('../preprocess')
 import models.MultiGranularityCNN as modelClass
 from preprocess.data_load import *
 import models.parameter as param
