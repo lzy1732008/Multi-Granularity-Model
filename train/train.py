@@ -7,7 +7,8 @@ from datetime import timedelta
 import tensorflow as tf
 from sklearn import metrics
 import os
-from models.MultiGranularityCNN import MultiGranularityCNNModel
+
+import models.MultiGranularityCNN as modelClass
 from preprocess.data_load import *
 import models.parameter as param
 
@@ -16,7 +17,7 @@ param_des = 'initParam'
 save_path = os.path.join(save_dir,param_des+'/checkpoints/best_validation')
 tensorboard_dir = os.path.join(save_dir,param_des+'/tensorboard')
 
-model = MultiGranularityCNNModel()
+model = modelClass.MultiGranularityCNNModel()
 
 if not os.path.exists(save_path):
     os.makedirs(save_path)
