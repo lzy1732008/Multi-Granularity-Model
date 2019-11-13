@@ -10,8 +10,9 @@ import os
 import sys
 sys.path.append('../models')
 sys.path.append('../preprocess')
-import models.MultiGranularityCNN as modelClass
+
 from preprocess.data_load import *
+import models.MultiGranularityCNN as modelClass
 import models.parameter as param
 
 save_dir = '../result/model/MultiGranularityCNN'  #修改处
