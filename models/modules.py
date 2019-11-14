@@ -84,6 +84,7 @@ class Interaction:
         y_weight_output = tf.reshape(y_weight_,shape=[-1,y_len])
         return new_x, new_y,y_weight_output
 
+
 class Fusion:
     def __init__(self, method, *data):
         self.method = method

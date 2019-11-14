@@ -8,7 +8,8 @@ class MultiGraConfig:
     Y_maxlen = 30
     dropout_rate = 0.5
     first_kernel_size = 2
-    second_kernel_size = 3
+    second_kernel_size = 4
+    third_kernel_size = 8
     filters_num = param.BaseConfig.word_dimension
     mlp_output = 2 * Y_maxlen
 
@@ -31,7 +32,6 @@ class MultiGranularityCNNModel:
             self.output_x2_1 = tf.layers.conv1d(self.input_X2,filters=self.config.filters_num,kernel_size=self.config.first_kernel_size,padding='same',name='first-cnn2')
 
         with tf.variable_scope("first-interaction"):
-            # self.inter1_output_x1, self.inter1_output_x2 = self.interaction2(self.output_x1_1,self.output_x2_1)
             self.inter1_output_x2 = self.interaction(self.output_x1_1,self.output_x2_1)
 
         with tf.variable_scope("second-CNN-layer"):
@@ -39,29 +39,17 @@ class MultiGranularityCNNModel:
             self.output_x2_2 = tf.layers.conv1d(self.output_x2_1,filters=self.config.filters_num,kernel_size=self.config.second_kernel_size,padding='same',name='second-cnn2')
 
         with tf.variable_scope("second-interaction"):
-            # self.inter2_output_x1, self.inter2_output_x2 = self.interaction2(self.output_x1_2,self.output_x2_2)
             self.inter2_output_x2 = self.interaction(self.output_x1_2, self.output_x2_2)
 
         with tf.variable_scope("third-CNN-layer"):
-            self.output_x1_3 = tf.layers.conv1d(self.output_x1_2,filters=self.config.filters_num,kernel_size=self.config.second_kernel_size,padding='same',name='third-cnn1')
-            self.output_x2_3 = tf.layers.conv1d(self.output_x2_2,filters=self.config.filters_num,kernel_size=self.config.second_kernel_size,padding='same',name='third-cnn2')
+            self.output_x1_3 = tf.layers.conv1d(self.output_x1_2,filters=self.config.filters_num,kernel_size=self.config.third_kernel_size,padding='same',name='third-cnn1')
+            self.output_x2_3 = tf.layers.conv1d(self.output_x2_2,filters=self.config.filters_num,kernel_size=self.config.third_kernel_size,padding='same',name='third-cnn2')
 
         with tf.variable_scope("third-interaction"):
             self.inter3_output_x2 = self.interaction(self.output_x1_3,self.output_x2_3)
 
-        with tf.variable_scope("forth-CNN-layer"):
-            self.output_x1_4 = tf.layers.conv1d(self.output_x1_3,filters=self.config.filters_num,kernel_size=self.config.second_kernel_size,padding='same',name="forth-cnn1")
-            self.output_x2_4 = tf.layers.conv1d(self.output_x2_3, filters=self.config.filters_num,
-                                                kernel_size=self.config.second_kernel_size, padding='same',
-                                                name="forth-cnn2")
-        with tf.variable_scope("forth-interaction"):
-            self.inter4_output_x2 = self.interaction(self.output_x1_4,self.output_x2_4)
-
         with tf.variable_scope("fusion-layer"):
-            # self.fusion_output = tf.concat([self.inter_output_1,self.inter_output_2], axis=-1) #[Batch, 2 * len]
-            # self.fusion_output = self.fusion(self.inter1_output_x1,self.inter2_output_x1,self.inter1_output_x2,self.inter2_output_x2)
-            # self.fusion_output = self.fusion(self.inter1_output_x2, self.inter2_output_x2)
-            self.fusion_output = tf.concat([self.inter1_output_x2, self.inter2_output_x2,self.inter3_output_x2,self.inter4_output_x2], axis=-1)  # [Batch, 3 * len]
+            self.fusion_output = tf.concat([self.inter1_output_x2, self.inter2_output_x2,self.inter3_output_x2], axis=-1)  # [Batch, 3 * len]
 
         with tf.variable_scope("predict-layer"):
             self.output_ = tf.nn.relu(tf.layers.dense(inputs=self.fusion_output,units=self.config.mlp_output,name='fnn1'))
