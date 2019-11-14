@@ -44,7 +44,7 @@ class MultiGranularityCNNModel:
             self.inter_x1_2, self.inter_x2_2 = interactionModel.exeInteraction()
 
         with tf.variable_scope("fusion-layer"):
-            fusionModel = mudules.Fusion(1,self.inter_x1_1,self.inter_x1_2,self.inter_x2_1,self.inter_x2_2)
+            fusionModel = mudules.Fusion(1,self.inter_x1_2,self.inter_x2_2)
             self.fusion_output = fusionModel.exeFusion()
 
         with tf.variable_scope("predict-layer"):
