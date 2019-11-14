@@ -40,7 +40,7 @@ class MultiGranularityCNNModel:
             self.output_x2_2 = tf.layers.conv1d(self.inter_x2_1,filters=self.config.filters_num,kernel_size=self.config.second_kernel_size,padding='same',name='second-cnn2')
 
         with tf.variable_scope("second-interaction"):
-            interactionModel = mudules.Interaction(1, self.output_x1_2, self.output_x2_2)
+            interactionModel = mudules.Interaction(2, self.output_x1_2, self.output_x2_2)
             self.inter_x1_2, self.inter_x2_2 = interactionModel.exeInteraction()
 
         with tf.variable_scope("fusion-layer"):

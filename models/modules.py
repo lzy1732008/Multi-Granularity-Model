@@ -33,6 +33,15 @@ class Interaction:
 
             return new_x, new_y
 
+    def playInteraction2(self):
+        with tf.variable_scope("interaction-play"):
+            x_2_y, y_2_x = comp.genericAttention(self.data[0], self.data[1])
+
+            # 获取x和y的各自总权重
+            x_weight = tf.reduce_sum(y_2_x, axis=-1)
+            y_weight = tf.reduce_sum(x_2_y, axis=1)
+            return x_weight, y_weight
+
 class Fusion:
     def __init__(self, method, *data):
         self.method = method
