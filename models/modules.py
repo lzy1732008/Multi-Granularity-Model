@@ -9,6 +9,8 @@ class Interaction:
     def exeInteraction(self):
         if self.method == 1:
             return self.playInteraction1()
+        elif self.method == 2:
+            return self.playInteraction2()
 
     def playInteraction1(self):
         '''
