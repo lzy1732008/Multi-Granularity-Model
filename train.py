@@ -14,7 +14,7 @@ from preprocess.data_load import *
 import models.parameter as param
 
 save_dir = 'result/model/MultiGranularityCNN'  #修改处
-param_des = 'initparam-3CNN-v1'
+param_des = 'initparam-3CNN-v2'
 save_path = os.path.join(save_dir,param_des+'/checkpoints/best_validation')
 tensorboard_dir = os.path.join(save_dir,param_des+'/tensorboard')
 
@@ -198,7 +198,7 @@ def test():
     return y_test_cls,y_pred_cls
 
 
-# train()
-y_test_cls,y_pred_cls = test()
+train()
+# y_test_cls,y_pred_cls = test()
 # wsnamels = getwslist(model=model)
 # wsevaluate(y_test_cls, y_pred_cls,wsnamels)
