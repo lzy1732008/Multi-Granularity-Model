@@ -32,19 +32,19 @@ class MultiGranularityCNNModel:
             self.output_x2_1 = tf.layers.conv1d(self.input_X2,filters=self.config.filters_num,kernel_size=self.config.first_kernel_size,padding='same',name='first-cnn2')
 
         with tf.variable_scope("first-interaction"):
-            interactionModel = mudules.Interaction(1,self.output_x1_1,self.output_x2_1)
-            self.inter_x1_1, self.inter_x2_1 = interactionModel.exeInteraction()
+            interactionModel = mudules.Interaction(3,self.output_x1_1,self.output_x2_1)
+            self.inter_x1_1, self.inter_x2_1, self.inter_x2_weight_1 = interactionModel.exeInteraction()
 
         with tf.variable_scope("second-CNN-layer"):
             self.output_x1_2 = tf.layers.conv1d(self.inter_x1_1,filters=self.config.filters_num,kernel_size=self.config.second_kernel_size,padding='same',name='second-cnn1')
             self.output_x2_2 = tf.layers.conv1d(self.inter_x2_1,filters=self.config.filters_num,kernel_size=self.config.second_kernel_size,padding='same',name='second-cnn2')
 
         with tf.variable_scope("second-interaction"):
-            interactionModel = mudules.Interaction(2, self.output_x1_2, self.output_x2_2)
-            self.inter_x1_2, self.inter_x2_2 = interactionModel.exeInteraction()
+            interactionModel = mudules.Interaction(3, self.output_x1_2, self.output_x2_2)
+            self.inter_x1_2, self.inter_x2_2, self.inter_x2_weight_2 = interactionModel.exeInteraction()
 
         with tf.variable_scope("fusion-layer"):
-            fusionModel = mudules.Fusion(1,self.inter_x1_2,self.inter_x2_2)
+            fusionModel = mudules.Fusion(1,self.inter_x2_weight_1,self.inter_x2_weight_2)
             self.fusion_output = fusionModel.exeFusion()
 
         with tf.variable_scope("predict-layer"):
