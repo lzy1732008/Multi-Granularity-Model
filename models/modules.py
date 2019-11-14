@@ -58,7 +58,6 @@ class Interaction:
         return x_weight, y_weight
 
 
-
     def playInteraction3(self):
         '''
         输入：两个
