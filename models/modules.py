@@ -19,7 +19,7 @@ class Interaction:
         3.计算两个输入各自被对齐后的向量矩阵
         '''
         with tf.variable_scope("interactin-layer"):
-            assert len(self.data) == 2, ValueError('the number of input data is wrong, it should be 2,but{0}'.format(len(self.data)))
+           
             #首先计算attention
             x_2_y, y_2_x = comp.genericAttention(self.data[0],self.data[1])
 
