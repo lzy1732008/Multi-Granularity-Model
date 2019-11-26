@@ -60,6 +60,23 @@ def processText(line,wordEmbedding, wordVocab):
         return {'word_input': wordEmbs}
     return []
 
+def processLawText(line,wordEmbedding, wordVocab):
+    initContent = line.strip()
+    if initContent != "":
+        content = jieba.cut(initContent)
+        lines = list(map(lambda x: str(x).strip(), content))
+        contentcut = list(filter(lambda x: x != "", lines))
+        wordEmbs = []
+        for word in contentcut:
+            wordEmb = processWord(word, wordEmbedding, wordVocab)
+            #判断是否是NoneType
+            if wordEmb is None: continue
+            wordEmb = getVector(wordEmb)
+            if wordEmb is None: continue
+            wordEmbs.append(wordEmb)
+        return wordEmbs
+    return []
+
 
 def getVector(str_vector):
     vectors = str_vector.split('\t')
@@ -71,6 +88,16 @@ def processWord(word, word_embedding, vocabs):
         return word_embedding['<UNK>']
     else:
         return word_embedding[word]
+
+
+
+
+
+
+
+
+
+
 
 
 

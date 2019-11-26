@@ -9,16 +9,16 @@ from sklearn import metrics
 import os
 import sys
 
-from models.MultiGranularityCNN import MultiGranularityCNNModel
+from models.qhjModel import QHModel
 from preps.data_load import *
 import models.parameter as param
 
-save_dir = 'result/model/MultiGranularityCNN'  #修改处
-param_des = 'initparam-3CNN-v3'
+save_dir = 'result/model/QHJModel'  #修改处
+param_des = 'v1'
 save_path = os.path.join(save_dir,param_des+'/checkpoints/best_validation')
 tensorboard_dir = os.path.join(save_dir,param_des+'/tensorboard')
 
-model = MultiGranularityCNNModel()
+model = QHModel()
 
 if not os.path.exists(save_path):
     os.makedirs(save_path)
@@ -34,9 +34,10 @@ def get_time_dif(start_time):
 
 
 def feed_data(a_word,b_word,y_batch,dropout_rate):
+
     feed_dict = {
-        model.input_X1: a_word,
-        model.input_X2: b_word,
+        model.inputX: a_word,
+        model.inputSplit: b_word,
         model.y: y_batch,
         model.dropout_rate: dropout_rate,
     }
@@ -51,6 +52,7 @@ def evaluate(sess,a_word,b_word,y):
     total_loss = 0.0
     total_acc = 0.0
     for a_word_batch, b_word_batch ,y_batch in batch_eval:
+        b_word_batch = addIndexForLaw(b_word_batch)
         batch_len = len(a_word_batch)
         feed_dict = feed_data(a_word_batch, b_word_batch,y_batch,1.0)
         loss, acc = sess.run([model.loss, model.acc], feed_dict=feed_dict)
@@ -81,10 +83,13 @@ def train():
     print("Loading training and validation data...")
     # 载入训练集与验证集
     start_time = time.time()
-    train_data, test_data, val_data = data_load(param.BaseConfig.trainPath,param.BaseConfig.valPath,None,model)
+    datasets = dataLoadLaw(model)
+    train_data = datasets[0]
+    val_data = datasets[1]
 
     train_x1_word, train_x2_word,  train_y = train_data
     val_x1_word,  val_x2_word,  val_y = val_data
+
 
     print('train len',len(train_x1_word))
     print('val_len',len(val_x1_word))
@@ -109,6 +114,8 @@ def train():
         print('Epoch:', epoch + 1)
         batch_train = get_batch_data(train_x1_word, train_x2_word,  train_y, param.BaseConfig.batch_size)
         for a_word_batch, b_word_batch, y_batch in batch_train:
+            b_word_batch = addIndexForLaw(b_word_batch)
+
             feed_dict = feed_data(a_word_batch, b_word_batch,y_batch,model.config.dropout_rate)
 
             if total_batch % param.BaseConfig.save_per_batch == 0:
@@ -152,7 +159,7 @@ def train():
 def test():
     print("Loading test data...")
     start_time = time.time()
-    test_data = data_load_test(model)
+    test_data = dataLoadLaw(model,train=False,val=False,test=True)[0]
     test_x1_word,  test_x2_word,  test_y = test_data
 
 
@@ -176,8 +183,8 @@ def test():
         start_id = i * batch_size
         end_id = min((i + 1) * batch_size, data_len)
         feed_dict = {
-            model.input_X1: test_x1_word[start_id:end_id],
-            model.input_X2: test_x2_word[start_id:end_id],
+            model.inputX: test_x1_word[start_id:end_id],
+            model.inputSplit: test_x2_word[start_id:end_id],
             model.y: test_y,
             model.dropout_rate: 1.0   #这个表示测试时不使用dropout对神经元过滤
         }
@@ -198,7 +205,7 @@ def test():
     return y_test_cls,y_pred_cls
 
 
-# train()
-y_test_cls,y_pred_cls = test()
+train()
+# y_test_cls,y_pred_cls = test()
 # wsnamels = getwslist(model=model)
 # wsevaluate(y_test_cls, y_pred_cls,wsnamels)
