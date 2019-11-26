@@ -143,7 +143,7 @@ def dataLoadLaw(model, train=True, val=True, test=False):
         testSet = env['testSet']
 
     #load word embedding
-    f_word = open(param.BaseConfig.w2vModel, 'r', encoding='utf- 8')
+    f_word = open(param.BaseConfig.w2vModel_ex, 'r', encoding='utf- 8')
     wordEmbedding = json.load(f_word)
     if '<UNK>' not in wordEmbedding.keys():
         wordEmbedding['<UNK>'] = '\t'.join(['0' for _ in range(param.BaseConfig.word_dimension)])
