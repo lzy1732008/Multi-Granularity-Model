@@ -347,7 +347,7 @@ def extendWordVocabs():
     newWordsEmbedding = np.reshape(np.random.randn(len(newWords) * param.BaseConfig.word_dimension),
                                    newshape=[len(newWords), param.BaseConfig.word_dimension])
     for i, nw in enumerate(newWords):
-        wordEmbedding[nw] = newWordsEmbedding[i].tolist()
+        wordEmbedding[nw] = '\t'.join(map(str,newWordsEmbedding[i].tolist()))
 
     w_word = open(param.BaseConfig.w2vModel_ex, 'w', encoding='utf-8')
     json.dump(wordEmbedding,w_word)
