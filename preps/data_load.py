@@ -158,7 +158,7 @@ def dataLoadLaw(model, train=True, val=True, test=False):
     if val:
        valSet = processInitDataLaw(valSet, model, wordEmbedding,wordVocab)
        output.append(valSet)
-    if train:
+    if test:
        testSet = processInitDataLaw(testSet, model, wordEmbedding,wordVocab)
        output.append(testSet)
     return output
