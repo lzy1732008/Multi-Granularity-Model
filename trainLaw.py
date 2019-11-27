@@ -160,7 +160,7 @@ def test():
     print("Loading test data...")
     start_time = time.time()
     test_data = dataLoadLaw(model,train=False,val=False,test=True)
-    test_data = test_data[0]
+    test_data = test_data
     test_x1_word,  test_x2_word,  test_y = test_data
 
 
