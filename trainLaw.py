@@ -14,7 +14,7 @@ from preps.data_load import *
 import models.parameter as param
 
 save_dir = 'result/model/QHJModel'  #修改处
-param_des = 'v1'
+param_des = 'v3'
 save_path = os.path.join(save_dir,param_des+'/checkpoints/best_validation')
 tensorboard_dir = os.path.join(save_dir,param_des+'/tensorboard')
 
