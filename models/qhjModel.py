@@ -5,10 +5,17 @@ class Config:
     def __init__(self):
 
         #param v1
-        self.max_len = 70 #这个有待统计
+        # self.max_len = 70 #这个有待统计
+        # self.rnn_output_dim = 128
+        # self.fnn_output = 64
+        # self.num_layers = 1
+        # self.dropout_rate = 0.8
+
+        #param v2
+        self.max_len = 70  # 这个有待统计
         self.rnn_output_dim = 128
         self.fnn_output = 64
-        self.num_layers = 1
+        self.num_layers = 2
         self.dropout_rate = 0.8
 
 
