@@ -14,7 +14,7 @@ from preps.data_load import *
 import models.parameter as param
 
 save_dir = 'result/model/QHJModel'  #修改处
-param_des = 'v3'
+param_des = 'v1'
 save_path = os.path.join(save_dir,param_des+'/checkpoints/best_validation')
 tensorboard_dir = os.path.join(save_dir,param_des+'/tensorboard')
 
@@ -185,7 +185,7 @@ def test():
         end_id = min((i + 1) * batch_size, data_len)
         feed_dict = {
             model.inputX: test_x1_word[start_id:end_id],
-            model.inputSplit: test_x2_word[start_id:end_id],
+            model.inputSplit: addIndexForLaw(test_x2_word[start_id:end_id]),
             model.y: test_y,
             model.dropout_rate: 1.0   #这个表示测试时不使用dropout对神经元过滤
         }
@@ -206,7 +206,7 @@ def test():
     return y_test_cls,y_pred_cls
 
 
-# train()
-y_test_cls,y_pred_cls = test()
+train()
+# y_test_cls,y_pred_cls = test()
 # wsnamels = getwslist(model=model)
 # wsevaluate(y_test_cls, y_pred_cls,wsnamels)

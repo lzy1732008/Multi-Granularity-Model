@@ -300,13 +300,18 @@ import numpy as np
 
 def buildDataSet(window = 1):
     jieba.load_userdict('resource/dict.txt')
-    fw = open('resource/lawDataSet.json','w',encoding='utf-8')
+    fw = open('resource/lawDataSet_rm2.json','w',encoding='utf-8')
     dataset = {}
     fr = open('resource/ft_labeled.json','r',encoding='utf-8')
     allft = json.load(fr).items()
     alldata = []
     for ft,labeledcontents in allft:
         for i, c in enumerate(labeledcontents):
+            #这一段用于删除类别为2的文字预测 *****************
+            if int(c[1]) == 2:
+                continue
+            # 这一段用于删除类别为2的文字预测 *****************
+
             currentData = ""
             if i == 0:
                 currentData += 'S'

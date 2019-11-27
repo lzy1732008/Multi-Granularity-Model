@@ -5,11 +5,11 @@ class Config:
     def __init__(self):
 
         #param v1
-        # self.max_len = 70 #这个有待统计
-        # self.rnn_output_dim = 128
-        # self.fnn_output = 64
-        # self.num_layers = 1
-        # self.dropout_rate = 0.8
+        self.max_len = 70 #这个有待统计
+        self.rnn_output_dim = 128
+        self.fnn_output = 64
+        self.num_layers = 1
+        self.dropout_rate = 0.8
 
         #param v2
         # self.max_len = 70  # 这个有待统计
@@ -19,11 +19,11 @@ class Config:
         # self.dropout_rate = 0.8
 
         #param v3
-        self.max_len = 70  # 这个有待统计
-        self.rnn_output_dim = 128
-        self.fnn_output = 64
-        self.num_layers = 2
-        self.dropout_rate = 0.5
+        # self.max_len = 70  # 这个有待统计
+        # self.rnn_output_dim = 128
+        # self.fnn_output = 64
+        # self.num_layers = 2
+        # self.dropout_rate = 0.5
 
 
 class QHModel:
@@ -31,7 +31,7 @@ class QHModel:
         self.config = Config()
         self.inputX = tf.placeholder(dtype=tf.float32,shape=[None,None,param.BaseConfig.law_word_dimension],name="inputX")
         self.inputSplit = tf.placeholder(dtype=tf.int32,shape=[None,3],name="inputSplit") #其中每行以第一个元素是bi-lstm 前向切分点，第二项是后向切分点
-        self.y = tf.placeholder(dtype=tf.int32,shape=[None,3],name="inputY")
+        self.y = tf.placeholder(dtype=tf.int32,shape=[None,2],name="inputY")
         self.dropout_rate = tf.placeholder(dtype=tf.float32,name="dropout_rate")
 
         self.run_model()
@@ -73,7 +73,7 @@ class QHModel:
         with tf.variable_scope("predict-layer"):
             self.output_ = tf.nn.relu(tf.layers.dense(inputs=output_split,units=self.config.fnn_output,name='fnn1'))
             self.output_ = tf.layers.dropout(self.output_,rate=self.dropout_rate)
-            self.logit = tf.layers.dense(inputs=self.output_,units=3,name='fnn2')
+            self.logit = tf.layers.dense(inputs=self.output_,units=2,name='fnn2')
 
         with tf.variable_scope("optimize-layer"):
             self.pred_y = tf.argmax(tf.nn.softmax(self.logit), 1)

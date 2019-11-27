@@ -90,6 +90,10 @@ def processInitDataLaw(data,model,wordEmbedding, vocabs):
     y = []
     for index,sample in enumerate(data):
         input, target_y = sample[0], int(sample[1])
+
+        if target_y == 2:
+            continue
+
         array = regx.split(input)
         assert len(array) in [2,3,4], ValueError("Contain wrong number of sub items:{0} with {1} sub items".format(input,len(array)))
         if len(array) == 2: #单独的一个句子
@@ -118,11 +122,11 @@ def processInitDataLaw(data,model,wordEmbedding, vocabs):
 
         inputSplit.append([pcut,hcut])
         if target_y == 0:
-            y.append([1,0,0])
+            y.append([1,0])
         elif target_y == 1:
-            y.append([0,1,0])
-        else:
-            y.append([0,0,1])
+            y.append([0,1])
+        # else:
+        #     y.append([0,0,1])
 
     inputX = kr.preprocessing.sequence.pad_sequences(np.array(inputX), model.config.max_len)
     inputSplit = np.array(inputSplit)
@@ -132,7 +136,7 @@ def processInitDataLaw(data,model,wordEmbedding, vocabs):
 
 import json
 def dataLoadLaw(model, train=True, val=True, test=False):
-    fr = open('resource/lawDataSet.json','r',encoding='utf-8')
+    fr = open('resource/lawDataSet_rm2.json','r',encoding='utf-8')
     env = json.load(fr)
     trainSet, valSet, testSet = [], [], []
     if train:
@@ -166,8 +170,7 @@ def dataLoadLaw(model, train=True, val=True, test=False):
 def addIndexForLaw(dataSet):
     newDataSet = []
     for i in range(len(dataSet)):
-        if i == 67:
-            print("Error")
+        assert i < 64, ValueError("Index is larger than 64")
         temp = dataSet[i].tolist()
         temp.insert(0,i)
         newDataSet.append(np.array(temp))
