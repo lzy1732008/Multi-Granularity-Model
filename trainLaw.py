@@ -159,7 +159,8 @@ def train():
 def test():
     print("Loading test data...")
     start_time = time.time()
-    test_data = dataLoadLaw(model,train=False,val=False,test=True)[0]
+    test_data = dataLoadLaw(model,train=False,val=False,test=True)
+    test_data = test_data[0]
     test_x1_word,  test_x2_word,  test_y = test_data
 
 
@@ -205,7 +206,7 @@ def test():
     return y_test_cls,y_pred_cls
 
 
-train()
-# y_test_cls,y_pred_cls = test()
+# train()
+y_test_cls,y_pred_cls = test()
 # wsnamels = getwslist(model=model)
 # wsevaluate(y_test_cls, y_pred_cls,wsnamels)
