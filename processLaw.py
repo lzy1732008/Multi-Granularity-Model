@@ -300,7 +300,7 @@ import numpy as np
 
 def buildDataSet(window = 1):
     jieba.load_userdict('resource/dict.txt')
-    fw = open('resource/lawDataSet_rm2.json','w',encoding='utf-8')
+    fw = open('resource/lawDataSet_rm2_rmContext.json','w',encoding='utf-8')
     dataset = {}
     fr = open('resource/ft_labeled.json','r',encoding='utf-8')
     allft = json.load(fr).items()
@@ -313,17 +313,17 @@ def buildDataSet(window = 1):
             # 这一段用于删除类别为2的文字预测 *****************
 
             currentData = ""
-            if i == 0:
-                currentData += 'S'
-            else:
-                for j in range(i-window,i):currentData += labeledcontents[j][0]
+            # if i == 0:
+            #     currentData += 'S'
+            # else:
+            #     for j in range(i-window,i):currentData += labeledcontents[j][0]
 
             currentData += c[0]
 
-            if i == len(labeledcontents) - 1:
-                currentData += 'E'
-            else:
-                for j in range(i+1,i+window+1): currentData += labeledcontents[j][0]
+            # if i == len(labeledcontents) - 1:
+            #     currentData += 'E'
+            # else:
+            #     for j in range(i+1,i+window+1): currentData += labeledcontents[j][0]
             #进行分词
             alldata.append((currentData,c[1]))
             # alldata.append((' '.join(jieba.lcut(currentData)), c[1]))
@@ -358,6 +358,160 @@ def extendWordVocabs():
     json.dump(wordEmbedding,w_word)
 
 # extendWordVocabs()
+
+
+
+#下面是为了传统机器学习分类器做法条预处理
+#首先建立法条正文文本的字典
+def buildLawDict():
+    dictionary = {}
+    fr = open('resource/corpus_law.txt','r',encoding='utf-8')
+    lines = fr.readlines()
+    for line in lines:
+        words = list(map(lambda x: x.strip(),list(filter(lambda x: x.strip()!="",line.split()))))
+        for w in words:
+            if w in dictionary.keys():
+                dictionary[w] += 1
+            else:
+                dictionary[w] = 1
+    dictionary = sorted(dictionary.items(),key=lambda x:x[1],reverse=True)
+    remainedWords = []
+    for w, n in dictionary:
+        if n > 40:
+            remainedWords.append(w)
+    print('\n'.join(remainedWords))
+    print('总共词语为：'+str(len(remainedWords)))
+
+
+# buildLawDict()
+from util import rules
+def processLawText2id(line,dictionary):
+    initContent = line.strip()
+    vector = []
+    if initContent != "":
+        for word in dictionary:
+            times = 0
+            if str(initContent).count(word) > 0: times = 1
+            vector.append(times)
+        return vector
+    return []
+
+def ruleFeatures(pre,cText,next):
+    pre_QRule = rules.QRules()
+    pre_HRule = rules.HRules()
+    cText_QRule = rules.QRules()
+    cText_HRule = rules.HRules()
+    next_QRule = rules.QRules()
+    next_HRule = rules.HRules()
+
+    return pre_QRule.inter(pre) + pre_HRule.inter(pre) + cText_QRule.inter(cText) + cText_HRule.inter(cText) + next_QRule.inter(next) + next_HRule.inter(next)
+
+
+
+def processMultiLawText2id(line,dictionary):
+    pattern = '，|。|；|：'
+    regx = re.compile(pattern)
+    array = regx.split(line)
+    pre, cText, next = '', '', ''
+    puncVectors = []
+    punction = {"，":1,'。':2,'：':3,"；":4}
+
+    assert len(array) in [2,3,4], ValueError("Contain wrong number of sub items:{0} with {1} sub items".format(input,len(array)))
+    if len(array) == 2: #独立的一个句子
+        v1 = [0 for _ in range(len(dictionary) - 2)] + [1, 0]
+        v2 = processLawText2id(array[0][1:],dictionary)
+        v3 = [0 for _ in range(len(dictionary) - 1)] + [1]
+
+        #前后都是空
+        cText = array[0][1:]
+
+        #标点符号
+        puncVectors = [0,punction[line[-2]],0]
+
+
+    elif len(array) == 3: #
+        if line[0] == 'S':
+            v1 = [0 for _ in range(len(dictionary) - 2)] + [1, 0]
+            v2 = processLawText2id(array[0][1:], dictionary)
+            v3 = processLawText2id(array[1], dictionary)
+
+            #前面是空
+            cText = array[0][1:]
+            next = array[1]
+
+            #标点符号
+            puncVectors = [0, punction[line[len(array[0])]], punction[line[-1]]]
+        elif line[-1] == 'E':
+            v1 = processLawText2id(array[0],dictionary)
+            v2 = processLawText2id(array[1], dictionary)
+            v3 = [0 for _ in range(len(dictionary) - 1)] + [1]
+
+            #后面是空
+            pre = array[0]
+            cText = array[1]
+
+            #标点符号
+            puncVectors = [punction[line[len(array[0])]], punction[line[-2]], 0]
+
+    else:
+        v1 = processLawText2id(array[0], dictionary)
+        v2 = processLawText2id(array[1], dictionary)
+        v3 = processLawText2id(array[2], dictionary)
+
+        #没有是空
+        pre = array[0]
+        cText = array[1]
+        next = array[2]
+
+        #标点符号
+        # print("line len:{0}, array[0]:{1}, array[1]:{2}".format(len(line),len(array[0]),len(array[1])))
+        puncVectors = [punction[line[len(array[0])]], punction[line[len(array[0])+len(array[1])+1]], \
+                       punction[line[-1]]]
+
+
+    assert len(v1) == len(v2) == len(v3), ValueError("Wrong vector size:" + line)
+    rulefeatures = ruleFeatures(pre,cText,next)
+    return v2 + rulefeatures + puncVectors
+
+
+
+def buildDataSetForRF(train,val,test):
+    fr = open('../resource/lawDataSet_rm2.json', 'r', encoding='utf-8')
+    env = json.load(fr)
+    fr_dict = open('../resource/lawdict>30.txt','r',encoding='utf-8')
+    dictionary = list(map(lambda x:x.strip(),fr_dict.readlines()))
+
+    X = []
+    Y = []
+    if train:
+        trainSet = env['trainSet']
+        x,y = vectorText(trainSet,dictionary)
+        X.extend(x)
+        Y.extend(y)
+    if val:
+        valSet = env['valSet']
+        x, y = vectorText(valSet, dictionary)
+        X.extend(x)
+        Y.extend(y)
+    if test:
+        testSet = env['testSet']
+        x, y = vectorText(testSet, dictionary)
+        X.extend(x)
+        Y.extend(y)
+    return X,Y
+
+def vectorText(data,dictionary):
+    y = []
+    inputs = []
+    for index,sample in enumerate(data):
+        input, target_y = sample[0], int(sample[1])
+
+        if target_y == 2:
+            continue
+        vector = processMultiLawText2id(input,dictionary)
+        inputs.append(vector)
+        y.append(target_y)
+    return [inputs,y]
 
 
 

@@ -9,16 +9,16 @@ from sklearn import metrics
 import os
 import sys
 
-from models.qhjModel import QHModel
+from models.qhj_fnn import QHFNNModel
 from preps.data_load import *
 import models.parameter as param
 
-save_dir = 'result/model/QHJModel'  #修改处
-param_des = 'v1'
+save_dir = 'result/model/QHJFNNModel'  #修改处
+param_des = 'v5-data:lawdataset_rm2_rmContent'
 save_path = os.path.join(save_dir,param_des+'/checkpoints/best_validation')
 tensorboard_dir = os.path.join(save_dir,param_des+'/tensorboard')
 
-model = QHModel()
+model = QHFNNModel()
 
 if not os.path.exists(save_path):
     os.makedirs(save_path)
@@ -33,11 +33,10 @@ def get_time_dif(start_time):
     return timedelta(seconds=int(round(time_dif)))
 
 
-def feed_data(a_word,b_word,y_batch,dropout_rate):
+def feed_data(a_word,y_batch,dropout_rate):
 
     feed_dict = {
         model.inputX: a_word,
-        model.inputSplit: b_word,
         model.y: y_batch,
         model.dropout_rate: dropout_rate,
     }
@@ -51,9 +50,8 @@ def evaluate(sess,a_word,b_word,y):
     total_loss = 0.0
     total_acc = 0.0
     for a_word_batch, b_word_batch ,y_batch in batch_eval:
-        b_word_batch = addIndexForLaw(b_word_batch)
         batch_len = len(a_word_batch)
-        feed_dict = feed_data(a_word_batch, b_word_batch,y_batch,1.0)
+        feed_dict = feed_data(a_word_batch,y_batch,1.0)
         loss, acc = sess.run([model.loss, model.acc], feed_dict=feed_dict)
         total_loss += loss * batch_len
         total_acc += acc * batch_len
@@ -111,11 +109,10 @@ def train():
     flag = False
     for epoch in range(param.BaseConfig.num_epochs):
         print('Epoch:', epoch + 1)
-        batch_train = get_batch_data(train_x1_word, train_x2_word,  train_y, param.BaseConfig.batch_size)
+        batch_train = get_batch_data(train_x1_word,  train_x2_word, train_y, param.BaseConfig.batch_size)
         for a_word_batch, b_word_batch, y_batch in batch_train:
-            b_word_batch = addIndexForLaw(b_word_batch)
 
-            feed_dict = feed_data(a_word_batch, b_word_batch,y_batch,model.config.dropout_rate)
+            feed_dict = feed_data(a_word_batch,y_batch,model.config.dropout_rate)
 
             if total_batch % param.BaseConfig.save_per_batch == 0:
                 # 每多少轮次将训练结果写入tensorboard scalar
@@ -127,7 +124,7 @@ def train():
 
                 feed_dict[model.dropout_rate] = 1.0
                 loss_train, acc_train,pre_y, logit, true_y, = session.run([model.loss, model.acc,model.pred_y,model.logit,model.y], feed_dict=feed_dict)
-                loss_val, acc_val = evaluate(session, val_x1_word,  val_x2_word, val_y)  # 验证当前会话中的模型的loss和acc
+                loss_val, acc_val = evaluate(session, val_x1_word, val_x2_word, val_y)  # 验证当前会话中的模型的loss和acc
 
 
                 if acc_val > best_acc_val:
@@ -160,7 +157,7 @@ def test():
     start_time = time.time()
     test_data = dataLoadLaw(model,train=False,val=False,test=True)
     test_data = test_data[0]
-    test_x1_word,  test_x2_word,  test_y = test_data
+    test_x1_word, test_x2_word, test_y = test_data
 
 
     session = tf.Session()
@@ -169,7 +166,7 @@ def test():
     saver.restore(sess=session, save_path=save_path)  # 读取保存的模型
 
     print('Testing...')
-    loss_test, acc_test = evaluate(session, test_x1_word, test_x2_word,  test_y)
+    loss_test, acc_test = evaluate(session, test_x1_word, test_x2_word, test_y)
     msg = 'Test Loss: {0:>6.2}, Test Acc: {1:>7.2%}'
     print(msg.format(loss_test, acc_test))
 
@@ -184,7 +181,6 @@ def test():
         end_id = min((i + 1) * batch_size, data_len)
         feed_dict = {
             model.inputX: test_x1_word[start_id:end_id],
-            model.inputSplit: addIndexForLaw(test_x2_word[start_id:end_id]),
             model.y: test_y,
             model.dropout_rate: 1.0   #这个表示测试时不使用dropout对神经元过滤
         }
@@ -205,7 +201,7 @@ def test():
     return y_test_cls,y_pred_cls
 
 
-train()
+# train()
 # y_test_cls,y_pred_cls = test()
 # wsnamels = getwslist(model=model)
 # wsevaluate(y_test_cls, y_pred_cls,wsnamels)

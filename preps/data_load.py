@@ -93,24 +93,25 @@ def processInitDataLaw(data,model,wordEmbedding, vocabs):
 
         if target_y == 2:
             continue
-
-        array = regx.split(input)
-        assert len(array) in [2,3,4], ValueError("Contain wrong number of sub items:{0} with {1} sub items".format(input,len(array)))
-        if len(array) == 2: #单独的一个句子
-            pcut = len(input) - 2
-            hcut = 1
-        elif len(array) == 3:
-            assert input[0] == 'S' or input[-1] == 'E', ValueError("Wrong input text:"+input)
-            if input[0] == 'S':
-                pcut = len(array[0])
-                hcut = 1
-            elif input[-1] == 'E':
-                pcut = len(input) - 2
-                hcut = len(input) - len(array[-2]) - 2
-
-        elif len(array) == 4:
-            pcut = len(input) - len(array[-2]) - 2
-            hcut = len(array[0])
+        pcut = 0
+        hcut = 0
+        # array = regx.split(input)
+        # assert len(array) in [2,3,4], ValueError("Contain wrong number of sub items:{0} with {1} sub items".format(input,len(array)))
+        # if len(array) == 2: #单独的一个句子
+        #     pcut = len(input) - 2
+        #     hcut = 1
+        # elif len(array) == 3:
+        #     assert input[0] == 'S' or input[-1] == 'E', ValueError("Wrong input text:"+input)
+        #     if input[0] == 'S':
+        #         pcut = len(array[0])
+        #         hcut = 1
+        #     elif input[-1] == 'E':
+        #         pcut = len(input) - 2
+        #         hcut = len(input) - len(array[-2]) - 2
+        #
+        # elif len(array) == 4:
+        #     pcut = len(input) - len(array[-2]) - 2
+        #     hcut = len(array[0])
 
         input_embed = pre.processLawText(input, wordEmbedding, vocabs)
         if len(input_embed) == 0 or input_embed is None: continue
@@ -136,7 +137,7 @@ def processInitDataLaw(data,model,wordEmbedding, vocabs):
 
 import json
 def dataLoadLaw(model, train=True, val=True, test=False):
-    fr = open('resource/lawDataSet_rm2.json','r',encoding='utf-8')
+    fr = open('resource/lawDataSet_rm2_rmContext.json','r',encoding='utf-8')
     env = json.load(fr)
     trainSet, valSet, testSet = [], [], []
     if train:
