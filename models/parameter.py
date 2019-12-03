@@ -5,7 +5,7 @@ class BaseConfig:
     w2vModel = 'resource/word_embedding.json'
     w2vModel_ex = 'resource/word_embedding_extend.json'  #这个是加入标点符号的embedding
     rf_model_path = 'result/model/RandomForest/rf_rm2json-dict30bool-rules-v2.pkl'
-    rf_dict_path = 'resource/lawdict>30.txt'
+    rf_dict_path = 'resource/lawdict.txt'
     char_vocab_size = 4594  # *
     word_vocab_size = 97505
     char_dimension = 30
