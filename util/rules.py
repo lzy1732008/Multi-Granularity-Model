@@ -65,7 +65,7 @@ class HRules:
 
     # 包含某些词
     def rule2(self, input):
-        words = ["是指","应当按规定"]
+        words = ["是指","应当按规定","应当"]
         rule = Rules(input)
         return rule.rule4(words)
 
@@ -78,4 +78,60 @@ class HRules:
         return [int(self.rule1(input)),int(self.rule2(input)),int(self.rule3(input))]
 
 
+class QRulesEx(QRules):
+    # 首先使用父类最基础的来判断看效果
+    def predict(self, input):
+        return self.rule1(input) or self.rule2(input) or self.rule3(input)
+
+    def predict2(self,input,line):
+        if self.predict(input):
+            return True
+
+        #判断前一句是否是已经结束，如果已经结束，则很有可能是前件。或者当前句子是第一句
+        if line[0] == 'S':
+            return True
+
+        index = str(line).index(input)
+        if line[index - 1] in ['。','；']:
+            return True
+        return False
+
+    def predict3(self,input,line):
+        if self.predict2(input,line):
+            return True
+
+        #增加前一句如果是前件，且二者是并列关系的话：或者、并且，但是，则当前也是前件
+        index = str(line).index(input)
+        pre = line[:index]
+        rule = Rules(input)
+        if self.predict(pre) and rule.rule1(["或者","并且","但是"]):
+            return True
+        return False
+
+
+
+class HRulesEx(HRules):
+    def predict(self,input):
+        return self.rule1(input) or self.rule2(input) or self.rule3(input)
+
+    def predict2(self,input,line):
+        if self.predict(input):
+            return True
+
+        # 判断当前句子是否是最后一句
+        if line[-1] == 'E' and not str(input).endswith("除外"):
+            return True
+        return False
+
+    def predict3(self, input, line):
+        if self.predict2(input, line):
+            return True
+
+        # 增加前一句如果是后件，且二者是并列关系的话：或者、并且，但是，则当前也是后件
+        index = str(line).index(input)
+        pre = line[:index]
+        rule = Rules(input)
+        if self.predict(pre) and rule.rule1(["或者","并且","但是"]):
+            return True
+        return False
 

@@ -81,6 +81,7 @@ def processInitData(data,model):
     b_data_word = kr.preprocessing.sequence.pad_sequences(np.array(b_data_word), model.config.Y_maxlen)
     return a_data_word,b_data_word, np.array(y)
 
+#法条前后件预测用到的
 import  re
 def processInitDataLaw(data,model,wordEmbedding, vocabs):
     pattern = '，|。|；|：'

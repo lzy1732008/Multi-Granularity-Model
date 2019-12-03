@@ -14,6 +14,8 @@ class Interaction:
                 return self.playInteraction2()
             elif self.method == 3:
                 return self.playInteraction3()
+            elif self.method == 4:
+                return self.playInteraction4()
 
 
     def playInteraction1(self):
@@ -84,6 +86,22 @@ class Interaction:
         y_weight_output = tf.reshape(y_weight_,shape=[-1,y_len])
         return new_x, new_y,y_weight_output
 
+    def playInteraction4(self):
+        inputX1 = self.data[0]
+        inputX2 = self.data[1]
+        len1 = inputX1.get_shape().as_list()[1]
+        len2 = inputX2.get_shape().as_list()[1]
+        x1_2_x2,x2_2_x1 = comp.genericAttention(self.data[0], self.data[1])
+
+        # 计算x1每个词获取的总weight
+        x1_weight = tf.reduce_mean(x2_2_x1, axis=2)  # [Batch, len1]
+
+        # 计算x2最后获取的每个词的总的weight
+        x1_weight_ = tf.expand_dims(x1_weight, axis=1)  # [Batch, 1, len1]
+        x2_weight = tf.matmul(x1_weight_, x1_2_x2)  # [Batch, 1, len2]
+        x2_weight = tf.reshape(x2_weight, shape=[-1, len2])
+        return x2_weight
+
 
 class Fusion:
     def __init__(self, method, *data):
@@ -97,3 +115,32 @@ class Fusion:
     def playFusion1(self):
         with tf.variable_scope("fusion-layer"):
             return tf.concat(self.data,axis=-1)
+
+
+class KnowledgeGate:
+    def __init__(self, method, data, knowledge):
+        self.method = method
+        self.data = data
+        self.knowledge = knowledge
+
+    def exeKnowledgeGate(self):
+        if self.method == 1:
+            return self.playKG1()
+
+    def playKG1(self):
+        with tf.variable_scope("knowledge-layer"):
+            k_dimension = self.knowledge.get_shape().as_list()[-1]
+            data_dimension = self.data.get_shape().as_list()[-1]
+            weight_1 = tf.Variable(tf.random_normal([k_dimension, data_dimension],
+                                                    stddev=0, seed=1), trainable=True, name='w1')
+            weight_2 = tf.Variable(tf.random_normal([data_dimension, data_dimension],
+                                                    stddev=0, seed=1), trainable=True, name='w2')
+            pw = tf.nn.sigmoid(tf.einsum('abc,cd->abd',self.knowledge,weight_1) + tf.einsum('abc,cd->abd',self.data,weight_2))
+            one_array = tf.ones(shape=pw)
+            output = (one_array - pw) * self.data + pw * self.knowledge
+            return output
+
+
+
+
+

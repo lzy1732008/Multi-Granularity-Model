@@ -6,14 +6,14 @@ from sklearn.svm import SVC
 import json
 import pickle
 
-X,Y = buildDataSetForRF(train=True,val=True,test=False)
-X,Y = np.array(X), np.array(Y)
-rf = RandomForestClassifier(n_estimators=100)
-rf.fit(X,Y)
-with open('../result/model/RandomForest/rf_rm2json-dict30bool-rules-punction.pkl','wb') as fw:
-     pickle.dump(rf,fw)
+# X,Y = buildDataSetForRF(train=True,val=True,test=False)
+# X,Y = np.array(X), np.array(Y)
+# rf = RandomForestClassifier(n_estimators=100)
+# rf.fit(X,Y)
+# with open('../result/model/RandomForest/.pkl','wb') as fw:
+#      pickle.dump(rf,fw)
 
-with open('../result/model/RandomForest/rf_rm2json-dict30bool-rules-punction.pkl', 'rb') as fr:
+with open('../result/model/RandomForest/rf_rm2json-dict30bool-rules-v2.pkl', 'rb') as fr:
     rf = pickle.load(fr)
 
 testX, testY = buildDataSetForRF(train=False,val=False,test=True)

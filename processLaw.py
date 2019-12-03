@@ -242,9 +242,12 @@ def checkAllLabeled(targetpath):
 
 #填充标点符号
 def fillFH():
-    sourceLaw = 'resource/ft_nr_QHSplit.txt'
-    labeledLaw = 'resource/ftSplitCheck.txt'
-    targetLaw = 'resource/ft_labeled.json'
+    # sourceLaw = 'resource/ft_nr_QHSplit.txt'
+    # labeledLaw = 'resource/ftSplitCheck.txt'
+    # targetLaw = 'resource/ft_labeled.json'
+    sourceLaw = 'resource/gyshz_ftchina_zw.txt'
+    labeledLaw = 'resource/gyshz_split_labeled.txt'
+    targetLaw = 'resource/gyshz_ft_labeled.json'
     fr1 = open(sourceLaw,'r',encoding='utf-8')
     fr2 = open(labeledLaw,'r',encoding='utf-8')
     fw = open(targetLaw,'w',encoding='utf-8')
@@ -252,17 +255,25 @@ def fillFH():
     source2_dict = {}
     #获取第一个源文件的内容
     lines = fr1.readlines()
-    for line in lines:
-        line = line.strip()
-        if line == "":
-            continue
-        array = line.split('|')
-        ft = array[1].strip()
-        content = array[2].strip()
-        if ft == "" or content == "":
-            continue
-
+    # for line in lines:
+    #     line = line.strip()
+    #     if line == "":
+    #         continue
+    #     array = line.split('|')
+    #     ft = array[1].strip()
+    #     content = array[2].strip()
+    #     if ft == "" or content == "":
+    #         continue
+    #
+    #     source1_dict[ft] = content
+    index = 0
+    while index + 1 < len(lines):
+        ft = lines[index][3:].strip()
+        content = lines[index + 1].strip()
         source1_dict[ft] = content
+        index += 2
+
+
 
     lines = fr2.read().split('法条:')
     for line in lines:
@@ -271,7 +282,8 @@ def fillFH():
         for c in array[1:]:
             c = c.strip()
             if c == "": continue
-            labeled = c.split('\t')
+            # labeled = c.split('\t')
+            labeled = c.split()
             assert len(labeled) == 2, ValueError("Wrong split labeled line:" + c)
             assert labeled[-1] in ['0','1','2'],ValueError("Wrong labeled line:" + c)
             labeledDatas.append(labeled)
@@ -289,20 +301,22 @@ def fillFH():
             endIndex = startIndex + len(subitem[0])
             assert startIndex != -1, ValueError("Find no substring matches for subitem {0} in law {1}!".format(subitem,ft))
             assert endIndex < len(content), ValueError("Wrong split" + subitem[0])
-            assert str(content[endIndex]) in punctuation, ValueError("End char isn't punctuation!")
+            assert str(content[endIndex]) in punctuation, ValueError("End char isn't punctuation!"+subitem[0])
             contents.append([content[startIndex:endIndex+1],subitem[1]])
             content = content[endIndex+1:]
         output_dict[ft] = contents
     json.dump(output_dict,fw)
+
+# fillFH()
 
 import random
 import numpy as np
 
 def buildDataSet(window = 1):
     jieba.load_userdict('resource/dict.txt')
-    fw = open('resource/lawDataSet_rm2_rmContext.json','w',encoding='utf-8')
+    fw = open('resource/gyshz_lawDataSet.json','w',encoding='utf-8')
     dataset = {}
-    fr = open('resource/ft_labeled.json','r',encoding='utf-8')
+    fr = open('resource/gyshz_ft_labeled.json','r',encoding='utf-8')
     allft = json.load(fr).items()
     alldata = []
     for ft,labeledcontents in allft:
@@ -313,17 +327,17 @@ def buildDataSet(window = 1):
             # 这一段用于删除类别为2的文字预测 *****************
 
             currentData = ""
-            # if i == 0:
-            #     currentData += 'S'
-            # else:
-            #     for j in range(i-window,i):currentData += labeledcontents[j][0]
+            if i == 0:
+                currentData += 'S'
+            else:
+                for j in range(i-window,i):currentData += labeledcontents[j][0]
 
             currentData += c[0]
 
-            # if i == len(labeledcontents) - 1:
-            #     currentData += 'E'
-            # else:
-            #     for j in range(i+1,i+window+1): currentData += labeledcontents[j][0]
+            if i == len(labeledcontents) - 1:
+                currentData += 'E'
+            else:
+                for j in range(i+1,i+window+1): currentData += labeledcontents[j][0]
             #进行分词
             alldata.append((currentData,c[1]))
             # alldata.append((' '.join(jieba.lcut(currentData)), c[1]))
@@ -335,9 +349,7 @@ def buildDataSet(window = 1):
     trainSet = alldata_[:numOfTrain]
     valSet = alldata_[numOfTrain:numOfTrain + numOfVal]
     testSet = alldata_[numOfTrain + numOfVal:]
-    dataset["trainSet"] = trainSet
-    dataset["valSet"] = valSet
-    dataset["testSet"] = testSet
+    dataset["dataSet"] = trainSet
     json.dump(dataset,fw)
 
 # buildDataSet()
@@ -404,7 +416,12 @@ def ruleFeatures(pre,cText,next):
     next_QRule = rules.QRules()
     next_HRule = rules.HRules()
 
+    #判断当前和之后的句子是否以连词开头
+    # cText_conRule = rules.Rules(cText)
+    # next_conRule = rules.Rules(next)
+    # con_words = ["并且","或者","但是","并","而且"]
     return pre_QRule.inter(pre) + pre_HRule.inter(pre) + cText_QRule.inter(cText) + cText_HRule.inter(cText) + next_QRule.inter(next) + next_HRule.inter(next)
+           # + [int(cText_conRule.rule1(con_words)),int(next_conRule.rule1(con_words))]
 
 
 
@@ -476,7 +493,7 @@ def processMultiLawText2id(line,dictionary):
 
 
 def buildDataSetForRF(train,val,test):
-    fr = open('../resource/lawDataSet_rm2.json', 'r', encoding='utf-8')
+    fr = open('../resource/gyshz_lawDataSet.json', 'r', encoding='utf-8')
     env = json.load(fr)
     fr_dict = open('../resource/lawdict>30.txt','r',encoding='utf-8')
     dictionary = list(map(lambda x:x.strip(),fr_dict.readlines()))
@@ -494,7 +511,7 @@ def buildDataSetForRF(train,val,test):
         X.extend(x)
         Y.extend(y)
     if test:
-        testSet = env['testSet']
+        testSet = env['dataSet']
         x, y = vectorText(testSet, dictionary)
         X.extend(x)
         Y.extend(y)
@@ -515,6 +532,62 @@ def vectorText(data,dictionary):
 
 
 
+def buildlabelfile(datapath):
+    fr = open(datapath,'r',encoding='utf-8')
+    lines = fr.readlines()
+    output = ""
+    pattern = '，|。|；|：'
+    regx = re.compile(pattern)
+    for line in lines:
+        if line.startswith("法条:"):
+            output += line
+        else:
+            array = regx.split(line)
+            array = list(filter(lambda x: x != "",list(map(lambda x: x.strip(), array))))
+            output += '\n'.join(array) + '\n'
+
+    fw = open('resource/gyshz_split_labeled.txt','w',encoding='utf-8')
+    fw.write(output)
+    print('Done!')
+
+# buildlabelfile('resource/gyshz_ftchina_zw.txt')
+
+
+# 下列方法是为了使用随机森林模型进行预测进行的数据预处理
+def processLawForRf(lawText):
+    pattern = r'([，。；：])'
+    fr_dict = open('../resource/lawdict>30.txt', 'r', encoding='utf-8')
+    dictionary = list(map(lambda x: x.strip(), fr_dict.readlines()))
+    #首先是进行切割，然后构建<pre,text,next>这样的输入
+    #首先根据原文把标点符号带上
+    outputTexts = str(lawText).replace("其中，","").replace("但是，","")
+    texts = re.split(pattern,outputTexts)
+    texts = list(filter(lambda x: x != "", list(map(lambda x:x.strip(), texts))))
+    newTexts = []
+    assert len(texts) % 2 == 0, ValueError("split num is not double," + str(len(texts)))
+    i = 0
+    while i < len(texts) - 1:
+        newTexts.append(texts[i] + texts[i + 1])
+        i += 2
+
+    rfInputVector = []
+    for i, text in enumerate(newTexts):
+        inputText = ""
+        if i == 0:
+            inputText += 'S'
+        else:
+            inputText += newTexts[i-1]
+        inputText += text
+
+        if i == len(newTexts) - 1:
+            inputText += 'E'
+        else:
+            inputText += newTexts[i+1]
+
+        vector = processMultiLawText2id(inputText, dictionary)
+        rfInputVector.append(vector)
+
+    return outputTexts, rfInputVector
 
 
 
