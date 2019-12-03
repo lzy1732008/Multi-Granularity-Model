@@ -556,7 +556,7 @@ def buildlabelfile(datapath):
 # 下列方法是为了使用随机森林模型进行预测进行的数据预处理
 def processLawForRf(lawText):
     pattern = r'([，。；：])'
-    fr_dict = open('../resource/lawdict>30.txt', 'r', encoding='utf-8')
+    fr_dict = open(param.BaseConfig.rf_dict_path, 'r', encoding='utf-8')
     dictionary = list(map(lambda x: x.strip(), fr_dict.readlines()))
     #首先是进行切割，然后构建<pre,text,next>这样的输入
     #首先根据原文把标点符号带上

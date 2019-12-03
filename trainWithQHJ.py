@@ -83,7 +83,7 @@ def train():
         os.makedirs(save_dir)
 
     #载入随机森林模型
-    with open('../result/model/RandomForest/rf_rm2json-dict30bool-rules-v2.pkl', 'rb') as fr:
+    with open(param.BaseConfig.rf_model_path, 'rb') as fr:
         rf = pickle.load(fr)
 
     print("Loading training and validation data...")
