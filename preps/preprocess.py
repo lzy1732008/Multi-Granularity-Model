@@ -76,6 +76,7 @@ def _setUp_inputs_QHJ(sourcePath, wordEmbedding, wordVocab,rfModel):
     with open(sourcePath,'r',encoding='utf-8') as fr:
         lines = fr.readlines()
     result = []
+    count = 0
     for line in lines:
         line = line.strip()
         if line != '':
@@ -100,6 +101,8 @@ def _setUp_inputs_QHJ(sourcePath, wordEmbedding, wordVocab,rfModel):
             assert items[3] in ['0', '1'], ValueError("Label is not in [0,1]!")
             label = items[3]
             result.append([fact_input, law_input, law_label_input, label])
+            count += 1
+            print("处理到第{0}/{1}个样本".format(count,len(lines)))
     return result
 
 def processTextWithoutDict(line,wordEmbedding, wordVocab):
