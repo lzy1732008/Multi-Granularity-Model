@@ -81,8 +81,8 @@ def _setUp_inputs_QHJ(sourcePath, wordEmbedding, wordVocab,rfModel):
         line = line.strip()
         if line != '':
             items = line.split('|')
-            assert len(items) == 4, ValueError("The number of items in this line is less than 4")
-            fact_input = processText(items[1],wordEmbedding, wordVocab)
+            assert len(items) == 4, ValueError("The number of items in this line is less than 4, content:" + line)
+            fact_input = processTextWithoutDict(items[1],wordEmbedding, wordVocab)
             law_units = items[2].split(':')
             law_name = law_units[0]
             law_content = items[2][len(law_name) + 1:]
@@ -95,8 +95,8 @@ def _setUp_inputs_QHJ(sourcePath, wordEmbedding, wordVocab,rfModel):
             law_label_input = []
             assert len(content_split) == len(law_labels), ValueError("content_split:{0}, law_label:{1}, line:{3}".format(len(content_split), len(law_label), line))
             for law_label,content in zip(law_labels,content_split):
-                content_vector = processTextWithoutDict(content, wordEmbedding,                    wordVocab)
-                law_input.append(content_vector)
+                content_vector = processTextWithoutDict(content, wordEmbedding,wordVocab)
+                law_input.extend(content_vector)
                 law_label_input = [law_label+1 for _ in range(len(content_vector))]
             assert items[3] in ['0', '1'], ValueError("Label is not in [0,1]!")
             label = items[3]

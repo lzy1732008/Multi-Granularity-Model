@@ -564,7 +564,7 @@ def processLawForRf(lawText):
     texts = re.split(pattern,outputTexts)
     texts = list(filter(lambda x: x != "", list(map(lambda x:x.strip(), texts))))
     newTexts = []
-    assert len(texts) % 2 == 0, ValueError("split num is not double," + str(len(texts)))
+    assert len(texts) % 2 == 0, ValueError("split num is not double," + str(len(texts)) + "content:"+ lawText)
     i = 0
     while i < len(texts) - 1:
         newTexts.append(texts[i] + texts[i + 1])

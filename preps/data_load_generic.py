@@ -23,12 +23,11 @@ def get_batch_data(*data, batch_size = 64):
     data_shuffle = []
     for i in range(len(data)):
         data_shuffle.append(data[i][indices])
-    data_shuffle = np.array(data_shuffle)
 
     for i in range(num_batch):
         start_id = batch_size * i
         end_id = min(batch_size * (i + 1), data_len)
-        yield [data[j][start_id:end_id] for j in range(len(data_shuffle))]
+        yield [np.array(data[j][start_id:end_id]) for j in range(len(data_shuffle))]
 
 
 def data_load(trainPath, valPath, testPath,model,rfModel):
