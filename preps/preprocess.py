@@ -102,7 +102,7 @@ def _setUp_inputs_QHJ(sourcePath, wordEmbedding, wordVocab,rfModel):
             label = items[3]
             result.append([fact_input, law_input, law_label_input, label])
             count += 1
-            print("处理到第{0}/{1}个样本".format(count,len(lines)))
+            print("precessing {0}/{1} samples".format(count,len(lines)))
     return result
 
 def processTextWithoutDict(line,wordEmbedding, wordVocab):
