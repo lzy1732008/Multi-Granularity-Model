@@ -136,8 +136,7 @@ class KnowledgeGate:
             weight_2 = tf.Variable(tf.random_normal([data_dimension, data_dimension],
                                                     stddev=0, seed=1), trainable=True, name='w2')
             pw = tf.nn.sigmoid(tf.einsum('abc,cd->abd',self.knowledge,weight_1) + tf.einsum('abc,cd->abd',self.data,weight_2))
-            one_array = tf.ones(shape=self.data.shape,dtype=tf.float32)
-            output = (one_array - pw) * self.data + pw * self.knowledge
+            output = (1 - pw) * self.data + pw * self.knowledge
             return output
 
 
