@@ -109,7 +109,7 @@ class Interaction:
         x2_len = self.data[1].get_shape().as_list()[1]
 
         beta = tf.Variable(tf.random_normal(shape=[1], stddev=0, seed=1,dtype=tf.float32), trainable=True, name='beta')
-        ks_rep = tf.keras.backend.repeat_elements(self.data[2],rep=x1_len,axis=1)
+        ks_rep = tf.reshape(tf.keras.backend.repeat_elements(self.data[2],rep=x1_len,axis=1),shape=[-1,x1_len,x2_len])
         dot_matrix = tf.matmul(self.data[0], tf.transpose(self.data[1], [0, 2, 1])) + beta[0] * ks_rep #[None, m, n]
         x_2_y = tf.nn.softmax(dot_matrix, axis=2)  # x对y每个词的关注度
         y_2_x = tf.nn.softmax(dot_matrix, axis=1)  # y对x每个词的关注度
