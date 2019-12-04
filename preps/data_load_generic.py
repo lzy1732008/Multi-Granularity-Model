@@ -41,7 +41,7 @@ def data_load(trainPath, valPath, testPath,model,rfModel):
     return train,test,val
 
 def data_load_test(model):
-    env = pre.setUp_inputs(trainPath=None, valPath=None,
+    env = pre.setUp_inputs_QHJ(trainPath=None, valPath=None,
                             testPath=param.BaseConfig.testPath)
     test_data = env['test']
     test = processInitData(test_data,model)
