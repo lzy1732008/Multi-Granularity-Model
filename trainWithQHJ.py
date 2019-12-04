@@ -158,9 +158,13 @@ def train():
             break
 
 def test():
+    #载入随机森林模型
+    with open(param.BaseConfig.rf_model_path, 'rb') as fr:
+        rf = pickle.load(fr)
+
     print("Loading test data...")
     start_time = time.time()
-    test_data = data_load_test(model)
+    test_data = data_load_test(model,rf)
     test_x1_word,  test_x2_word, test_x2_label, test_y = test_data
 
 
