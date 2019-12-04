@@ -105,8 +105,8 @@ class Interaction:
         return x2_weight
 
     def playInteraction5(self):
-        x1_len = self.datap[0].get_shape().as_list()[1]
-        x2_len = self.datap[1].get_shape().as_list()[1]
+        x1_len = self.data[0].get_shape().as_list()[1]
+        x2_len = self.data[1].get_shape().as_list()[1]
 
         beta = tf.Variable(tf.random_normal(shape=[1], stddev=0, seed=1), trainable=True, name='beta')
         ks_rep = tf.keras.backend.repeat_elements(self.data[2],rep=x1_len,axis=1)
