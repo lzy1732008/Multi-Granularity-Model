@@ -15,7 +15,7 @@ from preps.data_load_generic import *
 import models.parameter as param
 
 save_dir = 'result/model/MultiGraCNNQHJ'  #修改处
-param_des = 'v1-2nd'
+param_des = 'v1-1nd-CNN:valid'
 save_path = os.path.join(save_dir,param_des+'/checkpoints/best_validation')
 tensorboard_dir = os.path.join(save_dir,param_des+'/tensorboard')
 
