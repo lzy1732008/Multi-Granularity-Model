@@ -15,7 +15,7 @@ from preps.data_load_generic import *
 import models.parameter as param
 
 save_dir = 'result/model/MultiGraCNNQHJ'  #修改处
-param_des = 'v1'
+param_des = 'v1-2nd'
 save_path = os.path.join(save_dir,param_des+'/checkpoints/best_validation')
 tensorboard_dir = os.path.join(save_dir,param_des+'/tensorboard')
 
@@ -211,7 +211,7 @@ def test():
     return y_test_cls,y_pred_cls
 
 
-# train()
+train()
 y_test_cls,y_pred_cls = test()
 # wsnamels = getwslist(model=model)
 # wsevaluate(y_test_cls, y_pred_cls,wsnamels)
