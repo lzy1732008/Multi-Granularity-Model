@@ -37,8 +37,13 @@ class MultiGranularityCNNModel:
     def build_model(self):
 
         #WIL-1  word-Interaction-layer
+        # with tf.variable_scope("word-Interaction-layer"):
+        #     interaction = modules.Interaction(4, self.input_X1, self.input_X2)
+        #     self.inter0_output_x2 = interaction.exeInteraction()
+
+        #WIL-2  word-Interaction-layer
         with tf.variable_scope("word-Interaction-layer"):
-            interaction = modules.Interaction(4, self.input_X1, self.input_X2)
+            interaction = modules.Interaction(5, self.input_X1, self.input_X2, self.x2_label)
             self.inter0_output_x2 = interaction.exeInteraction()
 
         with tf.variable_scope("first-CNN-layer"):
