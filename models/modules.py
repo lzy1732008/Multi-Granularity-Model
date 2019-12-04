@@ -16,6 +16,8 @@ class Interaction:
                 return self.playInteraction3()
             elif self.method == 4:
                 return self.playInteraction4()
+            elif self.method == 5:
+                return self.playInteraction5()
 
 
     def playInteraction1(self):
@@ -102,6 +104,28 @@ class Interaction:
         x2_weight = tf.reshape(x2_weight, shape=[-1, len2])
         return x2_weight
 
+    def playInteraction5(self):
+        x1_len = self.datap[0].get_shape().as_list()[1]
+        x2_len = self.datap[1].get_shape().as_list()[1]
+
+        beta = tf.Variable(tf.random_normal(shape=[1], stddev=0, seed=1), trainable=True, name='beta')
+        ks_rep = tf.keras.backend.repeat_elements(self.data[2],rep=x1_len,axis=1)
+        dot_matrix = tf.matmul(self.data[0], tf.transpose(self.data[1], [0, 2, 1])) + beta[0] * ks_rep #[None, m, n]
+        x_2_y = tf.nn.softmax(dot_matrix, axis=2)  # x对y每个词的关注度
+        y_2_x = tf.nn.softmax(dot_matrix, axis=1)  # y对x每个词的关注度
+
+        # 计算x1每个词获取的总weight
+        x1_weight = tf.reduce_mean(y_2_x, axis=2)  # [Batch, len1]
+
+        # 计算x2最后获取的每个词的总的weight
+        x1_weight_ = tf.expand_dims(x1_weight, axis=1)  # [Batch, 1, len1]
+        x2_weight = tf.matmul(x1_weight_, x_2_y)  # [Batch, 1, len2]
+        x2_weight = tf.reshape(x2_weight, shape=[-1, x2_len])
+        return x2_weight
+
+
+
+
 
 class Fusion:
     def __init__(self, method, *data):
@@ -109,12 +133,13 @@ class Fusion:
         self.data = data
 
     def exeFusion(self):
-        if self.method == 1: #just concat them
-            return self.playFusion1()
+        with tf.variable_scope("fusion-layer"):
+            if self.method == 1:  # just concat them
+                return self.playFusion1()
+
 
     def playFusion1(self):
-        with tf.variable_scope("fusion-layer"):
-            return tf.concat(self.data,axis=-1)
+        return tf.concat(self.data,axis=-1)
 
 
 class KnowledgeGate:
@@ -124,20 +149,23 @@ class KnowledgeGate:
         self.knowledge = knowledge
 
     def exeKnowledgeGate(self):
-        if self.method == 1:
-            return self.playKG1()
+        with tf.variable_scope("knowledge-layer"):
+            if self.method == 1:
+                return self.playKG1()
+
 
     def playKG1(self):
-        with tf.variable_scope("knowledge-layer"):
-            k_dimension = self.knowledge.get_shape().as_list()[-1]
-            data_dimension = self.data.get_shape().as_list()[-1]
-            weight_1 = tf.Variable(tf.random_normal([k_dimension, data_dimension],
-                                                    stddev=0, seed=1), trainable=True, name='w1')
-            weight_2 = tf.Variable(tf.random_normal([data_dimension, data_dimension],
-                                                    stddev=0, seed=1), trainable=True, name='w2')
-            pw = tf.nn.sigmoid(tf.einsum('abc,cd->abd',self.knowledge,weight_1) + tf.einsum('abc,cd->abd',self.data,weight_2))
-            output = (1 - pw) * self.data + pw * self.knowledge
-            return output
+        k_dimension = self.knowledge.get_shape().as_list()[-1]
+        data_dimension = self.data.get_shape().as_list()[-1]
+        weight_1 = tf.Variable(tf.random_normal([k_dimension, data_dimension],
+                                                stddev=0, seed=1), trainable=True, name='w1')
+        weight_2 = tf.Variable(tf.random_normal([data_dimension, data_dimension],
+                                                stddev=0, seed=1), trainable=True, name='w2')
+        pw = tf.nn.sigmoid(
+            tf.einsum('abc,cd->abd', self.knowledge, weight_1) + tf.einsum('abc,cd->abd', self.data, weight_2))
+        output = (1 - pw) * self.data + pw * self.knowledge
+        return output
+
 
 
 
