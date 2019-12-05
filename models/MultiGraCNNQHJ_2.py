@@ -71,7 +71,7 @@ class MultiGranularityCNNModel:
             self.inter3_output_x2 = interaction.exeInteraction()
 
         with tf.variable_scope("fusion-layer"):
-            self.fusion_output = tf.concat([ self.inter1_output_x2, self.inter2_output_x2,self.inter3_output_x2], axis=-1)  # [Batch, 3 * len]
+            self.fusion_output = tf.concat([self.inter0_output_x2, self.inter1_output_x2, self.inter2_output_x2,self.inter3_output_x2], axis=-1)  # [Batch, 3 * len]
 
         with tf.variable_scope("predict-layer"):
             self.output_ = tf.nn.relu(tf.layers.dense(inputs=self.fusion_output,units=self.config.mlp_output,name='fnn1'))

@@ -14,19 +14,24 @@ from models.MultiGraCNNQHJ_2 import *
 from preps.data_load_generic import *
 import models.parameter as param
 
-save_dir = 'result/model/MultiGraCNNQHJ_2'  #修改处
-param_des = 'v1-testModel'
-save_path = os.path.join(save_dir,param_des+'/checkpoints/best_validation')
-tensorboard_dir = os.path.join(save_dir,param_des+'/tensorboard')
+class basicPath:
+    def __init__(self,time):
+        self.save_dir = 'result/model/MultiGraCNNQHJ_2'  # 修改处
+        self.param_des = 'v1-WIL2-' + str(time) +'times'
+        self.save_path = os.path.join(self.save_dir, self.param_des + '/checkpoints/best_validation')
+        self.tensorboard_dir = os.path.join(self.save_dir, self.param_des + '/tensorboard')
+
+        if not os.path.exists(self.save_path):
+            os.makedirs(self.save_path)
+        if not os.path.exists(self.tensorboard_dir):
+            os.makedirs(self.tensorboard_dir)
+
+
 
 
 config = MultiGraConfig()
 model = MultiGranularityCNNModel(config)
 
-if not os.path.exists(save_path):
-    os.makedirs(save_path)
-if not os.path.exists(tensorboard_dir):
-    os.makedirs(tensorboard_dir)
 
 
 def get_time_dif(start_time):
@@ -64,32 +69,29 @@ def evaluate(sess,a_word,b_word,c_word, y):
     return total_loss / data_len, total_acc / data_len
 
 
-def train():
+def train(train_data, val_data,Path):
     print("Configuring TensorBoard and Saver...")
     # 配置 Tensorboard，重新训练时，请将tensorboard文件夹删除，不然图会覆盖
 
-    if not os.path.exists(tensorboard_dir):
-        os.makedirs(tensorboard_dir)
+    if not os.path.exists(Path.tensorboard_dir):
+        os.makedirs(Path.tensorboard_dir)
 
     #结果可视化与存储
     tf.summary.scalar("loss", model.loss) #可视化loss
     tf.summary.scalar("accuracy", model.acc)  #可视化acc
     merged_summary = tf.summary.merge_all()   #将所有操作合并输出
-    writer = tf.summary.FileWriter(tensorboard_dir) #将summary data写入磁盘
+    writer = tf.summary.FileWriter(Path.tensorboard_dir) #将summary data写入磁盘
 
     # 配置 Saver
     saver = tf.train.Saver()
-    if not os.path.exists(save_dir):
-        os.makedirs(save_dir)
+    if not os.path.exists(Path.save_dir):
+        os.makedirs(Path.save_dir)
 
-    #载入随机森林模型
-    with open(param.BaseConfig.rf_model_path, 'rb') as fr:
-        rf = pickle.load(fr)
+
 
     print("Loading training and validation data...")
     # 载入训练集与验证集
     start_time = time.time()
-    train_data, test_data, val_data = data_load(param.BaseConfig.trainPath,param.BaseConfig.valPath,None,model,rf)
 
     train_x1_word, train_x2_word, train_x2_label, train_y = train_data
     val_x1_word,  val_x2_word, val_x2_label, val_y = val_data
@@ -136,7 +138,7 @@ def train():
                     # 保存最好结果
                     best_acc_val = acc_val
                     last_improved = total_batch
-                    saver.save(sess=session, save_path=save_path)
+                    saver.save(sess=session, save_path=Path.save_path)
                     improved_str = '*'
                 else:
                     improved_str = ''
@@ -157,21 +159,21 @@ def train():
         if flag:  # 同上
             break
 
-def test():
+def test(test_data, Path):
     #载入随机森林模型
     with open(param.BaseConfig.rf_model_path, 'rb') as fr:
         rf = pickle.load(fr)
 
     print("Loading test data...")
     start_time = time.time()
-    test_data = data_load_test(model,rf)
+
     test_x1_word,  test_x2_word, test_x2_label, test_y = test_data
 
 
     session = tf.Session()
     session.run(tf.global_variables_initializer())
     saver = tf.train.Saver()
-    saver.restore(sess=session, save_path=save_path)  # 读取保存的模型
+    saver.restore(sess=session, save_path=Path.save_path)  # 读取保存的模型
 
     print('Testing...')
     loss_test, acc_test = evaluate(session, test_x1_word, test_x2_word, test_x2_label, test_y)
@@ -210,8 +212,18 @@ def test():
     print("Time usage:", time_dif)
     return y_test_cls,y_pred_cls
 
+def run_mutli():
+    # 载入随机森林模型
+    with open(param.BaseConfig.rf_model_path, 'rb') as fr:
+        rf = pickle.load(fr)
+    train_data, test_data, val_data = data_load(param.BaseConfig.trainPath, param.BaseConfig.valPath, param.BaseConfig.testPath, model, rf)
+    for i in range(3):
+        Path = basicPath(i)
+        train(train_data,val_data,Path)
+        test(test_data,Path)
 
-train()
-y_test_cls,y_pred_cls = test()
+
+run_mutli()
+
 # wsnamels = getwslist(model=model)
 # wsevaluate(y_test_cls, y_pred_cls,wsnamels)
