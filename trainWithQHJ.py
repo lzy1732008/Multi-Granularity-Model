@@ -16,8 +16,8 @@ import models.parameter as param
 
 class basicPath:
     def __init__(self,time):
-        self.save_dir = 'result/model/MultiGraCNNQHJ_2'  # 修改处
-        self.param_des = 'v1-' + str(time) +'times'
+        self.save_dir = 'result/model/MultiGraCNNQHJ'  # 修改处
+        self.param_des = 'v1-useinitInteraction-' + str(time) +'times'
         self.save_path = os.path.join(self.save_dir, self.param_des + '/checkpoints/best_validation')
         self.tensorboard_dir = os.path.join(self.save_dir, self.param_des + '/tensorboard')
 
@@ -216,7 +216,7 @@ def run_mutli():
     # 载入随机森林模型
     with open(param.BaseConfig.rf_model_path, 'rb') as fr:
         rf = pickle.load(fr)
-    train_data, test_data, val_data = data_load(None, None, param.BaseConfig.testPath, model, rf)
+    train_data, test_data, val_data = data_load(param.BaseConfig.testPath, param.BaseConfig.valPath, param.BaseConfig.testPath, model, rf)
     for i in range(3):
         Path = basicPath(i)
         train(train_data,val_data,Path)

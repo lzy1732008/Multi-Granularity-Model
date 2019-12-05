@@ -42,33 +42,37 @@ class MultiGranularityCNNModel:
         #     self.inter0_output_x2 = interaction.exeInteraction()
 
         #WIL-2  word-Interaction-layer
-        # with tf.variable_scope("word-Interaction-layer"):
-        #     interaction = modules.Interaction(5, self.input_X1, self.input_X2, self.x2_label)
-        #     self.inter0_output_x2 = interaction.exeInteraction()
+        with tf.variable_scope("word-Interaction-layer"):
+            interaction = modules.Interaction(5, self.input_X1, self.input_X2, self.x2_label)
+            self.inter0_output_x2 = interaction.exeInteraction()
 
         with tf.variable_scope("first-CNN-layer"):
             self.output_x1_1 = tf.layers.conv1d(self.input_X1,filters=self.config.filters_num,kernel_size=self.config.first_kernel_size,padding='same',name='first-cnn1')
             self.output_x2_1 = tf.layers.conv1d(self.input_X2,filters=self.config.filters_num,kernel_size=self.config.first_kernel_size,padding='same',name='first-cnn2')
 
         with tf.variable_scope("first-interaction"):
-            interaction = modules.Interaction(4, self.output_x1_1,self.output_x2_1)
-            self.inter1_output_x2 = interaction.exeInteraction()
+            # interaction = modules.Interaction(4, self.output_x1_1,self.output_x2_1)
+            # self.inter1_output_x2 = interaction.exeInteraction()
+            self.inter1_output_x2 = self.interaction(self.output_x1_1, self.output_x2_1)
 
         with tf.variable_scope("second-CNN-layer"):
             self.output_x1_2 = tf.layers.conv1d(self.output_x1_1,filters=self.config.filters_num,kernel_size=self.config.second_kernel_size,padding='same',name='second-cnn1')
             self.output_x2_2 = tf.layers.conv1d(self.output_x2_1,filters=self.config.filters_num,kernel_size=self.config.second_kernel_size,padding='same',name='second-cnn2')
 
         with tf.variable_scope("second-interaction"):
-            interaction = modules.Interaction(4, self.output_x1_2, self.output_x2_2)
-            self.inter2_output_x2 = interaction.exeInteraction()
+            # interaction = modules.Interaction(4, self.output_x1_2, self.output_x2_2)
+            # self.inter2_output_x2 = interaction.exeInteraction()
+            self.inter2_output_x2 = self.interaction(self.output_x1_2, self.output_x2_2)
 
         with tf.variable_scope("third-CNN-layer"):
             self.output_x1_3 = tf.layers.conv1d(self.output_x1_2,filters=self.config.filters_num,kernel_size=self.config.third_kernel_size,padding='same',name='third-cnn1')
             self.output_x2_3 = tf.layers.conv1d(self.output_x2_2,filters=self.config.filters_num,kernel_size=self.config.third_kernel_size,padding='same',name='third-cnn2')
 
         with tf.variable_scope("third-interaction"):
-            interaction = modules.Interaction(4, self.output_x1_3,self.output_x2_3)
-            self.inter3_output_x2 = interaction.exeInteraction()
+            # interaction = modules.Interaction(4, self.output_x1_3,self.output_x2_3)
+            # self.inter3_output_x2 = interaction.exeInteraction()
+            self.inter3_output_x2 = self.interaction(self.output_x1_3,self.output_x2_3)
+
 
         with tf.variable_scope("fusion-layer"):
             self.fusion_output = tf.concat([self.inter1_output_x2, self.inter2_output_x2,self.inter3_output_x2], axis=-1)  # [Batch, 3 * len]
@@ -93,6 +97,22 @@ class MultiGranularityCNNModel:
                                     self.pred_y)  # 由于input_y也是onehot编码，因此，调用tf.argmax(self.input_y)得到的是1所在的下表
             self.acc = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
 
+    def interaction(self,inputX1,inputX2):
+        len1 = inputX1.get_shape().as_list()[1]
+        len2 = inputX2.get_shape().as_list()[1]
+        dot_matrix = tf.matmul(inputX1,tf.transpose(inputX2,perm=[0,2,1])) #[Batch, len1,len2]
+        #首先分别做row and col softmax
+        x1_2_x2 = tf.nn.softmax(dot_matrix,axis=2) #x1对x2每个词的关注度
+        x2_2_x1 = tf.nn.softmax(dot_matrix,axis=1) #x2对x1每个词的关注度
+
+        #计算x1每个词获取的总weight
+        x1_weight = tf.reduce_mean(x2_2_x1,axis=2) #[Batch, len1]
+
+        #计算x2最后获取的每个词的总的weight
+        x1_weight_ = tf.expand_dims(x1_weight,axis=1) #[Batch, 1, len1]
+        x2_weight = tf.matmul(x1_weight_, x1_2_x2)  #[Batch, 1, len2]
+        x2_weight = tf.reshape(x2_weight,shape=[-1,len2])
+        return x2_weight
 
 
 
