@@ -220,7 +220,10 @@ def run_mutli():
     for i in range(3):
         Path = basicPath(i)
         train(train_data,val_data,Path)
-        test(test_data,Path)
+
+    for i in range(3):
+        Path = basicPath(i)
+        test(test_data, Path)
 
 
 run_mutli()
