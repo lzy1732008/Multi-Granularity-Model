@@ -11,9 +11,9 @@ class MultiGraConfig:
     second_kernel_size = 4
     third_kernel_size = 8
     filters_num = param.BaseConfig.word_dimension
-    # mlp_output = 2 * Y_maxlen  #v1
+    mlp_output = 2 * Y_maxlen  #v1
     # mlp_output= 128 #v2
-    mlp_output = 64 #v3
+    # mlp_output = 64 #v3
 
 class MultiGranularityCNNModel:
     def __init__(self):
