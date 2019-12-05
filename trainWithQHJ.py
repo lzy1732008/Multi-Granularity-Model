@@ -16,8 +16,8 @@ import models.parameter as param
 
 class basicPath:
     def __init__(self,time):
-        self.save_dir = 'result/model/MultiGraCNNQHJ'  # 修改处
-        self.param_des = 'v1-useinitInteraction-' + str(time) +'times'
+        self.save_dir = 'result/model/MultiGraCNNQHJ_2'  # 修改处
+        self.param_des = 'v1-useinitInteraction-addmeanpooling' + str(time) +'times'
         self.save_path = os.path.join(self.save_dir, self.param_des + '/checkpoints/best_validation')
         self.tensorboard_dir = os.path.join(self.save_dir, self.param_des + '/tensorboard')
 
