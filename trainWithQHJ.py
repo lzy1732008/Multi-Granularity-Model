@@ -222,7 +222,7 @@ def run_mutli():
     #     train(train_data,val_data,Path)
 
     for i in range(3):
-        print("第{0}轮测试".format(str(i)))
+        print("the {0}nd testing......".format(str(i)))
         Path = basicPath(i)
         test(test_data, Path)
 
