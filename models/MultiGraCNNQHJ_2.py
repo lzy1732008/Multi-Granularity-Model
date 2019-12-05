@@ -42,9 +42,9 @@ class MultiGranularityCNNModel:
         #     self.inter0_output_x2 = interaction.exeInteraction()
 
         #WIL-2  word-Interaction-layer
-        with tf.variable_scope("word-Interaction-layer"):
-            interaction = modules.Interaction(5, self.input_X1, self.input_X2, self.x2_label)
-            self.inter0_output_x2 = interaction.exeInteraction()
+        # with tf.variable_scope("word-Interaction-layer"):
+        #     interaction = modules.Interaction(5, self.input_X1, self.input_X2, self.x2_label)
+        #     self.inter0_output_x2 = interaction.exeInteraction()
 
         with tf.variable_scope("first-CNN-layer"):
             self.output_x1_1 = tf.layers.conv1d(self.input_X1,filters=self.config.filters_num,kernel_size=self.config.first_kernel_size,padding='same',name='first-cnn1')
@@ -71,7 +71,7 @@ class MultiGranularityCNNModel:
             self.inter3_output_x2 = interaction.exeInteraction()
 
         with tf.variable_scope("fusion-layer"):
-            self.fusion_output = tf.concat([self.inter0_output_x2, self.inter1_output_x2, self.inter2_output_x2,self.inter3_output_x2], axis=-1)  # [Batch, 3 * len]
+            self.fusion_output = tf.concat([self.inter1_output_x2, self.inter2_output_x2,self.inter3_output_x2], axis=-1)  # [Batch, 3 * len]
 
         with tf.variable_scope("predict-layer"):
             self.output_ = tf.nn.relu(tf.layers.dense(inputs=self.fusion_output,units=self.config.mlp_output,name='fnn1'))
