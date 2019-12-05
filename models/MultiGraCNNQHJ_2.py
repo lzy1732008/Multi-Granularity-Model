@@ -9,7 +9,7 @@ class MultiGraConfig:
     def __init__(self):
         # initparam
         self.X_maxlen = 30
-        self.Y_maxlen = 30
+        self.Y_maxlen = 50
         self.dropout_rate = 0.5
         self.first_kernel_size = 2
         self.second_kernel_size = 4
@@ -43,11 +43,12 @@ class MultiGranularityCNNModel:
 
         #WIL-2  word-Interaction-layer
         with tf.variable_scope("word-Interaction-layer"):
-            interaction = modules.Interaction(5, self.input_X1, self.input_X2, self.x2_label)
+            self.beta = tf.Variable(tf.random_normal(shape=[1], stddev=0, seed=1, dtype=tf.float32), trainable=True, name='beta')
+            interaction = modules.Interaction(5, self.input_X1, self.input_X2, self.x2_label, self.beta)
             self.inter0_output_x2 = interaction.exeInteraction()
             #添加一个mean pooling
-            self.inter0_output_x2 = tf.expand_dims(tf.expand_dims(self.inter0_output_x2,axis=2),axis=3)
-            self.inter0_output_x2 = tf.nn.avg_pool(self.inter0_output_x2,ksize=[1,3,1,1],strides=[1,1,1,1],padding='VALID',name='mean-pooling')
+            # self.inter0_output_x2 = tf.expand_dims(tf.expand_dims(self.inter0_output_x2,axis=2),axis=3)
+            # self.inter0_output_x2 = tf.nn.avg_pool(self.inter0_output_x2,ksize=[1,3,1,1],strides=[1,1,1,1],padding='VALID',name='mean-pooling')
 
         with tf.variable_scope("first-CNN-layer"):
             self.output_x1_1 = tf.layers.conv1d(self.input_X1,filters=self.config.filters_num,kernel_size=self.config.first_kernel_size,padding='same',name='first-cnn1')
@@ -59,9 +60,9 @@ class MultiGranularityCNNModel:
             self.inter1_output_x2 = self.interaction(self.output_x1_1, self.output_x2_1)
 
             #mean pooling
-            self.inter1_output_x2 = tf.expand_dims(tf.expand_dims(self.inter1_output_x2,axis=2),axis=3)
-            self.inter1_output_x2 = tf.nn.avg_pool(self.inter1_output_x2,ksize=[1,3,1,1],strides=[1,1,1,1],padding='VALID', name='mean-pooling')
-            self.inter1_output_x2 = tf.reshape(self.inter1_output_x2, shape=[-1, 28])
+            # self.inter1_output_x2 = tf.expand_dims(tf.expand_dims(self.inter1_output_x2,axis=2),axis=3)
+            # self.inter1_output_x2 = tf.nn.avg_pool(self.inter1_output_x2,ksize=[1,3,1,1],strides=[1,1,1,1],padding='VALID', name='mean-pooling')
+            # self.inter1_output_x2 = tf.reshape(self.inter1_output_x2, shape=[-1, 28])
 
         with tf.variable_scope("second-CNN-layer"):
             self.output_x1_2 = tf.layers.conv1d(self.output_x1_1,filters=self.config.filters_num,kernel_size=self.config.second_kernel_size,padding='same',name='second-cnn1')
@@ -73,9 +74,9 @@ class MultiGranularityCNNModel:
             self.inter2_output_x2 = self.interaction(self.output_x1_2, self.output_x2_2)
 
             #mean pooling
-            self.inter2_output_x2 = tf.expand_dims(tf.expand_dims(self.inter2_output_x2,axis=2),axis=3)
-            self.inter2_output_x2 = tf.nn.avg_pool(self.inter2_output_x2,ksize=[1,3,1,1],strides=[1,1,1,1],padding='VALID', name='mean-pooling')
-            self.inter2_output_x2 = tf.reshape(self.inter2_output_x2,shape=[-1,28])
+            # self.inter2_output_x2 = tf.expand_dims(tf.expand_dims(self.inter2_output_x2,axis=2),axis=3)
+            # self.inter2_output_x2 = tf.nn.avg_pool(self.inter2_output_x2,ksize=[1,3,1,1],strides=[1,1,1,1],padding='VALID', name='mean-pooling')
+            # self.inter2_output_x2 = tf.reshape(self.inter2_output_x2,shape=[-1,28])
 
         with tf.variable_scope("third-CNN-layer"):
             self.output_x1_3 = tf.layers.conv1d(self.output_x1_2,filters=self.config.filters_num,kernel_size=self.config.third_kernel_size,padding='same',name='third-cnn1')
@@ -87,9 +88,9 @@ class MultiGranularityCNNModel:
             self.inter3_output_x2 = self.interaction(self.output_x1_3,self.output_x2_3)
 
             #mean pooling
-            self.inter3_output_x2 = tf.expand_dims(tf.expand_dims(self.inter3_output_x2,axis=2),axis=3)
-            self.inter3_output_x2 = tf.nn.avg_pool(self.inter3_output_x2,ksize=[1,3,1,1],strides=[1,1,1,1],padding='VALID', name='mean-pooling')
-            self.inter3_output_x2 = tf.reshape(self.inter3_output_x2, shape=[-1, 28])
+            # self.inter3_output_x2 = tf.expand_dims(tf.expand_dims(self.inter3_output_x2,axis=2),axis=3)
+            # self.inter3_output_x2 = tf.nn.avg_pool(self.inter3_output_x2,ksize=[1,3,1,1],strides=[1,1,1,1],padding='VALID', name='mean-pooling')
+            # self.inter3_output_x2 = tf.reshape(self.inter3_output_x2, shape=[-1, 28])
 
 
         with tf.variable_scope("fusion-layer"):

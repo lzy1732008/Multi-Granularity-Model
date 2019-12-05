@@ -17,7 +17,7 @@ import models.parameter as param
 class basicPath:
     def __init__(self,time):
         self.save_dir = 'result/model/MultiGraCNNQHJ_2'  # 修改处
-        self.param_des = 'v1-useinitInteraction-addmeanpooling' + str(time) +'times'
+        self.param_des = 'v1-useinitInteraction-3050-' + str(time) +'times'
         self.save_path = os.path.join(self.save_dir, self.param_des + '/checkpoints/best_validation')
         self.tensorboard_dir = os.path.join(self.save_dir, self.param_des + '/tensorboard')
 
@@ -130,8 +130,10 @@ def train(train_data, val_data,Path):
                 # 每多少轮次输出在训练集和验证集上的性能
 
                 feed_dict[model.dropout_rate] = 1.0
-                loss_train, acc_train,pre_y, logit, true_y, = session.run([model.loss, model.acc,model.pred_y,model.logit,model.y], feed_dict=feed_dict)
+                loss_train, acc_train,pre_y, logit, true_y,beta = session.run([model.loss, model.acc,model.pred_y,model.logit,model.y,model.beta], feed_dict=feed_dict)
                 loss_val, acc_val = evaluate(session, val_x1_word,  val_x2_word,  val_x2_label, val_y)  # 验证当前会话中的模型的loss和acc
+                print("current beta value:")
+                print(beta)
 
 
                 if acc_val > best_acc_val:
@@ -196,7 +198,7 @@ def test(test_data, Path):
             model.y: test_y,
             model.dropout_rate: 1.0   #这个表示测试时不使用dropout对神经元过滤
         }
-        y_pred_cls[start_id:end_id] = session.run(model.pred_y, feed_dict=feed_dict)   #将所有批次的预测结果都存放在y_pred_cls中
+        y_pred_cls[start_id:end_id],beta = session.run(model.pred_y,model.beta, feed_dict=feed_dict)   #将所有批次的预测结果都存放在y_pred_cls中
 
 
 
@@ -210,6 +212,8 @@ def test(test_data, Path):
 
     time_dif = get_time_dif(start_time)
     print("Time usage:", time_dif)
+
+    print("beta value", beta)
     return y_test_cls,y_pred_cls
 
 def run_mutli():
