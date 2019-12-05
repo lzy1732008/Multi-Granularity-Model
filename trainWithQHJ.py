@@ -216,7 +216,7 @@ def run_mutli():
     # 载入随机森林模型
     with open(param.BaseConfig.rf_model_path, 'rb') as fr:
         rf = pickle.load(fr)
-    train_data, test_data, val_data = data_load(param.BaseConfig.testPath, param.BaseConfig.valPath, param.BaseConfig.testPath, model, rf)
+    train_data, test_data, val_data = data_load(param.BaseConfig.trainPath, param.BaseConfig.valPath, param.BaseConfig.testPath, model, rf)
     for i in range(3):
         Path = basicPath(i)
         train(train_data,val_data,Path)
