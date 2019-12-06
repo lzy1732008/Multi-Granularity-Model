@@ -199,7 +199,7 @@ def test(test_data, Path):
             model.y: test_y,
             model.dropout_rate: 1.0   #这个表示测试时不使用dropout对神经元过滤
         }
-        y_pred_cls[start_id:end_id] = session.run([model.pred_y],feed_dict=feed_dict)   #将所有批次的预测结果都存放在y_pred_cls中
+        y_pred_cls[start_id:end_id] = session.run(model.pred_y,feed_dict=feed_dict)   #将所有批次的预测结果都存放在y_pred_cls中
 
 
 
