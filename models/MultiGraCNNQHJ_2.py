@@ -27,7 +27,7 @@ class MultiGranularityCNNModel:
         self.input_X2 = tf.placeholder(name="inputX2_word", dtype=tf.float32,
                                           shape=[None, self.config.Y_maxlen, param.BaseConfig.word_dimension])
         self.x2_label = tf.placeholder(name="inputX2_label", dtype=tf.float32,
-                                          shape=[None, self.config.Y_maxlen])
+                                          shape=[None, self.config.Y_maxlen,3])
         self.y = tf.placeholder(name="target_y", dtype=tf.int32, shape=[None, 2])
 
         self.dropout_rate = tf.placeholder(tf.float32, name='keep_prob')
@@ -55,9 +55,9 @@ class MultiGranularityCNNModel:
             self.output_x2_1 = tf.layers.conv1d(self.input_X2,filters=self.config.filters_num,kernel_size=self.config.first_kernel_size,padding='same',name='first-cnn2')
 
         with tf.variable_scope("first-interaction"):
-            self.beta1 = tf.Variable(tf.random_normal(shape=[1], stddev=0, seed=1, dtype=tf.float32), trainable=True,
+            self.beta1 = tf.Variable(tf.random_normal(shape=[3], stddev=0, seed=1, dtype=tf.float32), trainable=True,
                                     name='beta1')
-            interaction = modules.Interaction(5, self.output_x1_1,self.output_x2_1,self.x2_label,self.beta1)
+            interaction = modules.Interaction(6, self.output_x1_1,self.output_x2_1,self.x2_label,self.beta1)
             self.inter1_output_x2 = interaction.exeInteraction()
             # self.inter1_output_x2 = self.interaction(self.output_x1_1, self.output_x2_1)
 
@@ -71,9 +71,9 @@ class MultiGranularityCNNModel:
             self.output_x2_2 = tf.layers.conv1d(self.output_x2_1,filters=self.config.filters_num,kernel_size=self.config.second_kernel_size,padding='same',name='second-cnn2')
 
         with tf.variable_scope("second-interaction"):
-            self.beta2 = tf.Variable(tf.random_normal(shape=[1], stddev=0, seed=1, dtype=tf.float32), trainable=True,
+            self.beta2 = tf.Variable(tf.random_normal(shape=[3], stddev=0, seed=1, dtype=tf.float32), trainable=True,
                                     name='beta2')
-            interaction = modules.Interaction(5, self.output_x1_2, self.output_x2_2,self.x2_label,self.beta2)
+            interaction = modules.Interaction(6, self.output_x1_2, self.output_x2_2,self.x2_label,self.beta2)
             self.inter2_output_x2 = interaction.exeInteraction()
             # self.inter2_output_x2 = self.interaction(self.output_x1_2, self.output_x2_2)
 
@@ -87,9 +87,9 @@ class MultiGranularityCNNModel:
             self.output_x2_3 = tf.layers.conv1d(self.output_x2_2,filters=self.config.filters_num,kernel_size=self.config.third_kernel_size,padding='same',name='third-cnn2')
 
         with tf.variable_scope("third-interaction"):
-            self.beta3 = tf.Variable(tf.random_normal(shape=[1], stddev=0, seed=1, dtype=tf.float32), trainable=True,
+            self.beta3 = tf.Variable(tf.random_normal(shape=[3], stddev=0, seed=1, dtype=tf.float32), trainable=True,
                                     name='beta3')
-            interaction = modules.Interaction(5, self.output_x1_3,self.output_x2_3,self.x2_label,self.beta3)
+            interaction = modules.Interaction(6, self.output_x1_3,self.output_x2_3,self.x2_label,self.beta3)
             self.inter3_output_x2 = interaction.exeInteraction()
             # self.inter3_output_x2 = self.interaction(self.output_x1_3,self.output_x2_3)
 
@@ -109,10 +109,13 @@ class MultiGranularityCNNModel:
             #                                       name='fifth-cnn1')
             # self.fusion_output = tf.reduce_max(self.fusion_output, axis=-1)
 
-            #v3
-            self.fusion_output = tf.stack([self.inter1_output_x2, self.inter2_output_x2,self.inter3_output_x2,self.x2_label], axis=-1)  # [Batch,len,3]
-            self.fusion_output = tf.layers.conv1d(self.output_x1_1,filters=64,kernel_size=self.config.second_kernel_size,padding='same',name='fifth-cnn1')
-            self.fusion_output = tf.reduce_max(self.fusion_output,axis=-1)
+            # #v3
+            # self.fusion_output = tf.stack([self.inter1_output_x2, self.inter2_output_x2,self.inter3_output_x2,self.x2_label], axis=-1)  # [Batch,len,4]
+            # self.fusion_output = tf.layers.conv1d(self.output_x1_1,filters=64,kernel_size=self.config.second_kernel_size,padding='same',name='fifth-cnn1')
+            # self.fusion_output = tf.reduce_max(self.fusion_output,axis=-1)
+
+            #v4
+            self.fusion_output = tf.concat([self.inter1_output_x2, self.inter2_output_x2,self.inter3_output_x2,self.x2_label],axis=-1)
 
         with tf.variable_scope("predict-layer"):
             self.output_ = tf.nn.relu(tf.layers.dense(inputs=self.fusion_output,units=self.config.mlp_output,name='fnn1'))

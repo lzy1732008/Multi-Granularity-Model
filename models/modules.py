@@ -126,6 +126,29 @@ class Interaction:
         x2_weight = tf.reshape(x2_weight, shape=[-1, x2_len])
         return x2_weight
 
+    def playInteraction6(self):
+        x1_len = self.data[0].get_shape().as_list()[1]
+        x2_len = self.data[1].get_shape().as_list()[1]
+        ks_len = self.data[2].get_shape().as_list()[1]
+
+        assert ks_len == x2_len,ValueError("ks:{0}, law:{1}".format(ks_len,x2_len))
+
+        beta = self.data[-1]
+        ks_rep = tf.reshape(tf.einsum('abc,cd->abd',self.data[2],beta),shape=[-1,x2_len] )#[B,x2_len,1]
+        ks_rep = tf.reshape(tf.keras.backend.repeat_elements(ks_rep,rep=x1_len,axis=1),shape=[-1,x1_len,x2_len])
+        dot_matrix = tf.matmul(self.data[0], tf.transpose(self.data[1], [0, 2, 1])) + beta * ks_rep #[None, m, n]
+        x_2_y = tf.nn.softmax(dot_matrix, axis=2)  # x对y每个词的关注度
+        y_2_x = tf.nn.softmax(dot_matrix, axis=1)  # y对x每个词的关注度
+
+        # 计算x1每个词获取的总weight
+        x1_weight = tf.reduce_mean(y_2_x, axis=2)  # [Batch, len1]
+
+        # 计算x2最后获取的每个词的总的weight
+        x1_weight_ = tf.expand_dims(x1_weight, axis=1)  # [Batch, 1, len1]
+        x2_weight = tf.matmul(x1_weight_, x_2_y)  # [Batch, 1, len2]
+        x2_weight = tf.reshape(x2_weight, shape=[-1, x2_len])
+        return x2_weight
+
 
 
 

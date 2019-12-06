@@ -35,9 +35,9 @@ def data_load(trainPath, valPath, testPath,model,rfModel):
     train_data = env['train']
     test_data = env['test']
     val_data = env['val']
-    train = processInitData(train_data,model)
-    test = processInitData(test_data,model)
-    val = processInitData(val_data,model)
+    train = processInitData2(train_data,model)
+    test = processInitData2(test_data,model)
+    val = processInitData2(val_data,model)
     return train,test,val
 
 def data_load_test(model,rfModel):
@@ -61,6 +61,35 @@ def processInitData(data,model):
         a_data_word.append(list(map(lambda x:pre.getVector(x), input_a)))
         b_data_word.append(list(map(lambda x:pre.getVector(x), input_b)))
         c_data_word.append(input_c)
+        if target_y == 1:
+            y.append([0,1])
+        else:
+            y.append([1,0])
+
+
+    a_data_word = kr.preprocessing.sequence.pad_sequences(np.array(a_data_word), model.config.X_maxlen)
+    b_data_word = kr.preprocessing.sequence.pad_sequences(np.array(b_data_word), model.config.Y_maxlen)
+    c_data_word = kr.preprocessing.sequence.pad_sequences(np.array(c_data_word), model.config.Y_maxlen)
+    return a_data_word,b_data_word, c_data_word, np.array(y)
+
+def processInitData2(data,model):
+    a_data_word = []
+    b_data_word = []
+    c_data_word = []
+    y = []
+
+    for sample in data:
+        assert len(sample) == 4, ValueError("the number of elemengs in this sample is {0}".format(len(sample)))
+        input_a, input_b, input_c, target_y = sample[0],sample[1],sample[2], int(sample[3])
+        a_data_word.append(list(map(lambda x:pre.getVector(x), input_a)))
+        b_data_word.append(list(map(lambda x:pre.getVector(x), input_b)))
+        if input_c == 0:
+            c_data_word.append([1,0,0])
+        elif input_c == 1:
+            c_data_word.append([0,1,0])
+        else:
+            c_data_word.append([0,0,1])
+
         if target_y == 1:
             y.append([0,1])
         else:
