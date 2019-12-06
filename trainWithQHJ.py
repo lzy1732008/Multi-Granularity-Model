@@ -10,14 +10,14 @@ import os
 import sys
 import pickle
 
-from models.MultiGraCNNQHJ_2 import *
+from models.MultiGraCNNQHJ import *
 from preps.data_load_generic import *
 import models.parameter as param
 
 class basicPath:
     def __init__(self,time):
-        self.save_dir = 'result/model/MultiGraCNNQHJ_2'  # 修改处
-        self.param_des = 'v1-inter6-WIL2-fusionv4-' + str(time) +'times'
+        self.save_dir = 'result/model/MultiGraCNNQHJ'  # 修改处
+        self.param_des = 'retrain-' + str(time) +'times'
         self.save_path = os.path.join(self.save_dir, self.param_des + '/checkpoints/best_validation')
         self.tensorboard_dir = os.path.join(self.save_dir, self.param_des + '/tensorboard')
 
