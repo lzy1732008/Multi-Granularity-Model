@@ -100,7 +100,11 @@ class MultiGranularityCNNModel:
 
 
         with tf.variable_scope("fusion-layer"):
-            self.fusion_output = tf.concat([self.inter1_output_x2, self.inter2_output_x2,self.inter3_output_x2], axis=-1)  # [Batch, 3 * len]
+
+            #v2
+            self.fusion_output = tf.stack([self.inter1_output_x2, self.inter2_output_x2,self.inter3_output_x2], axis=-1)  # [Batch,len,3]
+            self.fusion_output = tf.layers.conv1d(self.output_x1_1,filters=self.config.filters_num,kernel_size=self.config.second_kernel_size,padding='same',name='fifth-cnn1')
+            self.fusion_output = tf.reduce_max(self.fusion_output,axis=-1)
 
         with tf.variable_scope("predict-layer"):
             self.output_ = tf.nn.relu(tf.layers.dense(inputs=self.fusion_output,units=self.config.mlp_output,name='fnn1'))
