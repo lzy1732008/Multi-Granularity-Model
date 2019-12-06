@@ -188,6 +188,9 @@ def test(test_data, Path):
 
     y_test_cls = np.argmax(test_y, 1)
     y_pred_cls = np.zeros(shape=data_len, dtype=np.int32)  # 保存预测结果
+    beta1 = 0
+    beta2 = 0
+    beta3 = 0
     for i in range(num_batch):  # 逐批次处理
         start_id = i * batch_size
         end_id = min((i + 1) * batch_size, data_len)
@@ -198,7 +201,7 @@ def test(test_data, Path):
             model.y: test_y,
             model.dropout_rate: 1.0   #这个表示测试时不使用dropout对神经元过滤
         }
-        y_pred_cls[start_id:end_id],beta = session.run(model.pred_y,model.beta, feed_dict=feed_dict)   #将所有批次的预测结果都存放在y_pred_cls中
+        y_pred_cls[start_id:end_id],beta1,beta2,beta3 = session.run(model.pred_y,model.beta1,model.beta2,model.beta3, feed_dict=feed_dict)   #将所有批次的预测结果都存放在y_pred_cls中
 
 
 
@@ -213,17 +216,17 @@ def test(test_data, Path):
     time_dif = get_time_dif(start_time)
     print("Time usage:", time_dif)
 
-    print("beta value", beta)
+    print("beta value", beta1,beta2,beta3)
     return y_test_cls,y_pred_cls
 
 def run_mutli():
     # 载入随机森林模型
     with open(param.BaseConfig.rf_model_path, 'rb') as fr:
         rf = pickle.load(fr)
-    train_data, test_data, val_data = data_load(param.BaseConfig.trainPath, param.BaseConfig.valPath, param.BaseConfig.testPath, model, rf)
-    for i in range(3):
-        Path = basicPath(i)
-        train(train_data,val_data,Path)
+    train_data, test_data, val_data = data_load(None, None, param.BaseConfig.testPath, model, rf)
+    # for i in range(3):
+    #     Path = basicPath(i)
+    #     train(train_data,val_data,Path)
 
     for i in range(3):
         print("the {0}nd testing......".format(str(i)))
