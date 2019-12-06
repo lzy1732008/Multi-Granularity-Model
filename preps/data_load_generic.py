@@ -83,12 +83,17 @@ def processInitData2(data,model):
         input_a, input_b, input_c, target_y = sample[0],sample[1],sample[2], int(sample[3])
         a_data_word.append(list(map(lambda x:pre.getVector(x), input_a)))
         b_data_word.append(list(map(lambda x:pre.getVector(x), input_b)))
-        if input_c == 0:
-            c_data_word.append([1,0,0])
-        elif input_c == 1:
-            c_data_word.append([0,1,0])
-        else:
-            c_data_word.append([0,0,1])
+
+        c_line = []
+        for c in input_c:
+            if c == 0:
+                c_line.append(np.array([1,0,0]))
+            elif c == 1:
+                c_line.append(np.array([0,1,0]))
+            else:
+                c_line.append(np.array([0,0,1]))
+        c_data_word.append(np.array(c_line))
+
 
         if target_y == 1:
             y.append([0,1])
@@ -96,8 +101,8 @@ def processInitData2(data,model):
             y.append([1,0])
 
 
-    a_data_word = kr.preprocessing.sequence.pad_sequences(np.array(a_data_word), model.config.X_maxlen)
-    b_data_word = kr.preprocessing.sequence.pad_sequences(np.array(b_data_word), model.config.Y_maxlen)
-    c_data_word = kr.preprocessing.sequence.pad_sequences(np.array(c_data_word,dtype=float), model.config.Y_maxlen)
+    a_data_word = kr.preprocessing.sequence.pad_sequences(a_data_word, model.config.X_maxlen)
+    b_data_word = kr.preprocessing.sequence.pad_sequences(b_data_word, model.config.Y_maxlen)
+    c_data_word = kr.preprocessing.sequence.pad_sequences(c_data_word, model.config.Y_maxlen)
     return a_data_word,b_data_word, c_data_word, np.array(y)
 

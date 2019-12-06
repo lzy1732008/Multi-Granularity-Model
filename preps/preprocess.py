@@ -97,7 +97,8 @@ def _setUp_inputs_QHJ(sourcePath, wordEmbedding, wordVocab,rfModel):
             for law_label,content in zip(law_labels,content_split):
                 content_vector = processTextWithoutDict(content, wordEmbedding,wordVocab)
                 law_input.extend(content_vector)
-                law_label_input = [law_label+1 for _ in range(len(content_vector))]
+                law_label_input+= [law_label+1 for _ in range(len(content_vector))]
+            assert len(law_input) == len(law_label_input), ValueError("law:{0},label:{1}".format(len(law_input),len(law_label_input)))
             assert items[3] in ['0', '1'], ValueError("Label is not in [0,1]!")
             label = items[3]
             result.append([fact_input, law_input, law_label_input, label])
