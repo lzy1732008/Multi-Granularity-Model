@@ -18,6 +18,8 @@ class Interaction:
                 return self.playInteraction4()
             elif self.method == 5:
                 return self.playInteraction5()
+            elif self.method == 6:
+                return self.playInteraction6()
 
 
     def playInteraction1(self):

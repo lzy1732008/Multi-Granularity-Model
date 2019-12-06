@@ -98,6 +98,6 @@ def processInitData2(data,model):
 
     a_data_word = kr.preprocessing.sequence.pad_sequences(np.array(a_data_word), model.config.X_maxlen)
     b_data_word = kr.preprocessing.sequence.pad_sequences(np.array(b_data_word), model.config.Y_maxlen)
-    c_data_word = kr.preprocessing.sequence.pad_sequences(np.array(c_data_word), model.config.Y_maxlen)
+    c_data_word = kr.preprocessing.sequence.pad_sequences(np.array(c_data_word,dtype=float), model.config.Y_maxlen)
     return a_data_word,b_data_word, c_data_word, np.array(y)
 
