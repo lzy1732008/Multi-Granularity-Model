@@ -57,7 +57,7 @@ class MultiGranularityCNNModel:
         with tf.variable_scope("first-interaction"):
             self.beta1 = tf.Variable(tf.random_normal(shape=[1], stddev=0, seed=1, dtype=tf.float32), trainable=True,
                                     name='beta1')
-            interaction = modules.Interaction(5, self.output_x1_1,self.output_x2_1,self.beta1)
+            interaction = modules.Interaction(5, self.output_x1_1,self.output_x2_1,self.x2_label,self.beta1)
             self.inter1_output_x2 = interaction.exeInteraction()
             # self.inter1_output_x2 = self.interaction(self.output_x1_1, self.output_x2_1)
 
@@ -73,7 +73,7 @@ class MultiGranularityCNNModel:
         with tf.variable_scope("second-interaction"):
             self.beta2 = tf.Variable(tf.random_normal(shape=[1], stddev=0, seed=1, dtype=tf.float32), trainable=True,
                                     name='beta2')
-            interaction = modules.Interaction(5, self.output_x1_2, self.output_x2_2,self.beta2)
+            interaction = modules.Interaction(5, self.output_x1_2, self.output_x2_2,self.x2_label,self.beta2)
             self.inter2_output_x2 = interaction.exeInteraction()
             # self.inter2_output_x2 = self.interaction(self.output_x1_2, self.output_x2_2)
 
@@ -89,7 +89,7 @@ class MultiGranularityCNNModel:
         with tf.variable_scope("third-interaction"):
             self.beta3 = tf.Variable(tf.random_normal(shape=[1], stddev=0, seed=1, dtype=tf.float32), trainable=True,
                                     name='beta3')
-            interaction = modules.Interaction(5, self.output_x1_3,self.output_x2_3,self.beta3)
+            interaction = modules.Interaction(5, self.output_x1_3,self.output_x2_3,self.x2_label,self.beta3)
             self.inter3_output_x2 = interaction.exeInteraction()
             # self.inter3_output_x2 = self.interaction(self.output_x1_3,self.output_x2_3)
 

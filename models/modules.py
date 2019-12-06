@@ -107,6 +107,9 @@ class Interaction:
     def playInteraction5(self):
         x1_len = self.data[0].get_shape().as_list()[1]
         x2_len = self.data[1].get_shape().as_list()[1]
+        ks_len = self.data[2].get_shape().as_list()[1]
+
+        assert ks_len == x2_len,ValueError("ks:{0}, law:{1}".format(ks_len,x2_len))
 
         beta = self.data[-1]
         ks_rep = tf.reshape(tf.keras.backend.repeat_elements(self.data[2],rep=x1_len,axis=1),shape=[-1,x1_len,x2_len])
