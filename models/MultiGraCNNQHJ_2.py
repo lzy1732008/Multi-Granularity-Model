@@ -19,6 +19,7 @@ class MultiGraConfig:
         self.knowledge_dimension = param.BaseConfig.word_dimension
 
 
+
 class MultiGranularityCNNModel:
     def __init__(self,config):
         self.config = config
@@ -42,10 +43,10 @@ class MultiGranularityCNNModel:
         #     self.inter0_output_x2 = interaction.exeInteraction()
 
         #WIL-2  word-Interaction-layer
-        # with tf.variable_scope("word-Interaction-layer"):
-        #     self.beta = tf.Variable(tf.random_normal(shape=[1], stddev=0, seed=1, dtype=tf.float32), trainable=True, name='beta')
-        #     interaction = modules.Interaction(5, self.input_X1, self.input_X2, self.x2_label, self.beta)
-        #     self.inter0_output_x2 = interaction.exeInteraction()
+        with tf.variable_scope("word-Interaction-layer"):
+            self.beta = tf.Variable(tf.random_normal(shape=[3,1], stddev=0, seed=1, dtype=tf.float32), trainable=True, name='beta')
+            interaction = modules.Interaction(6, self.input_X1, self.input_X2, self.x2_label, self.beta)
+            self.inter0_output_x2 = interaction.exeInteraction()
             #添加一个mean pooling
             # self.inter0_output_x2 = tf.expand_dims(tf.expand_dims(self.inter0_output_x2,axis=2),axis=3)
             # self.inter0_output_x2 = tf.nn.avg_pool(self.inter0_output_x2,ksize=[1,3,1,1],strides=[1,1,1,1],padding='VALID',name='mean-pooling')
@@ -115,7 +116,11 @@ class MultiGranularityCNNModel:
             # self.fusion_output = tf.reduce_max(self.fusion_output,axis=-1)
 
             #v4
-            self.fusion_output = tf.concat([self.inter1_output_x2, self.inter2_output_x2,self.inter3_output_x2],axis=-1)
+            # self.fusion_output = tf.concat([self.inter1_output_x2, self.inter2_output_x2,self.inter3_output_x2],axis=-1)
+
+            #v5
+            self.fusion_output = tf.concat([self.inter0_output_x2, self.inter1_output_x2, self.inter2_output_x2, self.inter3_output_x2],
+                                           axis=-1)
 
         with tf.variable_scope("predict-layer"):
             self.output_ = tf.nn.relu(tf.layers.dense(inputs=self.fusion_output,units=self.config.mlp_output,name='fnn1'))
