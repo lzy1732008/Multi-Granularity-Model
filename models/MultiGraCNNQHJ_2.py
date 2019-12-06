@@ -55,11 +55,11 @@ class MultiGranularityCNNModel:
             self.output_x2_1 = tf.layers.conv1d(self.input_X2,filters=self.config.filters_num,kernel_size=self.config.first_kernel_size,padding='same',name='first-cnn2')
 
         with tf.variable_scope("first-interaction"):
-            self.beta1 = tf.Variable(tf.random_normal(shape=[1], stddev=0, seed=1, dtype=tf.float32), trainable=True,
-                                    name='beta1')
-            interaction = modules.Interaction(5, self.output_x1_1,self.output_x2_1,self.beta1)
-            self.inter1_output_x2 = interaction.exeInteraction()
-            # self.inter1_output_x2 = self.interaction(self.output_x1_1, self.output_x2_1)
+            # self.beta1 = tf.Variable(tf.random_normal(shape=[1], stddev=0, seed=1, dtype=tf.float32), trainable=True,
+            #                         name='beta1')
+            # interaction = modules.Interaction(5, self.output_x1_1,self.output_x2_1,self.beta1)
+            # self.inter1_output_x2 = interaction.exeInteraction()
+            self.inter1_output_x2 = self.interaction(self.output_x1_1, self.output_x2_1)
 
             #mean pooling
             # self.inter1_output_x2 = tf.expand_dims(tf.expand_dims(self.inter1_output_x2,axis=2),axis=3)
@@ -71,11 +71,11 @@ class MultiGranularityCNNModel:
             self.output_x2_2 = tf.layers.conv1d(self.output_x2_1,filters=self.config.filters_num,kernel_size=self.config.second_kernel_size,padding='same',name='second-cnn2')
 
         with tf.variable_scope("second-interaction"):
-            self.beta2 = tf.Variable(tf.random_normal(shape=[1], stddev=0, seed=1, dtype=tf.float32), trainable=True,
-                                    name='beta2')
-            interaction = modules.Interaction(5, self.output_x1_2, self.output_x2_2,self.beta2)
-            self.inter2_output_x2 = interaction.exeInteraction()
-            # self.inter2_output_x2 = self.interaction(self.output_x1_2, self.output_x2_2)
+            # self.beta2 = tf.Variable(tf.random_normal(shape=[1], stddev=0, seed=1, dtype=tf.float32), trainable=True,
+            #                         name='beta2')
+            # interaction = modules.Interaction(5, self.output_x1_2, self.output_x2_2,self.beta2)
+            # self.inter2_output_x2 = interaction.exeInteraction()
+            self.inter2_output_x2 = self.interaction(self.output_x1_2, self.output_x2_2)
 
             #mean pooling
             # self.inter2_output_x2 = tf.expand_dims(tf.expand_dims(self.inter2_output_x2,axis=2),axis=3)
@@ -87,11 +87,11 @@ class MultiGranularityCNNModel:
             self.output_x2_3 = tf.layers.conv1d(self.output_x2_2,filters=self.config.filters_num,kernel_size=self.config.third_kernel_size,padding='same',name='third-cnn2')
 
         with tf.variable_scope("third-interaction"):
-            self.beta3 = tf.Variable(tf.random_normal(shape=[1], stddev=0, seed=1, dtype=tf.float32), trainable=True,
-                                    name='beta3')
-            interaction = modules.Interaction(5, self.output_x1_3,self.output_x2_3,self.beta3)
-            self.inter3_output_x2 = interaction.exeInteraction()
-            # self.inter3_output_x2 = self.interaction(self.output_x1_3,self.output_x2_3)
+            # self.beta3 = tf.Variable(tf.random_normal(shape=[1], stddev=0, seed=1, dtype=tf.float32), trainable=True,
+            #                         name='beta3')
+            # interaction = modules.Interaction(5, self.output_x1_3,self.output_x2_3,self.beta3)
+            # self.inter3_output_x2 = interaction.exeInteraction()
+            self.inter3_output_x2 = self.interaction(self.output_x1_3,self.output_x2_3)
 
             #mean pooling
             # self.inter3_output_x2 = tf.expand_dims(tf.expand_dims(self.inter3_output_x2,axis=2),axis=3)
