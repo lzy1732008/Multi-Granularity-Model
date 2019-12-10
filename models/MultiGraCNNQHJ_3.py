@@ -35,21 +35,16 @@ class MultiGranularityCNNModel:
         self.build_model()
 
     def build_model(self):
-        #首先将前后件信息进行embedding
-        with tf.variable_scope("encoder-layer"):
-            knowledge_embedding = tf.Variable(tf.random_normal([3,self.config.knowledge_dimension],
-                                                    stddev=0, seed=1), trainable=True, name='knowledge-embedding')
-            self.x2_label_embedding = tf.nn.embedding_lookup(knowledge_embedding, self.x2_label)
-            KG = modules.KnowledgeGate(1,self.input_X2,self.x2_label_embedding)
-            self.output_encoder = KG.exeKnowledgeGate()
-
         with tf.variable_scope("first-CNN-layer"):
             self.output_x1_1 = tf.layers.conv1d(self.input_X1,filters=self.config.filters_num,kernel_size=self.config.first_kernel_size,padding='valid',name='first-cnn1')
-            self.output_x2_1 = tf.layers.conv1d(self.output_encoder,filters=self.config.filters_num,kernel_size=self.config.first_kernel_size,padding='valid',name='first-cnn2')
+            self.output_x2_1 = tf.layers.conv1d(self.input_X2,filters=self.config.filters_num,kernel_size=self.config.first_kernel_size,padding='valid',name='first-cnn2')
 
         with tf.variable_scope("first-interaction"):
             interaction = modules.Interaction(4, self.output_x1_1,self.output_x2_1)
             self.inter1_output_x2 = interaction.exeInteraction()
+
+            interaction = modules.Interaction(7,self.output_x1_1,self.output_x2_1)
+            self.output_x1_1,self.output_x2_1 = interaction.exeInteraction()
 
 
         with tf.variable_scope("second-CNN-layer"):
@@ -59,6 +54,9 @@ class MultiGranularityCNNModel:
         with tf.variable_scope("second-interaction"):
             interaction = modules.Interaction(4, self.output_x1_2, self.output_x2_2)
             self.inter2_output_x2 = interaction.exeInteraction()
+
+            interaction = modules.Interaction(7, self.output_x1_2, self.output_x2_2)
+            self.output_x1_2, self.output_x2_2 = interaction.exeInteraction()
 
         with tf.variable_scope("third-CNN-layer"):
             self.output_x1_3 = tf.layers.conv1d(self.output_x1_2,filters=self.config.filters_num,kernel_size=self.config.third_kernel_size,padding='valid',name='third-cnn1')
