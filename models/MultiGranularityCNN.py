@@ -3,17 +3,27 @@ import tensorflow as tf
 import models.parameter as param
 
 class MultiGraConfig:
-    #initparam
+    # #initparam
+    # X_maxlen = 30
+    # Y_maxlen = 30
+    # dropout_rate = 0.5
+    # first_kernel_size = 2
+    # second_kernel_size = 4
+    # third_kernel_size = 8
+    # filters_num = param.BaseConfig.word_dimension
+    # mlp_output = 2 * Y_maxlen  #v1
+    # # mlp_output= 128 #v2
+    # # mlp_output = 64 #v3
+
+#v1
     X_maxlen = 30
     Y_maxlen = 30
     dropout_rate = 0.5
     first_kernel_size = 2
     second_kernel_size = 4
-    third_kernel_size = 8
+    third_kernel_size = 6
     filters_num = param.BaseConfig.word_dimension
-    mlp_output = 2 * Y_maxlen  #v1
-    # mlp_output= 128 #v2
-    # mlp_output = 64 #v3
+    mlp_output = 2 * Y_maxlen
 
 class MultiGranularityCNNModel:
     def __init__(self):
