@@ -20,7 +20,8 @@ class Interaction:
                 return self.playInteraction5()
             elif self.method == 6:
                 return self.playInteraction6()
-
+            elif self.method == 7:
+                return self.playInteraction7()
 
     def playInteraction1(self):
         '''
@@ -45,6 +46,14 @@ class Interaction:
 
         return new_x, new_y
 
+    def playInteraction7(self):
+        assert len(self.data) == 2, ValueError(
+            'the number of input data is wrong, it should be 2,but{0}'.format(len(self.data)))
+        # 首先计算attention
+        x_2_y, y_2_x = comp.genericAttention(self.data[0], self.data[1])
+        feature_b = tf.matmul(y_2_x, self.data[0], transpose_a=True)
+        feature_a = tf.matmul(x_2_y, self.data[1])
+        return feature_a, feature_b
 
     def playInteraction2(self):
         '''
