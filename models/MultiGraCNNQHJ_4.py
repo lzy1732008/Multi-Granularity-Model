@@ -6,8 +6,19 @@ import models.modules as modules
 class MultiGraConfig:
     def __init__(self):
         # v1
+        # self.X_maxlen = 30
+        # self.Y_maxlen = 30
+        # self.dropout_rate = 0.5
+        # self.first_kernel_size = 2
+        # self.second_kernel_size = 4
+        # self.third_kernel_size = 8
+        # self.filters_num = param.BaseConfig.word_dimension
+        # self.mlp_output = 2 * self.Y_maxlen
+        # self.knowledge_dimension = param.BaseConfig.word_dimension
+
+#v2
         self.X_maxlen = 30
-        self.Y_maxlen = 30
+        self.Y_maxlen = 50
         self.dropout_rate = 0.5
         self.first_kernel_size = 2
         self.second_kernel_size = 4
@@ -15,7 +26,6 @@ class MultiGraConfig:
         self.filters_num = param.BaseConfig.word_dimension
         self.mlp_output = 2 * self.Y_maxlen
         self.knowledge_dimension = param.BaseConfig.word_dimension
-
 
 class MultiGranularityCNNModel:
     def __init__(self,config):
@@ -40,7 +50,6 @@ class MultiGranularityCNNModel:
         with tf.variable_scope("first-interaction"):
             interaction = modules.Interaction(8, self.output_x1_1,self.output_x2_1,self.x2_label)
             self.inter1_output_x2 = interaction.exeInteraction()
-
 
         with tf.variable_scope("second-CNN-layer"):
             self.output_x1_2 = tf.layers.conv1d(self.output_x1_1,filters=self.config.filters_num,kernel_size=self.config.second_kernel_size,padding='same',name='second-cnn1')
