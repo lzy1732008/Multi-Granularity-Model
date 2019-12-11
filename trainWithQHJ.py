@@ -10,13 +10,13 @@ import os
 import sys
 import pickle
 
-from models.MGCQ_6 import *
+from models.MGCQ_7 import *
 from preps.data_load_generic import *
 import models.parameter as param
 
 class basicPath:
     def __init__(self,time):
-        self.save_dir = 'result/model/MGCQ_6'  # 修改处
+        self.save_dir = 'result/model/MGCQ_7'  # 修改处
         self.param_des = 'v1-inter8-' + str(time) +'times'
         self.save_path = os.path.join(self.save_dir, self.param_des + '/checkpoints/best_validation')
         self.tensorboard_dir = os.path.join(self.save_dir, self.param_des + '/tensorboard')
