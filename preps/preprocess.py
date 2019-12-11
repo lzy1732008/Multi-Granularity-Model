@@ -69,24 +69,22 @@ def setUp_inputs_QHJ(trainPath = None, valPath = None, testPath = None, rfModel=
     test = ""
     val = ""
     if trainPath:
+        args = []
+        tars = []
+        for i in range(15):
+            args.append((trainPath,wordEmbedding, wordVocab, rfModel,i * 1000,i * 1000 + 1000))
+            tars.append(_setUp_inputs_QHJ)
         starttime = time.time()
-        mp = MultiProcess(tar=[_setUp_inputs_QHJ,_setUp_inputs_QHJ,_setUp_inputs_QHJ],
-                     arg=[(trainPath,wordEmbedding, wordVocab, rfModel,0,1000),
-                          (trainPath, wordEmbedding, wordVocab, rfModel, 1000, 2000),
-                          (trainPath, wordEmbedding, wordVocab, rfModel, 2000, 3000)])
+        mp = MultiProcess(tar=tars,arg=args)
         mp.multi_processing()
         train = list(q.get())
         endtime = time.time()
         print("cost time:"+str(endtime-starttime))
-        starttime = time.time()
-        train = _setUp_inputs_QHJ(trainPath,wordEmbedding, wordVocab, rfModel,0,3000)
-        endtime = time.time()
-        print("cost time:" + str(endtime - starttime))
 
     if testPath:
-       test = _setUp_inputs_QHJ(testPath, wordEmbedding, wordVocab, rfModel,0,900)
+       test = _setUp_inputs_QHJ(testPath, wordEmbedding, wordVocab, rfModel,0,1000)
     if valPath:
-       val = _setUp_inputs_QHJ(valPath, wordEmbedding, wordVocab, rfModel,0,900)
+       val = _setUp_inputs_QHJ(valPath, wordEmbedding, wordVocab, rfModel,0,1000)
        env = {'train': train, 'test': test, 'val': val}
     return env
 
@@ -96,6 +94,10 @@ def _setUp_inputs_QHJ(sourcePath, wordEmbedding, wordVocab,rfModel,start,end):
         lines = fr.readlines()
     result = []
     count = 0
+    if start >= len(lines):
+        return
+    end = min(len(lines), end)
+
     for line in lines[start:end]:
         line = line.strip()
         if line != '':
