@@ -75,11 +75,8 @@ def setUp_inputs_QHJ(trainPath = None, valPath = None, testPath = None, rfModel=
         for i in range(15):
             args.append((trainPath,wordEmbedding, wordVocab, rfModel,i * 1000,i * 1000 + 1000,1))
             tars.append(_setUp_inputs_QHJ)
-        starttime = time.time()
         mp = MultiProcess(tar=tars,arg=args)
         mp.multi_processing()
-        endtime = time.time()
-
         while not q1.empty():
             train += list(q1.get())
 
@@ -94,7 +91,7 @@ def setUp_inputs_QHJ(trainPath = None, valPath = None, testPath = None, rfModel=
         mp = MultiProcess(tar=tars, arg=args)
         mp.multi_processing()
         while not q1.empty():
-            test += list(q1.get())
+            test += list(q2.get())
 
         # test = _setUp_inputs_QHJ(testPath, wordEmbedding, wordVocab, rfModel, 0, 1000, 2)
 
@@ -107,7 +104,7 @@ def setUp_inputs_QHJ(trainPath = None, valPath = None, testPath = None, rfModel=
         mp = MultiProcess(tar=tars, arg=args)
         mp.multi_processing()
         while not q1.empty():
-            val += list(q1.get())
+            val += list(q3.get())
 
         # test = _setUp_inputs_QHJ(valPath, wordEmbedding, wordVocab, rfModel, 0, 1000, 3)
 
