@@ -80,7 +80,7 @@ def setUp_inputs_QHJ(trainPath = None, valPath = None, testPath = None, rfModel=
         # while not q1.empty():
         #     train += list(q1.get())
 
-        train = _setUp_inputs_QHJ(trainPath, wordEmbedding, wordVocab, rfModel, 0, 1000,1)
+        train = _setUp_inputs_QHJ(trainPath, wordEmbedding, wordVocab, rfModel, 0, 15000,1)
 
     if valPath:
         # args = []
