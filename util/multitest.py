@@ -4,9 +4,7 @@ from multiprocessing import Process,Queue,Pool
 import time
 startTime = time.time()
 
-q = Queue()
-def count(start,end):
-    q.put(range(start,end))
+
 
 
 class MultiProcess(object):
@@ -27,11 +25,11 @@ class MultiProcess(object):
             p.join()
 
 
-mp = MultiProcess(tar=[count,count,count],arg=[(0,10),(10,20),(20,30)])
-mp.multi_processing()
-result = []
-while not q.empty():
-    result += list(q.get())
+# mp = MultiProcess(tar=[count,count,count],arg=[(0,10),(10,20),(20,30)])
+# mp.multi_processing()
+# result = []
+# while not q.empty():
+#     result += list(q.get())
 
 
 # p = Pool(5)
