@@ -40,11 +40,11 @@ def data_load(trainPath, valPath, testPath,model,rfModel):
     val = []
     if trainPath:
        train = processInitData2(train_data,model)
-    if testPath:
-       test = processInitData2(test_data,model)
     if valPath:
        val = processInitData2(val_data,model)
-    return train,test,val
+    if testPath:
+       test = processInitData2(test_data,model)
+    return train,val, test
 
 def data_load_test(model,rfModel):
     env = pre.setUp_inputs_QHJ(trainPath=None, valPath=None,
