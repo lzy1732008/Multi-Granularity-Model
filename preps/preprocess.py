@@ -51,7 +51,9 @@ import re
 from util.multitest import MultiProcess
 from multiprocessing import Queue
 import time
-q = Queue()
+q1 = Queue()
+q2 = Queue()
+q3 = Queue()
 
 
 def setUp_inputs_QHJ(trainPath = None, valPath = None, testPath = None, rfModel=None):
@@ -72,12 +74,12 @@ def setUp_inputs_QHJ(trainPath = None, valPath = None, testPath = None, rfModel=
         args = []
         tars = []
         for i in range(15):
-            args.append((trainPath,wordEmbedding, wordVocab, rfModel,i * 1000,i * 1000 + 1000))
+            args.append((trainPath,wordEmbedding, wordVocab, rfModel,i * 1000,i * 1000 + 1000,1))
             tars.append(_setUp_inputs_QHJ)
         starttime = time.time()
         mp = MultiProcess(tar=tars,arg=args)
         mp.multi_processing()
-        train = list(q.get())
+        train = list(q1.get())
         endtime = time.time()
         print("cost time:"+str(endtime-starttime))
 
@@ -85,26 +87,26 @@ def setUp_inputs_QHJ(trainPath = None, valPath = None, testPath = None, rfModel=
         args = []
         tars = []
         for i in range(10):
-            args.append((testPath, wordEmbedding, wordVocab, rfModel, i * 100, i * 100 + 100))
+            args.append((testPath, wordEmbedding, wordVocab, rfModel, i * 100, i * 100 + 100,2))
             tars.append(_setUp_inputs_QHJ)
         mp = MultiProcess(tar=tars, arg=args)
         mp.multi_processing()
-        test = list(q.get())
+        test = list(q2.get())
 
     if valPath:
         args = []
         tars = []
         for i in range(10):
-            args.append((valPath, wordEmbedding, wordVocab, rfModel, i * 100, i * 100 + 100))
+            args.append((valPath, wordEmbedding, wordVocab, rfModel, i * 100, i * 100 + 100,3))
             tars.append(_setUp_inputs_QHJ)
         mp = MultiProcess(tar=tars, arg=args)
         mp.multi_processing()
-        val = list(q.get())
+        val = list(q3.get())
 
     env = {'train': train, 'test': test, 'val': val}
     return env
 
-def _setUp_inputs_QHJ(sourcePath, wordEmbedding, wordVocab,rfModel,start,end):
+def _setUp_inputs_QHJ(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,flag):
 
     with open(sourcePath,'r',encoding='utf-8') as fr:
         lines = fr.readlines()
@@ -141,7 +143,12 @@ def _setUp_inputs_QHJ(sourcePath, wordEmbedding, wordVocab,rfModel,start,end):
             result.append([fact_input, law_input, law_label_input, label])
             count += 1
             print("precessing {0}/{1} samples".format(count,len(lines)))
-    q.put(result)
+    if flag == 1:
+        q1.put(result)
+    elif flag == 2:
+        q2.put(result)
+    elif flag == 3:
+        q3.put(result)
 
 def processTextWithoutDict(line,wordEmbedding, wordVocab):
     initContent = line.strip()
