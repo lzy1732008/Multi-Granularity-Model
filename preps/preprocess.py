@@ -71,7 +71,7 @@ def setUp_inputs_QHJ(trainPath = None, valPath = None, testPath = None, rfModel=
     if trainPath:
         args = []
         tars = []
-        for i in range(15):
+        for i in range(1):
             args.append((trainPath,wordEmbedding, wordVocab, rfModel,i * 1000,i * 1000 + 1000))
             tars.append(_setUp_inputs_QHJ)
         starttime = time.time()
@@ -83,9 +83,11 @@ def setUp_inputs_QHJ(trainPath = None, valPath = None, testPath = None, rfModel=
 
     if testPath:
        test = _setUp_inputs_QHJ(testPath, wordEmbedding, wordVocab, rfModel,0,1000)
+
     if valPath:
        val = _setUp_inputs_QHJ(valPath, wordEmbedding, wordVocab, rfModel,0,1000)
-       env = {'train': train, 'test': test, 'val': val}
+
+    env = {'train': train, 'test': test, 'val': val}
     return env
 
 def _setUp_inputs_QHJ(sourcePath, wordEmbedding, wordVocab,rfModel,start,end):
