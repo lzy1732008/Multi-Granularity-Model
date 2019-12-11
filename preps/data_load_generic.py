@@ -35,9 +35,15 @@ def data_load(trainPath, valPath, testPath,model,rfModel):
     train_data = env['train']
     test_data = env['test']
     val_data = env['val']
-    train = processInitData2(train_data,model)
-    test = processInitData2(test_data,model)
-    val = processInitData2(val_data,model)
+    train = []
+    test = []
+    val = []
+    if trainPath:
+       train = processInitData2(train_data,model)
+    if testPath:
+       test = processInitData2(test_data,model)
+    if valPath:
+       val = processInitData2(val_data,model)
     return train,test,val
 
 def data_load_test(model,rfModel):
