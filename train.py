@@ -15,7 +15,7 @@ import models.parameter as param
 
 save_dir = 'result/model/MultiGraCNNQHJ_5'  #修改处
 # param_des = 'initparam-3CNN-v1'
-param_des = 'v1-inter4'
+param_des = 'v1-inter4-3inters'
 save_path = os.path.join(save_dir,param_des+'/checkpoints/best_validation')
 tensorboard_dir = os.path.join(save_dir,param_des+'/tensorboard')
 

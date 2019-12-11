@@ -33,7 +33,7 @@ class MultiGranularityCNNModel:
         with tf.variable_scope("first-CNN-layer"):
             self.output_x1_1 = tf.layers.conv1d(self.input_X1,filters=self.config.filters_num,kernel_size=self.config.first_kernel_size,padding='same',name='first-cnn1')
             self.output_x2_1 = tf.layers.conv1d(self.input_X2,filters=self.config.filters_num,kernel_size=self.config.first_kernel_size,padding='same',name='first-cnn2')
-            # self.pooling_x2_1 = tf.reduce_max(self.output_x2_1,axis=-1) #[B,l]
+            self.pooling_x2_1 = tf.reduce_max(self.output_x2_1,axis=-1) #[B,l]
 
         with tf.variable_scope("second-CNN-layer"):
             self.output_x1_2 = tf.layers.conv1d(self.output_x1_1,filters=self.config.filters_num,kernel_size=self.config.second_kernel_size,padding='same',name='second-cnn1')
@@ -42,38 +42,39 @@ class MultiGranularityCNNModel:
         with tf.variable_scope("third-CNN-layer"):
             self.output_x1_3 = tf.layers.conv1d(self.output_x1_2,filters=self.config.filters_num,kernel_size=self.config.third_kernel_size,padding='same',name='third-cnn1')
             self.output_x2_3 = tf.layers.conv1d(self.output_x2_2,filters=self.config.filters_num,kernel_size=self.config.third_kernel_size,padding='same',name='third-cnn2')
-            # self.pooling_x2_3 = tf.reduce_max(self.output_x2_3,axis=-1)
+            self.pooling_x2_3 = tf.reduce_max(self.output_x2_3,axis=-1)
 
         with tf.variable_scope("interaction"):
             interaction11 = modules.Interaction(4, self.output_x1_1,self.output_x2_1)
             self.inter11 = interaction11.exeInteraction()
 
-            interaction21 = modules.Interaction(4, self.output_x1_2, self.output_x2_1)
-            self.inter21 = interaction21.exeInteraction()
+            # interaction21 = modules.Interaction(4, self.output_x1_2, self.output_x2_1)
+            # self.inter21 = interaction21.exeInteraction()
 
-            interaction31 = modules.Interaction(4, self.output_x1_3, self.output_x2_1)
-            self.inter31 = interaction31.exeInteraction()
+            # interaction31 = modules.Interaction(4, self.output_x1_3, self.output_x2_1)
+            # self.inter31 = interaction31.exeInteraction()
 
-            interaction12 = modules.Interaction(4, self.output_x1_1,self.output_x2_2)
-            self.inter12 = interaction12.exeInteraction()
+            # interaction12 = modules.Interaction(4, self.output_x1_1,self.output_x2_2)
+            # self.inter12 = interaction12.exeInteraction()
 
             interaction22 = modules.Interaction(4, self.output_x1_2, self.output_x2_2)
             self.inter22 = interaction22.exeInteraction()
 
-            interaction32 = modules.Interaction(4, self.output_x1_3, self.output_x2_2)
-            self.inter32 = interaction32.exeInteraction()
-
-            interaction13 = modules.Interaction(4, self.output_x1_1,self.output_x2_3)
-            self.inter13 = interaction13.exeInteraction()
-
-            interaction23 = modules.Interaction(4, self.output_x1_2, self.output_x2_3)
-            self.inter23 = interaction23.exeInteraction()
+            # interaction32 = modules.Interaction(4, self.output_x1_3, self.output_x2_2)
+            # self.inter32 = interaction32.exeInteraction()
+            #
+            # interaction13 = modules.Interaction(4, self.output_x1_1,self.output_x2_3)
+            # self.inter13 = interaction13.exeInteraction()
+            #
+            # interaction23 = modules.Interaction(4, self.output_x1_2, self.output_x2_3)
+            # self.inter23 = interaction23.exeInteraction()
 
             interaction33 = modules.Interaction(4, self.output_x1_3, self.output_x2_3)
             self.inter33 = interaction33.exeInteraction() #[B,l]
 
-            self.inter = tf.reshape(tf.stack([self.inter11,self.inter12,self.inter13,self.inter12,self.inter22,self.inter32,self.inter31,self.inter32,self.inter33],axis=-1),
-                       shape=[-1,self.config.Y_maxlen,9]) #[B,9,l]
+            # self.inter = tf.reshape(tf.stack([self.inter11,self.inter12,self.inter13,self.inter12,self.inter22,self.inter32,self.inter31,self.inter32,self.inter33],axis=-1),
+            #            shape=[-1,self.config.Y_maxlen,9]) #[B,9,l]
+            self.inter = tf.reshape(tf.stack([self.inter11,self.inter22,self.inter33],axis=-1),shape=[-1,self.config.Y_maxlen,3])
 
         with tf.variable_scope("fusion-layer"):
             self.fusion_output = tf.reduce_max(self.inter,axis=1)
