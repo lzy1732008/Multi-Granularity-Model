@@ -96,17 +96,17 @@ def setUp_inputs_QHJ(trainPath = None, valPath = None, testPath = None, rfModel=
         # test = _setUp_inputs_QHJ(testPath, wordEmbedding, wordVocab, rfModel, 0, 1000, 2)
 
     if valPath:
-        args = []
-        tars = []
-        for i in range(10):
-            args.append((valPath, wordEmbedding, wordVocab, rfModel, i * 100, i * 100 + 100,3))
-            tars.append(_setUp_inputs_QHJ)
-        mp = MultiProcess(tar=tars, arg=args)
-        mp.multi_processing()
-        while not q3.empty():
-            val += list(q3.get())
+        # args = []
+        # tars = []
+        # for i in range(10):
+        #     args.append((valPath, wordEmbedding, wordVocab, rfModel, i * 100, i * 100 + 100,3))
+        #     tars.append(_setUp_inputs_QHJ)
+        # mp = MultiProcess(tar=tars, arg=args)
+        # mp.multi_processing()
+        # while not q3.empty():
+        #     val += list(q3.get())
 
-        # test = _setUp_inputs_QHJ(valPath, wordEmbedding, wordVocab, rfModel, 0, 1000, 3)
+        test = _setUp_inputs_QHJ(valPath, wordEmbedding, wordVocab, rfModel, 0, 1000, 3)
 
     env = {'train': train, 'test': test, 'val': val}
     return env
