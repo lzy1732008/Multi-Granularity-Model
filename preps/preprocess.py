@@ -48,6 +48,7 @@ def _setUp_inputs_(sourcePath, wordEmbedding, wordVocab):
             result.append([fact_input, law_input, label])
     return result
 import re
+import threading
 def setUp_inputs_QHJ(trainPath = None, valPath = None, testPath = None, rfModel=None):
     #read word info
     f_word = open(param.BaseConfig.w2vModel, 'r', encoding='utf-8')
