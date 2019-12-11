@@ -232,6 +232,7 @@ def checkPrediction(pred_cls, target_y):
             s = 'fact:{0}, law:{1}, pred:{2}, y:{3}'.format(fact,law,pred_cls[index], y)
             if target_y[index] == pred_cls[index]: right.append(s)
             else:wrong.append(s)
+            index += 1
 
     print('predction is right.......')
     print('\n'.join(right[:5]))
