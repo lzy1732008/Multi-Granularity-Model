@@ -147,7 +147,7 @@ def _setUp_inputs_QHJ(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,fla
             label = items[3]
             result.append([fact_input, law_input, law_label_input, label])
             count += 1
-            # print("precessing {0}/{1} samples".format(count,len(lines)))
+            print("precessing {0}/{1} samples".format(count,len(lines)))
     if flag == 1:
         q1.put(result)
     elif flag == 2:
