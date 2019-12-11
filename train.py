@@ -9,7 +9,7 @@ from sklearn import metrics
 import os
 import sys
 
-from models.MultiGranularityCNN import MultiGranularityCNNModel
+from models.MultiGraCNNQHJ_5 import MultiGranularityCNNModel,MultiGraConfig
 from preps.data_load import *
 import models.parameter as param
 
@@ -19,7 +19,8 @@ param_des = 'v1-inter4'
 save_path = os.path.join(save_dir,param_des+'/checkpoints/best_validation')
 tensorboard_dir = os.path.join(save_dir,param_des+'/tensorboard')
 
-model = MultiGranularityCNNModel()
+config = MultiGraConfig()
+model = MultiGranularityCNNModel(config)
 
 if not os.path.exists(save_path):
     os.makedirs(save_path)
