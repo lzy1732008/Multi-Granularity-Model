@@ -13,9 +13,9 @@ from models.MultiGranularityCNN import MultiGranularityCNNModel
 from preps.data_load import *
 import models.parameter as param
 
-save_dir = 'result/model/MultiGranularityCNN'  #修改处
+save_dir = 'result/model/MultiGraCNNQHJ_5'  #修改处
 # param_des = 'initparam-3CNN-v1'
-param_des = 'v2-3cnn'
+param_des = 'v1-inter4'
 save_path = os.path.join(save_dir,param_des+'/checkpoints/best_validation')
 tensorboard_dir = os.path.join(save_dir,param_des+'/tensorboard')
 
@@ -51,7 +51,7 @@ def evaluate(sess,a_word,b_word,y):
     batch_eval = get_batch_data_test(a_word, b_word,y, param.BaseConfig.batch_size)
     total_loss = 0.0
     total_acc = 0.0
-    for a_word_batch, b_word_batch ,y_batch in batch_eval:
+    for a_word_batch, b_word_batch,y_batch in batch_eval:
         batch_len = len(a_word_batch)
         feed_dict = feed_data(a_word_batch, b_word_batch,y_batch,1.0)
         loss, acc = sess.run([model.loss, model.acc], feed_dict=feed_dict)
