@@ -228,8 +228,8 @@ def checkPrediction(pred_cls, target_y):
             fact = items[1]
             law = items[2]
             y = int(items[-1])
-            assert y != target_y[index],print("No Align")
             s = 'fact:{0}, law:{1}, pred:{2}, y:{3}'.format(fact,law,pred_cls[index], y)
+            assert y != target_y[index],print("No Align！" + s)
             if target_y[index] == pred_cls[index]: right.append(s)
             else:wrong.append(s)
             index += 1
