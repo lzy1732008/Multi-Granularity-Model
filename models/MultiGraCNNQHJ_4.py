@@ -24,7 +24,7 @@ class MultiGranularityCNNModel:
                                           shape=[None, self.config.X_maxlen, param.BaseConfig.word_dimension])
         self.input_X2 = tf.placeholder(name="inputX2_word", dtype=tf.float32,
                                           shape=[None, self.config.Y_maxlen, param.BaseConfig.word_dimension])
-        self.x2_label = tf.placeholder(name="inputX2_label", dtype=tf.int32,
+        self.x2_label = tf.placeholder(name="inputX2_label", dtype=tf.float32,
                                           shape=[None, self.config.Y_maxlen,3])
         self.y = tf.placeholder(name="target_y", dtype=tf.int32, shape=[None, 2])
 
@@ -34,8 +34,8 @@ class MultiGranularityCNNModel:
 
     def build_model(self):
         with tf.variable_scope("first-CNN-layer"):
-            self.output_x1_1 = tf.layers.conv1d(self.input_X1,filters=self.config.filters_num,kernel_size=self.config.first_kernel_size,padding='valid',name='first-cnn1')
-            self.output_x2_1 = tf.layers.conv1d(self.input_X2,filters=self.config.filters_num,kernel_size=self.config.first_kernel_size,padding='valid',name='first-cnn2')
+            self.output_x1_1 = tf.layers.conv1d(self.input_X1,filters=self.config.filters_num,kernel_size=self.config.first_kernel_size,padding='same',name='first-cnn1')
+            self.output_x2_1 = tf.layers.conv1d(self.input_X2,filters=self.config.filters_num,kernel_size=self.config.first_kernel_size,padding='same',name='first-cnn2')
 
         with tf.variable_scope("first-interaction"):
             interaction = modules.Interaction(8, self.output_x1_1,self.output_x2_1,self.x2_label)
@@ -43,16 +43,16 @@ class MultiGranularityCNNModel:
 
 
         with tf.variable_scope("second-CNN-layer"):
-            self.output_x1_2 = tf.layers.conv1d(self.output_x1_1,filters=self.config.filters_num,kernel_size=self.config.second_kernel_size,padding='valid',name='second-cnn1')
-            self.output_x2_2 = tf.layers.conv1d(self.output_x2_1,filters=self.config.filters_num,kernel_size=self.config.second_kernel_size,padding='valid',name='second-cnn2')
+            self.output_x1_2 = tf.layers.conv1d(self.output_x1_1,filters=self.config.filters_num,kernel_size=self.config.second_kernel_size,padding='same',name='second-cnn1')
+            self.output_x2_2 = tf.layers.conv1d(self.output_x2_1,filters=self.config.filters_num,kernel_size=self.config.second_kernel_size,padding='same',name='second-cnn2')
 
         with tf.variable_scope("second-interaction"):
             interaction = modules.Interaction(8, self.output_x1_2, self.output_x2_2,self.x2_label)
             self.inter2_output_x2 = interaction.exeInteraction()
 
         with tf.variable_scope("third-CNN-layer"):
-            self.output_x1_3 = tf.layers.conv1d(self.output_x1_2,filters=self.config.filters_num,kernel_size=self.config.third_kernel_size,padding='valid',name='third-cnn1')
-            self.output_x2_3 = tf.layers.conv1d(self.output_x2_2,filters=self.config.filters_num,kernel_size=self.config.third_kernel_size,padding='valid',name='third-cnn2')
+            self.output_x1_3 = tf.layers.conv1d(self.output_x1_2,filters=self.config.filters_num,kernel_size=self.config.third_kernel_size,padding='same',name='third-cnn1')
+            self.output_x2_3 = tf.layers.conv1d(self.output_x2_2,filters=self.config.filters_num,kernel_size=self.config.third_kernel_size,padding='same',name='third-cnn2')
 
         with tf.variable_scope("third-interaction"):
             interaction = modules.Interaction(8, self.output_x1_3,self.output_x2_3,self.x2_label)

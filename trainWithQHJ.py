@@ -10,7 +10,7 @@ import os
 import sys
 import pickle
 
-from models.MultiGraCNNQHJ import *
+from models.MultiGraCNNQHJ_4 import *
 from preps.data_load_generic import *
 import models.parameter as param
 
@@ -186,9 +186,6 @@ def test(test_data, Path):
 
     y_test_cls = np.argmax(test_y, 1)
     y_pred_cls = np.zeros(shape=data_len, dtype=np.int32)  # 保存预测结果
-    beta1 = 0
-    beta2 = 0
-    beta3 = 0
     for i in range(num_batch):  # 逐批次处理
         start_id = i * batch_size
         end_id = min((i + 1) * batch_size, data_len)
