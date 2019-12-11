@@ -209,25 +209,57 @@ def test(test_data, Path):
     print("Time usage:", time_dif)
 
     # print("beta value", beta1,beta2,beta3)
+    #check error prediction
+
     return y_test_cls,y_pred_cls
+
+
+def checkPrediction(pred_cls, target_y):
+    test_content = open('resource/test-init.txt','r',encoding='utf-8').read()
+    lines = test_content.split('\n')
+    index = 0
+    right = []
+    wrong = []
+    for line in lines:
+        line = line.strip()
+        if line != '':
+            items = line.split('|')
+            assert len(items) == 4, ValueError("The number of items in this line is less than 4, content:" + line)
+            fact = items[1]
+            law = items[2]
+            y = int(items[-1])
+            assert y != target_y[index],print("No Align")
+            s = 'fact:{0}, law:{1}, pred:{2}, y:{3}'.format(fact,law,pred_cls[index], y)
+            if target_y[index] == pred_cls[index]: right.append(s)
+            else:wrong.append(s)
+
+    print('predction is right.......')
+    print('\n'.join(right[:5]))
+
+    print('prediction is wrong')
+    print('\n'.join(wrong))
+
 
 def run_mutli():
     # 载入随机森林模型
     with open(param.BaseConfig.rf_model_path, 'rb') as fr:
         rf = pickle.load(fr)
-    train_data, val_data, test_data = data_load(param.BaseConfig.trainPath, param.BaseConfig.valPath, param.BaseConfig.testPath, model, rf)
-    # train_data, test_data, val_data = data_load(None, None,
-    #                                             param.BaseConfig.testPath, model, rf)
+    # train_data, val_data, test_data = data_load(param.BaseConfig.trainPath, param.BaseConfig.valPath, param.BaseConfig.testPath, model, rf)
+    train_data, val_data, test_data = data_load(None, None,
+                                                param.BaseConfig.testPath, model, rf)
     print('train data shape:{0}\n val data shape:{1}\n test data shape:{2}'.format(len(train_data), len(val_data), len(test_data)))
-    for i in range(3):
-        Path = basicPath(i)
-        train(train_data,val_data,Path)
+    # for i in range(3):
+    #     Path = basicPath(i)
+    #     train(train_data,val_data,Path)
 
 
-    for i in range(3):
-        print("the {0}nd testing......".format(str(i)))
-        Path = basicPath(i)
-        test(test_data, Path)
+    # for i in range(3):
+    #     print("the {0}nd testing......".format(str(i)))
+    #     Path = basicPath(i)
+    #     test(test_data, Path)
+    Path = basicPath(1)
+    y_test_cls, y_pred_cls = test(test_data, Path)
+    checkPrediction(y_pred_cls,y_test_cls)
 
 
 run_mutli()
