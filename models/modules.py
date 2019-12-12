@@ -173,7 +173,7 @@ class Interaction:
         ks_len = self.data[2].get_shape().as_list()[1]
 
         assert ks_len == x2_len, ValueError("ks:{0}, law:{1}".format(ks_len, x2_len))
-        beta = tf.Variable(tf.random_normal(shape=[dim, 3], stddev=0, seed=1, dtype=tf.float32), trainable=True,
+        beta = tf.Variable(tf.random_normal(shape=[dim, 2], stddev=0, seed=1, dtype=tf.float32), trainable=True,
                                  name='beta')
         weigt = tf.einsum('abc,cd->abd',self.data[1],beta) #[B,l2,3]
         ks = tf.reduce_sum(weigt * self.data[2],axis=-1) #[B,l2]

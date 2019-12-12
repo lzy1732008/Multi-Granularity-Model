@@ -47,7 +47,7 @@ def data_load(trainPath, valPath, testPath,model,rfModel):
     if testPath:
        test = processInitData(test_data,model)
 
-    with open('resource/qhjInfo.json','w',encoding='utf-8') as f:
+    with open('resource/qhjInfoIndex.json','w',encoding='utf-8') as f:
         info = {}
         info['train'] = train[-2].tolist()
         info['val'] = val[-2].tolist()
@@ -59,15 +59,15 @@ def data_load(trainPath, valPath, testPath,model,rfModel):
     #
     # if trainPath:
     #     train = processInitDataWithoutQHJ(train_data,model)
-    #     train = train[0],train[1],info['train'],train[2]
+    #     train = train[0],train[1],np.array(info['train']),train[2]
     #
     # if valPath:
     #     val = processInitDataWithoutQHJ(val_data,model)
-    #     val = val[0], val[1], info['val'], val[2]
+    #     val = val[0], val[1], np.array(info['val']), val[2]
     #
     # if testPath:
     #     test = processInitDataWithoutQHJ(test_data,model)
-    #     test = test[0], test[1], info['test'], test[2]
+    #     test = test[0], test[1], np.array(info['test']), test[2]
 
     return train,val, test
 
@@ -85,7 +85,7 @@ def processInitDataWithoutQHJ(data,model):
 
     for sample in data:
         assert len(sample) == 3, ValueError("the number of elemengs in this sample is {0}".format(len(sample)))
-        input_a, input_b, input_c, target_y = sample[0],sample[1],sample[2], int(sample[3])
+        input_a, input_b,  target_y = sample[0],sample[1],int(sample[2])
         a_data_word.append(list(map(lambda x:pre.getVector(x), input_a)))
         b_data_word.append(list(map(lambda x:pre.getVector(x), input_b)))
         if target_y == 1:
@@ -122,6 +122,7 @@ def processInitData(data,model):
     c_data_word = kr.preprocessing.sequence.pad_sequences(np.array(c_data_word), model.config.Y_maxlen)
     return a_data_word,b_data_word, c_data_word, np.array(y)
 
+#采用one-hot形式来表示前后件信息
 def processInitData2(data,model):
     a_data_word = []
     b_data_word = []
@@ -137,11 +138,11 @@ def processInitData2(data,model):
         c_line = []
         for c in input_c:
             if c == 0:
-                c_line.append(np.array([1,0,0]))
+                c_line.append(np.array([1,0]))
             elif c == 1:
-                c_line.append(np.array([0,1,0]))
+                c_line.append(np.array([0,1]))
             else:
-                c_line.append(np.array([0,0,1]))
+                print("label of qhj is wrong!" + str(c))
         c_data_word.append(np.array(c_line))
 
 
