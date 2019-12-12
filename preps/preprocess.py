@@ -150,12 +150,42 @@ def _setUp_inputs_QHJ(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,fla
             result.append([fact_input, law_input, law_label_input, label])
             count += 1
             print("precessing {0}/{1} samples".format(count,len(lines)))
-    # if flag == 1:
-    #     q1.put(result)
-    # elif flag == 2:
-    #     q2.put(result)
-    # elif flag == 3:
-    #     q3.put(result)
+    return result
+
+def _setUp_inputs_QHJ_2(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,flag):
+    stp = open(param.BaseConfig.stpPath,'r',encoding='utf-8').read().split('\n')
+
+    with open(sourcePath,'r',encoding='utf-8') as fr:
+        lines = fr.readlines()
+    result = []
+    count = 0
+    if start >= len(lines):
+        return
+    end = min(len(lines), end)
+
+    for line in lines[start:end]:
+        line = line.strip()
+        if line != '':
+            items = line.split('|')
+            assert len(items) == 4, ValueError("The number of items in this line is less than 4, content:" + line)
+            fact_input = processTextWithoutStpDict(items[1],wordEmbedding, wordVocab,stp)
+            if len(fact_input) == 0: continue
+            law_units = items[2].split(':')
+            law_name = law_units[0]
+            law_content = items[2][len(law_name) + 1:]
+            law_content, law_input_vector = psLaw.processLawForRf(law_content)
+            #接下来预测每句话的label,并将其映射到每个词上
+            content_split = re.split(r"[，；。：]",law_content)
+            content_split = list(filter(lambda x: x != "", list(map(lambda x: x.strip(), content_split))))
+            law_input = []
+            for content in content_split:
+                content_vector = processTextWithoutDict(content, wordEmbedding,wordVocab)
+                law_input.extend(content_vector)
+            assert items[3] in ['0', '1'], ValueError("Label is not in [0,1]!")
+            label = items[3]
+            result.append([fact_input, law_input, label])
+            count += 1
+            print("precessing {0}/{1} samples".format(count,len(lines)))
     return result
 
 def processTextWithoutDict(line,wordEmbedding, wordVocab):

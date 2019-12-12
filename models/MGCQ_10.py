@@ -33,7 +33,7 @@ class MultiGranularityCNNModel:
 
     def build_model(self):
         with tf.variable_scope("knowledge-embedding-layer"):
-            knowledge_embedding = tf.Variable(tf.random_normal([3, self.config.knowledge_dimension],
+            knowledge_embedding = tf.Variable(tf.random_normal([2, self.config.knowledge_dimension],
                                                                stddev=0, seed=1), trainable=True,
                                                                name='knowledge-embedding')
             self.x2_label_embedding = tf.nn.embedding_lookup(knowledge_embedding, self.x2_label)

@@ -28,6 +28,7 @@ def get_batch_data(*data, batch_size = 64):
         start_id = batch_size * i
         end_id = min(batch_size * (i + 1), data_len)
         yield [np.array(data[j][start_id:end_id]) for j in range(len(data_shuffle))]
+
 import json
 
 def data_load(trainPath, valPath, testPath,model,rfModel):
@@ -38,6 +39,7 @@ def data_load(trainPath, valPath, testPath,model,rfModel):
     train = []
     test = []
     val = []
+
     if trainPath:
        train = processInitData(train_data,model)
     if valPath:
@@ -47,10 +49,26 @@ def data_load(trainPath, valPath, testPath,model,rfModel):
 
     with open('resource/qhjInfo.json','w',encoding='utf-8') as f:
         info = {}
-        info['train'] = train[-2]
-        info['val'] = val[-2]
-        info['test'] = val[-2]
+        info['train'] = train[-2].tolist()
+        info['val'] = val[-2].tolist()
+        info['test'] = val[-2].tolist()
         json.dump(info,f)
+
+    # with open('resource/qhjInfo.json','r',encoding='utf-8') as f:
+    #     info = json.load(f)
+    #
+    # if trainPath:
+    #     train = processInitDataWithoutQHJ(train_data,model)
+    #     train = train[0],train[1],info['train'],train[2]
+    #
+    # if valPath:
+    #     val = processInitDataWithoutQHJ(val_data,model)
+    #     val = val[0], val[1], info['val'], val[2]
+    #
+    # if testPath:
+    #     test = processInitDataWithoutQHJ(test_data,model)
+    #     test = test[0], test[1], info['test'], test[2]
+
     return train,val, test
 
 def data_load_test(model,rfModel):
@@ -60,6 +78,25 @@ def data_load_test(model,rfModel):
     test = processInitData(test_data,model)
     return test
 
+def processInitDataWithoutQHJ(data,model):
+    a_data_word = []
+    b_data_word = []
+    y = []
+
+    for sample in data:
+        assert len(sample) == 3, ValueError("the number of elemengs in this sample is {0}".format(len(sample)))
+        input_a, input_b, input_c, target_y = sample[0],sample[1],sample[2], int(sample[3])
+        a_data_word.append(list(map(lambda x:pre.getVector(x), input_a)))
+        b_data_word.append(list(map(lambda x:pre.getVector(x), input_b)))
+        if target_y == 1:
+            y.append([0,1])
+        else:
+            y.append([1,0])
+
+
+    a_data_word = kr.preprocessing.sequence.pad_sequences(np.array(a_data_word), model.config.X_maxlen)
+    b_data_word = kr.preprocessing.sequence.pad_sequences(np.array(b_data_word), model.config.Y_maxlen)
+    return a_data_word,b_data_word, np.array(y)
 
 #process data from env
 def processInitData(data,model):
