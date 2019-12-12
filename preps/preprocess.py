@@ -106,7 +106,7 @@ def setUp_inputs_QHJ(trainPath = None, valPath = None, testPath = None, rfModel=
         # while not q2.empty():
         #     test += list(q2.get())
 
-        test = _setUp_inputs_QHJ_2(testPath, wordEmbedding, wordVocab, rfModel, 0, 1000, 2)
+        test = _setUp_inputs_QHJ(testPath, wordEmbedding, wordVocab, rfModel, 0, 1000, 2)
 
     env = {'train': train, 'test': test, 'val': val}
     return env
