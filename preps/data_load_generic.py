@@ -28,7 +28,7 @@ def get_batch_data(*data, batch_size = 64):
         start_id = batch_size * i
         end_id = min(batch_size * (i + 1), data_len)
         yield [np.array(data[j][start_id:end_id]) for j in range(len(data_shuffle))]
-
+import json
 
 def data_load(trainPath, valPath, testPath,model,rfModel):
     env = pre.setUp_inputs_QHJ(trainPath=trainPath,valPath=valPath,testPath=testPath,rfModel=rfModel)
@@ -44,6 +44,13 @@ def data_load(trainPath, valPath, testPath,model,rfModel):
        val = processInitData(val_data,model)
     if testPath:
        test = processInitData(test_data,model)
+
+    with open('resource/qhjInfo.json','w',encoding='utf-8') as f:
+        info = {}
+        info['train'] = train[-2]
+        info['val'] = val[-2]
+        info['test'] = val[-2]
+        json.dump(info,f)
     return train,val, test
 
 def data_load_test(model,rfModel):
