@@ -40,34 +40,34 @@ def data_load(trainPath, valPath, testPath,model,rfModel):
     test = []
     val = []
 
-    if trainPath:
-       train = processInitData(train_data,model)
-    if valPath:
-       val = processInitData(val_data,model)
-    if testPath:
-       test = processInitData(test_data,model)
-
-    with open('resource/qhjInfoIndex.json','w',encoding='utf-8') as f:
-        info = {}
-        info['train'] = train[-2].tolist()
-        info['val'] = val[-2].tolist()
-        info['test'] = val[-2].tolist()
-        json.dump(info,f)
-
-    # with open('resource/qhjInfo.json','r',encoding='utf-8') as f:
-    #     info = json.load(f)
-    #
     # if trainPath:
-    #     train = processInitDataWithoutQHJ(train_data,model)
-    #     train = train[0],train[1],np.array(info['train']),train[2]
-    #
+    #    train = processInitData(train_data,model)
     # if valPath:
-    #     val = processInitDataWithoutQHJ(val_data,model)
-    #     val = val[0], val[1], np.array(info['val']), val[2]
-    #
+    #    val = processInitData(val_data,model)
     # if testPath:
-    #     test = processInitDataWithoutQHJ(test_data,model)
-    #     test = test[0], test[1], np.array(info['test']), test[2]
+    #    test = processInitData(test_data,model)
+    #
+    # with open('resource/qhjInfoIndex.json','w',encoding='utf-8') as f:
+    #     info = {}
+    #     info['train'] = train[-2].tolist()
+    #     info['val'] = val[-2].tolist()
+    #     info['test'] = val[-2].tolist()
+    #     json.dump(info,f)
+
+    with open('resource/qhjInfoIndex.json','r',encoding='utf-8') as f:
+        info = json.load(f)
+
+    if trainPath:
+        train = processInitDataWithoutQHJ(train_data,model)
+        train = train[0],train[1],np.array(info['train']),train[2]
+
+    if valPath:
+        val = processInitDataWithoutQHJ(val_data,model)
+        val = val[0], val[1], np.array(info['val']), val[2]
+
+    if testPath:
+        test = processInitDataWithoutQHJ(test_data,model)
+        test = test[0], test[1], np.array(info['test']), test[2]
 
     return train,val, test
 
