@@ -128,6 +128,7 @@ def _setUp_inputs_QHJ(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,fla
             items = line.split('|')
             assert len(items) == 4, ValueError("The number of items in this line is less than 4, content:" + line)
             fact_input = processTextWithoutStpDict(items[1],wordEmbedding, wordVocab,stp)
+            if len(fact_input) == 0: continue
             law_units = items[2].split(':')
             law_name = law_units[0]
             law_content = items[2][len(law_name) + 1:]
