@@ -24,6 +24,8 @@ class Interaction:
                 return self.playInteraction7()
             elif self.method == 8:
                 return self.playInteraction8()
+            elif self.method == 9:
+                return self.playInteraction9()
 
     def playInteraction1(self):
         '''
@@ -47,6 +49,7 @@ class Interaction:
         new_y = tf.einsum('abc,ab->abc', self.data[1], y_weight)
 
         return new_x, new_y
+
 
     def playInteraction7(self):
         assert len(self.data) == 2, ValueError(
@@ -187,6 +190,28 @@ class Interaction:
         x2_weight = tf.reshape(x2_weight, shape=[-1, x2_len])
         return x2_weight
 
+    def playInteraction9(self):
+        '''
+        该interaction包含两个输入
+        过程如下：
+        1.计算普通的attention的矩阵
+        2.然后分别对行求softmax和列softmax
+        3.计算两个输入各自被对齐后的向量矩阵
+        '''
+        assert len(self.data) == 2, ValueError(
+            'the number of input data is wrong, it should be 2,but{0}'.format(len(self.data)))
+        # 首先计算attention
+        x_2_y, y_2_x = comp.genericAttention(self.data[0], self.data[1])
+
+        # 获取x和y的各自总权重
+        x_weight = tf.reduce_mean(y_2_x, axis=-1)
+        y_weight = tf.reduce_mean(x_2_y, axis=1)
+
+        # 计算对齐后的向量矩阵
+        new_x = tf.einsum('abc,ab->abc', self.data[0], x_weight)
+        new_y = tf.einsum('abc,ab->abc', self.data[1], y_weight)
+
+        return new_x, new_y
 
 class Fusion:
     def __init__(self, method, *data):
@@ -213,6 +238,8 @@ class KnowledgeGate:
         with tf.variable_scope("knowledge-layer"):
             if self.method == 1:
                 return self.playKG1()
+            elif self.method == 2:
+                return self.playKG2()
 
 
     def playKG1(self):
@@ -226,6 +253,16 @@ class KnowledgeGate:
             tf.einsum('abc,cd->abd', self.knowledge, weight_1) + tf.einsum('abc,cd->abd', self.data, weight_2))
         output = (1 - pw) * self.data + pw * self.knowledge
         return output
+
+    def playKG2(self):
+        k_dimension = self.knowledge.get_shape().as_list()[-1]
+        data_dimension = self.data.get_shape().as_list()[-1]
+        weight = tf.Variable(tf.random_normal([data_dimension, k_dimension],
+                                                stddev=0, seed=1), trainable=True, name='w1')
+        pw = tf.sigmoid(tf.einsum('abc,cd->abd', self.data, weight) * self.knowledge)    # [B,l,d]
+        output = pw * self.data
+        return output
+
 
 
 
