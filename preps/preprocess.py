@@ -112,6 +112,7 @@ def setUp_inputs_QHJ(trainPath = None, valPath = None, testPath = None, rfModel=
     return env
 
 def _setUp_inputs_QHJ(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,flag):
+    stp = open(param.BaseConfig.stpPath,'r',encoding='utf-8').read().split('\n')
 
     with open(sourcePath,'r',encoding='utf-8') as fr:
         lines = fr.readlines()
@@ -126,7 +127,7 @@ def _setUp_inputs_QHJ(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,fla
         if line != '':
             items = line.split('|')
             assert len(items) == 4, ValueError("The number of items in this line is less than 4, content:" + line)
-            fact_input = processTextWithoutDict(items[1],wordEmbedding, wordVocab)
+            fact_input = processTextWithoutStpDict(items[1],wordEmbedding, wordVocab,stp)
             law_units = items[2].split(':')
             law_name = law_units[0]
             law_content = items[2][len(law_name) + 1:]
@@ -168,6 +169,25 @@ def processTextWithoutDict(line,wordEmbedding, wordVocab):
             wordEmbs.append(wordEmb)
         return wordEmbs
     return []
+import jieba.posseg as pos
+def processTextWithoutStpDict(line,wordEmbedding, wordVocab,stp):
+    initContent = line.strip()
+    if initContent != "":
+        content = pos.cut(initContent)
+        contentcut = []
+        for w in content:
+            word = w.word.strip()
+            if word == "" or word in stp or w.flag in ['nr','ns','p','u']: continue
+            contentcut.append(word)
+
+        if len(contentcut) == 0:  return []
+        wordEmbs = []
+        for word in contentcut:
+            wordEmb = processWord(word,wordEmbedding,wordVocab)
+            wordEmbs.append(wordEmb)
+        return wordEmbs
+    return []
+
 
 def processText(line,wordEmbedding, wordVocab):
     initContent = line.strip()

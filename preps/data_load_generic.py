@@ -39,11 +39,11 @@ def data_load(trainPath, valPath, testPath,model,rfModel):
     test = []
     val = []
     if trainPath:
-       train = processInitData2(train_data,model)
+       train = processInitData(train_data,model)
     if valPath:
-       val = processInitData2(val_data,model)
+       val = processInitData(val_data,model)
     if testPath:
-       test = processInitData2(test_data,model)
+       test = processInitData(test_data,model)
     return train,val, test
 
 def data_load_test(model,rfModel):
