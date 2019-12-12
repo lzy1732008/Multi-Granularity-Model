@@ -9,18 +9,18 @@ from sklearn import metrics
 import os
 import sys
 
-from models.MultiGraCNNQHJ_5 import MultiGranularityCNNModel,MultiGraConfig
+from models.MGC_9 import MultiGranularityCNNModel,MultiGraConfig
 from preps.data_load import *
 import models.parameter as param
 
 save_dir = 'result/model/MultiGraCNNQHJ_5'  #修改处
 # param_des = 'initparam-3CNN-v1'
-param_des = 'v1-inter4-3inters'
+param_des = 'v1'
 save_path = os.path.join(save_dir,param_des+'/checkpoints/best_validation')
 tensorboard_dir = os.path.join(save_dir,param_des+'/tensorboard')
 
-config = MultiGraConfig()
-model = MultiGranularityCNNModel(config)
+
+model = MultiGranularityCNNModel()
 
 if not os.path.exists(save_path):
     os.makedirs(save_path)
@@ -200,7 +200,8 @@ def test():
     return y_test_cls,y_pred_cls
 
 
-# train()
-# y_test_cls,y_pred_cls = test()
+train()
+y_test_cls,y_pred_cls = test()
+
 # wsnamels = getwslist(model=model)
 # wsevaluate(y_test_cls, y_pred_cls,wsnamels)
