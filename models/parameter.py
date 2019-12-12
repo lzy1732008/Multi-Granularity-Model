@@ -16,7 +16,7 @@ class BaseConfig:
 
     # training
     batch_size = 64  # alias = N
-    lr = 1e-3  #
+    lr = 1e-4  #
     logdir = 'logdir'  # log directory
     num_epochs = 200
     save_per_batch = 100
