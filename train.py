@@ -9,11 +9,11 @@ from sklearn import metrics
 import os
 import sys
 
-from models.MGC_9 import MultiGranularityCNNModel,MultiGraConfig
+from models.MGCQ_12 import MultiGranularityCNNModel,MultiGraConfig
 from preps.data_load import *
 import models.parameter as param
 
-save_dir = 'result/model/MultiGraCNNQHJ_5'  #修改处
+save_dir = 'result/model/MGCQ_12'  #修改处
 # param_des = 'initparam-3CNN-v1'
 param_des = 'v1'
 save_path = os.path.join(save_dir,param_des+'/checkpoints/best_validation')

@@ -6,26 +6,26 @@ import models.modules as modules
 class MultiGraConfig:
     def __init__(self):
         # v1
-        # self.X_maxlen = 30
-        # self.Y_maxlen = 50
-        # self.dropout_rate = 0.8
-        # self.first_kernel_size = 2
-        # self.second_kernel_size = 4
-        # self.third_kernel_size = 8
-        # self.filters_num = param.BaseConfig.word_dimension
-        # self.mlp_output = 2 * self.Y_maxlen
-        # self.knowledge_dimension = param.BaseConfig.word_dimension
-
-        #v2
         self.X_maxlen = 30
-        self.Y_maxlen = 80
+        self.Y_maxlen = 50
         self.dropout_rate = 0.8
         self.first_kernel_size = 2
         self.second_kernel_size = 4
         self.third_kernel_size = 8
         self.filters_num = param.BaseConfig.word_dimension
-        self.mlp_output = 64
+        self.mlp_output = 2 * self.Y_maxlen
         self.knowledge_dimension = param.BaseConfig.word_dimension
+
+        #v2
+        # self.X_maxlen = 30
+        # self.Y_maxlen = 80
+        # self.dropout_rate = 0.8
+        # self.first_kernel_size = 2
+        # self.second_kernel_size = 4
+        # self.third_kernel_size = 8
+        # self.filters_num = param.BaseConfig.word_dimension
+        # self.mlp_output = 64
+        # self.knowledge_dimension = param.BaseConfig.word_dimension
 
 class MultiGranularityCNNModel:
     def __init__(self,config):
