@@ -17,7 +17,7 @@ import models.parameter as param
 class basicPath:
     def __init__(self,time):
         self.save_dir = 'result/model/MGCQ_10'  # 修改处
-        self.param_des = 'v1-inter10-' + str(time) +'times'
+        self.param_des = 'v2-inter10-' + str(time) +'times'
         self.save_path = os.path.join(self.save_dir, self.param_des + '/checkpoints/best_validation')
         self.tensorboard_dir = os.path.join(self.save_dir, self.param_des + '/tensorboard')
 
@@ -250,13 +250,13 @@ def run_mutli():
     #                                             param.BaseConfig.testPath, model, rf)
     print('train data shape:{0}\n val data shape:{1}\n test data shape:{2}'.format(len(train_data), len(val_data), len(test_data)))
     for i in range(3):
-        Path = basicPath(i+7)
+        Path = basicPath(i)
         train(train_data,val_data,Path)
 
 
-    for i in range(3):
-        print("the {0}nd testing......".format(str(i)))
-        Path = basicPath(i+7)
+    for j in range(3):
+        print("the {0}nd testing......".format(str(j)))
+        Path = basicPath(j)
         test(test_data, Path)
 
 

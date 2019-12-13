@@ -6,26 +6,26 @@ import models.modules as modules
 class MultiGraConfig:
     def __init__(self):
         # v1
-        self.X_maxlen = 30
-        self.Y_maxlen = 50
-        self.dropout_rate = 0.8
-        self.first_kernel_size = 2
-        self.second_kernel_size = 4
-        self.third_kernel_size = 8
-        self.filters_num = param.BaseConfig.word_dimension
-        self.mlp_output = 2 * self.Y_maxlen
-        self.knowledge_dimension = param.BaseConfig.word_dimension
-
-        #v2
         # self.X_maxlen = 30
-        # self.Y_maxlen = 80
+        # self.Y_maxlen = 50
         # self.dropout_rate = 0.8
         # self.first_kernel_size = 2
         # self.second_kernel_size = 4
         # self.third_kernel_size = 8
         # self.filters_num = param.BaseConfig.word_dimension
-        # self.mlp_output = 64
+        # self.mlp_output = 2 * self.Y_maxlen
         # self.knowledge_dimension = param.BaseConfig.word_dimension
+
+        #v2
+        self.X_maxlen = 30
+        self.Y_maxlen = 80
+        self.dropout_rate = 0.8
+        self.first_kernel_size = 2
+        self.second_kernel_size = 4
+        self.third_kernel_size = 8
+        self.filters_num = param.BaseConfig.word_dimension
+        self.mlp_output = 64
+        self.knowledge_dimension = param.BaseConfig.word_dimension
 
 class MultiGranularityCNNModel:
     def __init__(self,config):
@@ -51,9 +51,9 @@ class MultiGranularityCNNModel:
 
         with tf.variable_scope("first-CNN-layer"):
             self.output_x1_1 = tf.layers.conv1d(self.input_X1,filters=self.config.filters_num,kernel_size=self.config.first_kernel_size,padding='same',name='first-cnn1')
-            self.output_x1_1 = tf.nn.dropout(self.output_x1_1, self.dropout_rate)
+            # self.output_x1_1 = tf.nn.dropout(self.output_x1_1, self.dropout_rate)
             self.output_x2_1 = tf.layers.conv1d(self.input_X2,filters=self.config.filters_num,kernel_size=self.config.first_kernel_size,padding='same',name='first-cnn2')
-            self.output_x2_1 = tf.nn.dropout(self.output_x2_1, self.dropout_rate)
+            # self.output_x2_1 = tf.nn.dropout(self.output_x2_1, self.dropout_rate)
 
         with tf.variable_scope("first-interaction"):
             interaction = modules.Interaction(10, self.output_x1_1,self.output_x2_1,self.x2_label_embedding)
@@ -62,8 +62,8 @@ class MultiGranularityCNNModel:
         with tf.variable_scope("second-CNN-layer"):
             self.output_x1_2 = tf.layers.conv1d(self.output_x1_1,filters=self.config.filters_num,kernel_size=self.config.second_kernel_size,padding='same',name='second-cnn1')
             self.output_x2_2 = tf.layers.conv1d(self.output_x2_1,filters=self.config.filters_num,kernel_size=self.config.second_kernel_size,padding='same',name='second-cnn2')
-            self.output_x1_2 = tf.nn.dropout(self.output_x1_2, self.dropout_rate)
-            self.output_x2_2 = tf.nn.dropout(self.output_x2_2, self.dropout_rate)
+            # self.output_x1_2 = tf.nn.dropout(self.output_x1_2, self.dropout_rate)
+            # self.output_x2_2 = tf.nn.dropout(self.output_x2_2, self.dropout_rate)
 
         with tf.variable_scope("second-interaction"):
             interaction = modules.Interaction(10, self.output_x1_2, self.output_x2_2,self.x2_label_embedding)
@@ -72,8 +72,8 @@ class MultiGranularityCNNModel:
         with tf.variable_scope("third-CNN-layer"):
             self.output_x1_3 = tf.layers.conv1d(self.output_x1_2,filters=self.config.filters_num,kernel_size=self.config.third_kernel_size,padding='same',name='third-cnn1')
             self.output_x2_3 = tf.layers.conv1d(self.output_x2_2,filters=self.config.filters_num,kernel_size=self.config.third_kernel_size,padding='same',name='third-cnn2')
-            self.output_x1_3 = tf.nn.dropout(self.output_x1_3, self.dropout_rate)
-            self.output_x2_3 = tf.nn.dropout(self.output_x2_3, self.dropout_rate)
+            # self.output_x1_3 = tf.nn.dropout(self.output_x1_3, self.dropout_rate)
+            # self.output_x2_3 = tf.nn.dropout(self.output_x2_3, self.dropout_rate)
 
         with tf.variable_scope("third-interaction"):
             interaction = modules.Interaction(10, self.output_x1_3,self.output_x2_3,self.x2_label_embedding)

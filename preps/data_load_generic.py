@@ -32,49 +32,36 @@ def get_batch_data(*data, batch_size = 64):
 import json
 
 def data_load(trainPath, valPath, testPath,model,rfModel):
-    env = pre.setUp_inputs_QHJ(trainPath=trainPath,valPath=valPath,testPath=testPath,rfModel=rfModel)
-    train_data = env['train']
-    test_data = env['test']
-    val_data = env['val']
-    train = []
-    test = []
-    val = []
-
-    if trainPath:
-       train = processInitData(train_data,model)
-    if valPath:
-       val = processInitData(val_data,model)
-    if testPath:
-       test = processInitData(test_data,model)
-
-    # with open('resource/qhjInfoIndex.json','w',encoding='utf-8') as f:
-    #     info = {}
-    #     info['train'] = train[-2].tolist()
-    #     info['val'] = val[-2].tolist()
-    #     info['test'] = val[-2].tolist()
-    #     json.dump(info,f)
-
-    # with open('resource/qhjInfoIndex.json','r',encoding='utf-8') as f:
-    #     info = json.load(f)
+    # env = pre.setUp_inputs_QHJ(trainPath=trainPath,valPath=valPath,testPath=testPath,rfModel=rfModel)
+    # train_data = env['train']
+    # test_data = env['test']
+    # val_data = env['val']
+    # train = []
+    # test = []
+    # val = []
     #
     # if trainPath:
-    #     train = processInitDataWithoutQHJ(train_data,model)
-    #     train = train[0],train[1],np.array(info['train']),train[2]
-    #
+    #    train = processInitData(train_data,model)
     # if valPath:
-    #     val = processInitDataWithoutQHJ(val_data,model)
-    #     val = val[0], val[1], np.array(info['val']), val[2]
-    #
+    #    val = processInitData(val_data,model)
     # if testPath:
-    #     test = processInitDataWithoutQHJ(test_data,model)
-    #     test = test[0], test[1], np.array(info['test']), test[2]
+    #    test = processInitData(test_data,model)
 
-    with open('resource/dataSet.json','w',encoding='utf-8') as fw:
-        dataset = {}
-        dataset['train'] = [train[0].tolist(), train[1].tolist(), train[2].tolist(), train[3].tolist()]
-        dataset['val'] = [val[0].tolist(), val[1].tolist(), val[2].tolist(), val[3].tolist()]
-        dataset['test'] = [test[0].tolist(), test[1].tolist(), test[2].tolist(), test[3].tolist()]
-        json.dump(dataset, fw)
+
+
+    # with open('resource/dataSet.json','w',encoding='utf-8') as fw:
+    #     dataset = {}
+    #     dataset['train'] = [train[0].tolist(), train[1].tolist(), train[2].tolist(), train[3].tolist()]
+    #     dataset['val'] = [val[0].tolist(), val[1].tolist(), val[2].tolist(), val[3].tolist()]
+    #     dataset['test'] = [test[0].tolist(), test[1].tolist(), test[2].tolist(), test[3].tolist()]
+    #     json.dump(dataset, fw)
+
+    with open('resource/dataSet.json', 'r', encoding='utf-8') as fr:
+        dataset = json.load(fr)
+        train = dataset['train']
+        val = dataset['val']
+        test = dataset['test']
+
 
     return train,val, test
 
