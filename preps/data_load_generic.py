@@ -41,15 +41,15 @@ def data_load(trainPath, valPath, testPath,model,rfModel):
     val = []
 
     if trainPath:
-       train = processInitData(train_data,model)
+       train = processInitData2(train_data,model)
     if valPath:
-       val = processInitData(val_data,model)
+       val = processInitData2(val_data,model)
     if testPath:
-       test = processInitData(test_data,model)
+       test = processInitData2(test_data,model)
 
 
 
-    with open('resource/dataSet80.json','w',encoding='utf-8') as fw:
+    with open('resource/dataSet50oneHot.json','w',encoding='utf-8') as fw:
         dataset = {}
         dataset['train'] = [train[0].tolist(), train[1].tolist(), train[2].tolist(), train[3].tolist()]
         dataset['val'] = [val[0].tolist(), val[1].tolist(), val[2].tolist(), val[3].tolist()]
@@ -135,12 +135,12 @@ def processInitData2(data,model):
 
         c_line = []
         for c in input_c:
+            assert c in [0,1],ValueError("label of qhj is wrong!" + str(c))
             if c == 0:
                 c_line.append(np.array([1,0]))
             elif c == 1:
                 c_line.append(np.array([0,1]))
-            else:
-                print("label of qhj is wrong!" + str(c))
+
         c_data_word.append(np.array(c_line))
 
 
