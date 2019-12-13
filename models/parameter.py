@@ -15,7 +15,7 @@ class BaseConfig:
     law_word_dimension = 128
 
     # training
-    batch_size = 64  # alias = N
+    batch_size = 128  # alias = N
     lr = 4e-5  #
     logdir = 'logdir'  # log directory
     num_epochs = 200
