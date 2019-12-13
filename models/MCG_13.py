@@ -6,7 +6,7 @@ import models.modules as ms
 class MultiGraConfig:
     # #initparam
     X_maxlen = 30
-    Y_maxlen = 30
+    Y_maxlen = 50
     dropout_rate = 0.5
     first_kernel_size = 2
     second_kernel_size = 4
@@ -61,14 +61,13 @@ class MultiGranularityCNNModel:
             self.fusion_output_2 = tf.concat(
                 [self.input_X2, self.inter3_output_x2, self.input_X2 - self.inter3_output_x2,
                  self.input_X2 * self.inter3_output_x2], axis=-1)  # [Batch, 3 * len]
-            self.fusion_output_2 = tf.nn.sigmoid(tf.layers.dense(inputs=self.fusion_output_2, units=self.config.mlp_output,
-                                                   name='fnn1'))
+            self.fusion_output_2 = tf.nn.sigmoid(tf.layers.dense(inputs=self.fusion_output_2, units=self.config.mlp_output,name='fnn2'))
             self.fusion_output = tf.concat([self.fusion_output_1,self.fusion_output_2],axis=-1)
 
         with tf.variable_scope("predict-layer"):
             self.output_ = tf.nn.relu(tf.layers.dense(inputs=self.fusion_output,units=self.config.mlp_output,name='fnn1'))
             self.output_ = tf.layers.dropout(self.output_,rate=self.config.dropout_rate)
-            self.logit = tf.layers.dense(inputs=self.output_,units=2,name='fnn3')
+            self.logit = tf.layers.dense(inputs=self.output_,units=2,name='fnn2')
 
         with tf.variable_scope("optimize-layer"):
             self.pred_y = tf.argmax(tf.nn.softmax(self.logit), 1)
