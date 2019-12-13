@@ -73,9 +73,6 @@ class MultiGranularityCNNModel:
             self.output_x1_3 = tf.layers.conv1d(self.output_x1_2,filters=self.config.filters_num,kernel_size=self.config.third_kernel_size,padding='same',name='third-cnn1')
             self.output_x2_3 = tf.layers.conv1d(self.output_x2_2,filters=self.config.filters_num,kernel_size=self.config.third_kernel_size,padding='same',name='third-cnn2')
 
-            self.output_x1_3 = tf.layers.dropout(self.output_x1_3, rate=self.config.dropout_rate)
-            self.output_x2_3 = tf.layers.dropout(self.output_x2_3, rate=self.config.dropout_rate)
-
         with tf.variable_scope("third-interaction"):
             self.inter3_output_x2 = self.interaction(self.output_x1_3,self.output_x2_3)
 
