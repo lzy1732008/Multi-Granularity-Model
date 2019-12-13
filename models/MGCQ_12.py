@@ -4,14 +4,14 @@ import models.parameter as param
 
 class MultiGraConfig:
     # #initparam
-    # X_maxlen = 30
-    # Y_maxlen = 30
-    # dropout_rate = 0.5
-    # first_kernel_size = 2
-    # second_kernel_size = 4
-    # third_kernel_size = 8
-    # filters_num = param.BaseConfig.word_dimension
-    # mlp_output = 2 * Y_maxlen  #v1
+    X_maxlen = 30
+    Y_maxlen = 30
+    dropout_rate = 0.5
+    first_kernel_size = 2
+    second_kernel_size = 4
+    third_kernel_size = 8
+    filters_num = param.BaseConfig.word_dimension
+    mlp_output = 2 * Y_maxlen  #v1
     # mlp_output= 128 #v2
     # mlp_output = 64 #v3
 
@@ -26,14 +26,14 @@ class MultiGraConfig:
     # mlp_output = 2 * Y_maxlen
 
 #v3
-    X_maxlen = 30
-    Y_maxlen = 30
-    dropout_rate = 0.8
-    first_kernel_size = 2
-    second_kernel_size = 4
-    third_kernel_size = 8
-    filters_num = param.BaseConfig.word_dimension
-    mlp_output = 2 * Y_maxlen
+    # X_maxlen = 30
+    # Y_maxlen = 30
+    # dropout_rate = 0.8
+    # first_kernel_size = 2
+    # second_kernel_size = 4
+    # third_kernel_size = 8
+    # filters_num = param.BaseConfig.word_dimension
+    # mlp_output = 2 * Y_maxlen
 
 
 class MultiGranularityCNNModel:
@@ -57,9 +57,6 @@ class MultiGranularityCNNModel:
                                                 name='first-cnn3')
             self.output_x21_1 = tf.reduce_max(self.output_x21_1,axis=-1)
 
-            self.output_x1_1 = tf.layers.dropout(self.output_x1_1, rate=self.config.dropout_rate)
-            self.output_x2_1 = tf.layers.dropout(self.output_x2_1, rate=self.config.dropout_rate)
-            self.output_x21_1 = tf.layers.dropout(self.output_x21_1, rate=self.config.dropout_rate)
 
         with tf.variable_scope("first-interaction"):
             self.inter1_output_x2 = self.interaction(self.output_x1_1,self.output_x2_1)
@@ -68,8 +65,6 @@ class MultiGranularityCNNModel:
             self.output_x1_2 = tf.layers.conv1d(self.output_x1_1,filters=self.config.filters_num,kernel_size=self.config.second_kernel_size,padding='same',name='second-cnn1')
             self.output_x2_2 = tf.layers.conv1d(self.output_x2_1,filters=self.config.filters_num,kernel_size=self.config.second_kernel_size,padding='same',name='second-cnn2')
 
-            self.output_x1_2 = tf.layers.dropout(self.output_x1_2, rate=self.config.dropout_rate)
-            self.output_x2_2 = tf.layers.dropout(self.output_x2_2, rate=self.config.dropout_rate)
 
         with tf.variable_scope("second-interaction"):
             self.inter2_output_x2 = self.interaction(self.output_x1_2, self.output_x2_2)
@@ -99,9 +94,20 @@ class MultiGranularityCNNModel:
         with tf.variable_scope("optimize-layer"):
             self.pred_y = tf.argmax(tf.nn.softmax(self.logit), 1)
             # 损失函数，交叉熵
-            cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=self.logit,
-                                                                    labels=self.y)  # 对logits进行softmax操作后，做交叉墒，输出的是一个向量
+            # 采用代价敏感损失函数
+            count_class = tf.reduce_sum(self.y,axis=0)
+            count_neg = tf.cast(count_class[0],dtype=tf.float32)
+            count_pos = tf.cast(count_class[1],dtype=tf.float32)
+            pos_weight = count_neg/count_pos
+            self.target = tf.cast(self.y,dtype=tf.float32)
+            cross_entropy = tf.nn.weighted_cross_entropy_with_logits(targets=self.target, logits=self.logit,
+                                                                     pos_weight=pos_weight)
+
+            # cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=self.logit,
+            #                                                         labels=self.y)  # 对logits进行softmax操作后，做交叉墒，输出的是一个向量
+
             self.loss = tf.reduce_mean(cross_entropy)  # 将交叉熵向量求和，即可得到交叉熵
+
             # 优化器
             self.optim = tf.train.AdamOptimizer(learning_rate=param.BaseConfig.lr).minimize(self.loss)
 
