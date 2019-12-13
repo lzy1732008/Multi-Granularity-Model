@@ -495,7 +495,7 @@ def processMultiLawText2id(line,dictionary):
 def buildDataSetForRF(train,val,test):
     fr = open('../resource/gyshz_lawDataSet.json', 'r', encoding='utf-8')
     env = json.load(fr)
-    fr_dict = open('../resource/lawdict>30.txt','r',encoding='utf-8')
+    fr_dict = open('../resource/lawdict.txt','r',encoding='utf-8')
     dictionary = list(map(lambda x:x.strip(),fr_dict.readlines()))
 
     X = []

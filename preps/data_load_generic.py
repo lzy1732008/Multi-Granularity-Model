@@ -40,13 +40,13 @@ def data_load(trainPath, valPath, testPath,model,rfModel):
     test = []
     val = []
 
-    # if trainPath:
-    #    train = processInitData(train_data,model)
-    # if valPath:
-    #    val = processInitData(val_data,model)
-    # if testPath:
-    #    test = processInitData(test_data,model)
-    #
+    if trainPath:
+       train = processInitData(train_data,model)
+    if valPath:
+       val = processInitData(val_data,model)
+    if testPath:
+       test = processInitData(test_data,model)
+
     # with open('resource/qhjInfoIndex.json','w',encoding='utf-8') as f:
     #     info = {}
     #     info['train'] = train[-2].tolist()
@@ -54,20 +54,27 @@ def data_load(trainPath, valPath, testPath,model,rfModel):
     #     info['test'] = val[-2].tolist()
     #     json.dump(info,f)
 
-    with open('resource/qhjInfoIndex.json','r',encoding='utf-8') as f:
-        info = json.load(f)
+    # with open('resource/qhjInfoIndex.json','r',encoding='utf-8') as f:
+    #     info = json.load(f)
+    #
+    # if trainPath:
+    #     train = processInitDataWithoutQHJ(train_data,model)
+    #     train = train[0],train[1],np.array(info['train']),train[2]
+    #
+    # if valPath:
+    #     val = processInitDataWithoutQHJ(val_data,model)
+    #     val = val[0], val[1], np.array(info['val']), val[2]
+    #
+    # if testPath:
+    #     test = processInitDataWithoutQHJ(test_data,model)
+    #     test = test[0], test[1], np.array(info['test']), test[2]
 
-    if trainPath:
-        train = processInitDataWithoutQHJ(train_data,model)
-        train = train[0],train[1],np.array(info['train']),train[2]
-
-    if valPath:
-        val = processInitDataWithoutQHJ(val_data,model)
-        val = val[0], val[1], np.array(info['val']), val[2]
-
-    if testPath:
-        test = processInitDataWithoutQHJ(test_data,model)
-        test = test[0], test[1], np.array(info['test']), test[2]
+    with open('resource/dataSet.json','w',encoding='utf-8') as fw:
+        dataset = {}
+        dataset['train'] = [train[0].tolist(), train[1].tolist(), train[2].tolist(), train[3].tolist()]
+        dataset['val'] = [val[0].tolist(), val[1].tolist(), val[2].tolist(), val[3].tolist()]
+        dataset['test'] = [test[0].tolist(), test[1].tolist(), test[2].tolist(), test[3].tolist()]
+        json.dump(dataset, fw)
 
     return train,val, test
 

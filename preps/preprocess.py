@@ -80,7 +80,7 @@ def setUp_inputs_QHJ(trainPath = None, valPath = None, testPath = None, rfModel=
         # while not q1.empty():
         #     train += list(q1.get())
 
-        train = _setUp_inputs_QHJ_2(trainPath, wordEmbedding, wordVocab, rfModel, 0, 15000,1)
+        train = _setUp_inputs_QHJ(trainPath, wordEmbedding, wordVocab, rfModel, 0, 15000,1)
 
     if valPath:
         # args = []
@@ -93,7 +93,7 @@ def setUp_inputs_QHJ(trainPath = None, valPath = None, testPath = None, rfModel=
         # while not q3.empty():
         #     val += list(q3.get())
 
-        val = _setUp_inputs_QHJ_2(valPath, wordEmbedding, wordVocab, rfModel, 0, 1000, 3)
+        val = _setUp_inputs_QHJ(valPath, wordEmbedding, wordVocab, rfModel, 0, 1000, 3)
 
     if testPath:
         # args = []
@@ -106,7 +106,7 @@ def setUp_inputs_QHJ(trainPath = None, valPath = None, testPath = None, rfModel=
         # while not q2.empty():
         #     test += list(q2.get())
 
-        test = _setUp_inputs_QHJ_2(testPath, wordEmbedding, wordVocab, rfModel, 0, 1000, 2)
+        test = _setUp_inputs_QHJ(testPath, wordEmbedding, wordVocab, rfModel, 0, 1000, 2)
 
     env = {'train': train, 'test': test, 'val': val}
     return env
@@ -143,7 +143,7 @@ def _setUp_inputs_QHJ(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,fla
             for law_label,content in zip(law_labels,content_split):
                 content_vector = processTextWithoutDict(content, wordEmbedding,wordVocab)
                 law_input.extend(content_vector)
-                law_label_input+= [law_label+1 for _ in range(len(content_vector))]
+                law_label_input+= [law_label for _ in range(len(content_vector))]
             assert len(law_input) == len(law_label_input), ValueError("law:{0},label:{1}".format(len(law_input),len(law_label_input)))
             assert items[3] in ['0', '1'], ValueError("Label is not in [0,1]!")
             label = items[3]
