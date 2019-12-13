@@ -62,7 +62,7 @@ class MultiGranularityCNNModel:
                 [self.input_X2, self.inter3_output_x2, self.input_X2 - self.inter3_output_x2,
                  self.input_X2 * self.inter3_output_x2], axis=-1)  # [Batch, 3 * len]
             self.fusion_output_2 = tf.nn.sigmoid(tf.layers.dense(inputs=self.fusion_output_2, units=self.config.mlp_output,name='fnn2'))
-            self.fusion_output = tf.concat([self.fusion_output_1,self.fusion_output_2],axis=-1)
+            self.fusion_output = tf.concat([tf.reduce_max(self.fusion_output_1,axis=-1),tf.reduce_max(self.fusion_output_2,axis=-1)],axis=-1)
 
         with tf.variable_scope("predict-layer"):
             self.output_ = tf.nn.relu(tf.layers.dense(inputs=self.fusion_output,units=self.config.mlp_output,name='fnn1'))
