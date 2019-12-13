@@ -15,7 +15,7 @@ import models.parameter as param
 
 save_dir = 'result/model/MGCQ_12'  #修改处
 # param_des = 'initparam-3CNN-v1'
-param_des = 'v1'
+param_des = 'v1-2nd'
 save_path = os.path.join(save_dir,param_des+'/checkpoints/best_validation')
 tensorboard_dir = os.path.join(save_dir,param_des+'/tensorboard')
 
