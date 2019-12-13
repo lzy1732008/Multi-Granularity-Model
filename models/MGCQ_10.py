@@ -8,7 +8,7 @@ class MultiGraConfig:
         # v1
         self.X_maxlen = 30
         self.Y_maxlen = 50
-        self.dropout_rate = 0.5
+        self.dropout_rate = 0.8
         self.first_kernel_size = 2
         self.second_kernel_size = 4
         self.third_kernel_size = 8
