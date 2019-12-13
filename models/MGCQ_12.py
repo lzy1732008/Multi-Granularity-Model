@@ -4,14 +4,14 @@ import models.parameter as param
 
 class MultiGraConfig:
     # #initparam
-    # X_maxlen = 30
-    # Y_maxlen = 30
-    # dropout_rate = 0.5
-    # first_kernel_size = 2
-    # second_kernel_size = 4
-    # third_kernel_size = 8
-    # filters_num = param.BaseConfig.word_dimension
-    # mlp_output = 2 * Y_maxlen  #v1
+    X_maxlen = 30
+    Y_maxlen = 30
+    dropout_rate = 0.5
+    first_kernel_size = 2
+    second_kernel_size = 4
+    third_kernel_size = 8
+    filters_num = param.BaseConfig.word_dimension
+    mlp_output = 2 * Y_maxlen  #v1
     # mlp_output= 128 #v2
     # mlp_output = 64 #v3
 
@@ -26,14 +26,14 @@ class MultiGraConfig:
     # mlp_output = 2 * Y_maxlen
 
 #v3
-    X_maxlen = 30
-    Y_maxlen = 80
-    dropout_rate = 0.5
-    first_kernel_size = 2
-    second_kernel_size = 4
-    third_kernel_size = 8
-    filters_num = param.BaseConfig.word_dimension
-    mlp_output = param.BaseConfig.word_dimension
+    # X_maxlen = 30
+    # Y_maxlen = 80
+    # dropout_rate = 0.5
+    # first_kernel_size = 2
+    # second_kernel_size = 4
+    # third_kernel_size = 8
+    # filters_num = param.BaseConfig.word_dimension
+    # mlp_output = param.BaseConfig.word_dimension
 
 
 class MultiGranularityCNNModel:

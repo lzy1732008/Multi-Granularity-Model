@@ -27,13 +27,13 @@ class MultiGraConfig:
 
 #v3
     X_maxlen = 30
-    Y_maxlen = 30
+    Y_maxlen = 80
     dropout_rate = 0.5
     first_kernel_size = 2
     second_kernel_size = 4
     third_kernel_size = 6
     filters_num = param.BaseConfig.word_dimension
-    mlp_output = 2 * Y_maxlen
+    mlp_output = param.BaseConfig.word_dimension
 
 
 class MultiGranularityCNNModel:
@@ -42,7 +42,7 @@ class MultiGranularityCNNModel:
         self.input_X1 = tf.placeholder(name="inputX1_word", dtype=tf.float32,
                                           shape=[None, self.config.X_maxlen, param.BaseConfig.word_dimension])
         self.input_X2 = tf.placeholder(name="inputX2_word", dtype=tf.float32,
-                                          shape=[None, self.config.X_maxlen, param.BaseConfig.word_dimension])
+                                          shape=[None, self.config.Y_maxlen, param.BaseConfig.word_dimension])
         self.y = tf.placeholder(name="target_y", dtype=tf.int32, shape=[None, 2])
         self.dropout_rate = tf.placeholder(tf.float32, name='keep_prob')
 
