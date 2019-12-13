@@ -62,6 +62,10 @@ def data_load(trainPath, valPath, testPath,model,rfModel):
         val = dataset['val']
         test = dataset['test']
 
+        train = np.array(train[0]),np.array(train[1]),np.array(train[2]),np.array(train[3])
+        val = np.array(val[0]), np.array(val[1]), np.array(val[2]), np.array(val[3])
+        test = np.array(test[0]), np.array(test[1]), np.array(test[2]), np.array(test[3])
+
 
     return train,val, test
 
