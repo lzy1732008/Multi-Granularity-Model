@@ -9,13 +9,13 @@ from sklearn import metrics
 import os
 import sys
 
-from models.MultiGranularityCNN import MultiGranularityCNNModel,MultiGraConfig
+from models.MCG_13 import MultiGranularityCNNModel,MultiGraConfig
 from preps.data_load import *
 import models.parameter as param
 
-save_dir = 'result/model/param.BaseConfig.word_dimension'  #修改处
+save_dir = 'result/model/MGC_13'  #修改处
 # param_des = 'initparam-3CNN-v1'
-param_des = 'v3'
+param_des = 'v1'
 save_path = os.path.join(save_dir,param_des+'/checkpoints/best_validation')
 tensorboard_dir = os.path.join(save_dir,param_des+'/tensorboard')
 

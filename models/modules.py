@@ -28,6 +28,8 @@ class Interaction:
                 return self.playInteraction9()
             elif self.method == 10:
                 return self.playInteraction10()
+            elif self.method == 11:
+                return self.playInteraction11()
 
     def playInteraction1(self):
         '''
@@ -235,6 +237,26 @@ class Interaction:
         x2_weight = tf.matmul(x1_weight_, x_2_y)  # [Batch, 1, len2]
         x2_weight = tf.reshape(x2_weight, shape=[-1, x2_len])
         return x2_weight
+
+    def playInteraction11(self):
+        '''
+        输入：两个
+        过程：
+        1.执行playInteraction1获取每个的新表达
+        :return: new_x,new_y
+        '''
+        y_len = self.data[1].get_shape().as_list()[1]
+
+        x_2_y, y_2_x = comp.genericAttention(self.data[0], self.data[1])
+
+        # 获取x和y的各自总权重
+        x_weight = tf.reduce_sum(y_2_x, axis=-1)
+        y_weight = tf.reduce_sum(x_2_y, axis=1)
+
+        # 计算对齐后的向量矩阵
+        new_x = tf.einsum('abc,ab->abc', self.data[0], x_weight)
+        new_y = tf.einsum('abc,ab->abc', self.data[1], y_weight)
+        return new_x, new_y
 
 
 class Fusion:
