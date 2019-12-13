@@ -13,7 +13,7 @@ from models.MCG_13 import MultiGranularityCNNModel,MultiGraConfig
 from preps.data_load import *
 import models.parameter as param
 
-save_dir = 'result/model/MGC_13'  #修改处
+save_dir = 'result/model/MGC_14'  #修改处
 # param_des = 'initparam-3CNN-v1'
 param_des = 'v1'
 save_path = os.path.join(save_dir,param_des+'/checkpoints/best_validation')
