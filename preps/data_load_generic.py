@@ -32,39 +32,39 @@ def get_batch_data(*data, batch_size = 64):
 import json
 
 def data_load(trainPath, valPath, testPath,model,rfModel):
-    env = pre.setUp_inputs_QHJ(trainPath=trainPath,valPath=valPath,testPath=testPath,rfModel=rfModel)
-    train_data = env['train']
-    test_data = env['test']
-    val_data = env['val']
-    train = []
-    test = []
-    val = []
-
-    if trainPath:
-       train = processInitData2(train_data,model)
-    if valPath:
-       val = processInitData2(val_data,model)
-    if testPath:
-       test = processInitData2(test_data,model)
-
-
-
-    with open('resource/dataSet50oneHot.json','w',encoding='utf-8') as fw:
-        dataset = {}
-        dataset['train'] = [train[0].tolist(), train[1].tolist(), train[2].tolist(), train[3].tolist()]
-        dataset['val'] = [val[0].tolist(), val[1].tolist(), val[2].tolist(), val[3].tolist()]
-        dataset['test'] = [test[0].tolist(), test[1].tolist(), test[2].tolist(), test[3].tolist()]
-        json.dump(dataset, fw)
-
-    # with open('resource/dataSet.json', 'r', encoding='utf-8') as fr:
-    #     dataset = json.load(fr)
-    #     train = dataset['train']
-    #     val = dataset['val']
-    #     test = dataset['test']
+    # env = pre.setUp_inputs_QHJ(trainPath=trainPath,valPath=valPath,testPath=testPath,rfModel=rfModel)
+    # train_data = env['train']
+    # test_data = env['test']
+    # val_data = env['val']
+    # train = []
+    # test = []
+    # val = []
     #
-    #     train = np.array(train[0]),np.array(train[1]),np.array(train[2]),np.array(train[3])
-    #     val = np.array(val[0]), np.array(val[1]), np.array(val[2]), np.array(val[3])
-    #     test = np.array(test[0]), np.array(test[1]), np.array(test[2]), np.array(test[3])
+    # if trainPath:
+    #    train = processInitData2(train_data,model)
+    # if valPath:
+    #    val = processInitData2(val_data,model)
+    # if testPath:
+    #    test = processInitData2(test_data,model)
+    #
+    #
+    #
+    # with open('resource/dataSet50oneHot.json','w',encoding='utf-8') as fw:
+    #     dataset = {}
+    #     dataset['train'] = [train[0].tolist(), train[1].tolist(), train[2].tolist(), train[3].tolist()]
+    #     dataset['val'] = [val[0].tolist(), val[1].tolist(), val[2].tolist(), val[3].tolist()]
+    #     dataset['test'] = [test[0].tolist(), test[1].tolist(), test[2].tolist(), test[3].tolist()]
+    #     json.dump(dataset, fw)
+
+    with open('resource/dataSet50oneHot.json', 'r', encoding='utf-8') as fr:
+        dataset = json.load(fr)
+        train = dataset['train']
+        val = dataset['val']
+        test = dataset['test']
+
+        train = np.array(train[0]),np.array(train[1]),np.array(train[2]),np.array(train[3])
+        val = np.array(val[0]), np.array(val[1]), np.array(val[2]), np.array(val[3])
+        test = np.array(test[0]), np.array(test[1]), np.array(test[2]), np.array(test[3])
 
 
     return train,val, test
