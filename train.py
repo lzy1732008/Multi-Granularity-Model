@@ -9,7 +9,7 @@ from sklearn import metrics
 import os
 import sys
 
-from models.MGCQ_14 import MultiGranularityCNNModel,MultiGraConfig
+from models.MGC_15 import MultiGranularityCNNModel,MultiGraConfig
 from preps.data_load import *
 import models.parameter as param
 
