@@ -11,7 +11,7 @@ class MultiGraConfig:
     first_kernel_size = 2
     second_kernel_size = 4
     filters_num = param.BaseConfig.word_dimension
-    mlp_output = 2 * Y_maxlen
+    mlp_output = 2*Y_maxlen
 
 
 class MultiGranularityCNNModel:
@@ -54,6 +54,7 @@ class MultiGranularityCNNModel:
                 axis=-1)  # [Batch, len, 4 * dimension]
             self.fusion_output_2 = tf.layers.dense(inputs=self.fusion_output_2, units=self.config.mlp_output,
                                                    name='fusion-fnn')
+            self.fusion_output_2 = tf.nn.top_k(input=self.fusion_output_2,k=5)
             self.fusion_output_2 = tf.layers.dense(inputs=tf.concat([self.fusion_output_2,self.x2_label],axis=-1),units=self.config.mlp_output,name='fusion-fnn-2')
             self.fusion_output_max_2 = tf.reduce_max(self.fusion_output_2, axis=-1)
 
