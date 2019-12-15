@@ -6,7 +6,7 @@ from models.modules import Interaction
 class MultiGraConfig:
     # v1
     X_maxlen = 30
-    Y_maxlen = 50
+    Y_maxlen = 80
     dropout_rate = 0.5
     first_kernel_size = 2
     second_kernel_size = 4
@@ -22,6 +22,8 @@ class MultiGranularityCNNModel:
         self.input_X2 = tf.placeholder(name="inputX2_word", dtype=tf.float32,
                                           shape=[None, self.config.Y_maxlen, param.BaseConfig.word_dimension])
         self.y = tf.placeholder(name="target_y", dtype=tf.int32, shape=[None, 2])
+        # self.x2_label = tf.placeholder(name="inputX2_label", dtype=tf.float32,
+        #                                shape=[None, self.config.Y_maxlen, 2])
         self.dropout_rate = tf.placeholder(tf.float32, name='keep_prob')
 
         self.build_model()
@@ -41,6 +43,9 @@ class MultiGranularityCNNModel:
             self.output_x1_2 = tf.layers.conv1d(self.output_x1_1,filters=self.config.filters_num,kernel_size=self.config.second_kernel_size,padding='same',name='second-cnn1')
             self.output_x2_2 = tf.layers.conv1d(self.output_x2_1,filters=self.config.filters_num,kernel_size=self.config.second_kernel_size,padding='same',name='second-cnn2')
 
+        # with tf.variable_scope("second-interaction"):
+        #
+
         with tf.variable_scope("third-CNN-layer"):
             self.output_x1_3 = tf.layers.conv1d(self.output_x1_2, filters=self.config.filters_num,
                                                 kernel_size=self.config.second_kernel_size, padding='same',
@@ -48,7 +53,7 @@ class MultiGranularityCNNModel:
             self.output_x2_3 = tf.layers.conv1d(self.output_x2_2, filters=self.config.filters_num,
                                                 kernel_size=self.config.second_kernel_size, padding='same',
                                                 name='second-cnn2')
-        with tf.variable_scope("interaction"):
+        with tf.variable_scope("third-interaction"):
             self.inter = self.interaction(self.output_x1_3,self.output_x2_3)
             self.inter_rep = tf.reshape(tf.keras.backend.repeat_elements(self.inter, rep=param.BaseConfig.word_dimension, axis=1),shape=[-1,self.config.Y_maxlen,param.BaseConfig.word_dimension])
 
