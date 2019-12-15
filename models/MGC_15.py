@@ -14,14 +14,24 @@ class MultiGraConfig:
     # mlp_output = 2 * Y_maxlen
 
     #v2
+    # X_maxlen = 30
+    # Y_maxlen = 50
+    # dropout_rate = 0.5
+    # first_kernel_size = 2
+    # second_kernel_size = 4
+    # filters_num = param.BaseConfig.word_dimension
+    # mlp_output = 64
+
+    # v3:
+
     X_maxlen = 30
     Y_maxlen = 50
     dropout_rate = 0.5
     first_kernel_size = 2
     second_kernel_size = 4
+    third_kernel_size = 8
     filters_num = param.BaseConfig.word_dimension
     mlp_output = 64
-
 
 
 
@@ -40,11 +50,6 @@ class MultiGranularityCNNModel:
         self.build_model()
 
     def build_model(self):
-        # with tf.variable_scope("first-encoder"):
-        #     interaction = Interaction(4,self.input_X1,self.input_X2)
-        #     self.inter1 = interaction.exeInteraction()
-        #     self.inter_rep = tf.reshape(tf.keras.backend.repeat_elements(self.inter1, rep=param.BaseConfig.word_dimension, axis=1),shape=[-1,self.config.Y_maxlen,param.BaseConfig.word_dimension])
-        #     self.x1_inter1 = self.inter_rep * self.input_X1
 
         with tf.variable_scope("first-CNN-layer"):
             self.output_x1_1 = tf.layers.conv1d(self.input_X1,filters=self.config.filters_num,kernel_size=self.config.first_kernel_size,padding='same',name='first-cnn1')
@@ -87,10 +92,10 @@ class MultiGranularityCNNModel:
 
         with tf.variable_scope("third-CNN-layer"):
             self.output_x1_3 = tf.layers.conv1d(self.output_x1_2, filters=self.config.filters_num,
-                                                kernel_size=self.config.second_kernel_size, padding='same',
+                                                kernel_size=self.config.third_kernel_size, padding='same',
                                                 name='second-cnn1')
             self.output_x2_3 = tf.layers.conv1d(self.output_x2_2, filters=self.config.filters_num,
-                                                kernel_size=self.config.second_kernel_size, padding='same',
+                                                kernel_size=self.config.third_kernel_size, padding='same',
                                                 name='second-cnn2')
         with tf.variable_scope("third-interaction"):
             self.inter_3 = self.interaction(self.output_x1_3,self.output_x2_3)
