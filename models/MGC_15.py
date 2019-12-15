@@ -54,7 +54,7 @@ class MultiGranularityCNNModel:
                 axis=-1)  # [Batch, len, 4 * dimension]
             self.fusion_output_2 = tf.layers.dense(inputs=self.fusion_output_2, units=self.config.mlp_output,
                                                    name='fusion-fnn')
-            self.fusion_output_2 = tf.layers.dense(inputs=tf.concat([self.fusion_output_2,self.x2_label],axis=-2),units=self.config.mlp_output,name='fusion-fnn-2')
+            self.fusion_output_2 = tf.layers.dense(inputs=tf.concat([self.fusion_output_2,self.x2_label],axis=-1),units=self.config.mlp_output,name='fusion-fnn-2')
             self.fusion_output_max_2 = tf.reduce_max(self.fusion_output_2, axis=-1)
 
         with tf.variable_scope("third-CNN-layer"):
