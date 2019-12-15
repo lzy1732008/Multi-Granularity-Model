@@ -6,7 +6,7 @@ from models.modules import Interaction
 class MultiGraConfig:
     # v1
     X_maxlen = 30
-    Y_maxlen = 50
+    Y_maxlen = 80
     dropout_rate = 0.5
     first_kernel_size = 2
     second_kernel_size = 4
