@@ -50,10 +50,11 @@ class MultiGranularityCNNModel:
         with tf.variable_scope("fusion-layer-2"):
             self.x2_inter_2 = self.inter_rep_2 * self.input_X2
             self.fusion_output_2 = tf.concat(
-                [self.input_X2, self.x2_inter_2, self.input_X2 - self.x2_inter_2, self.input_X2 * self.x2_inter_2, self.x2_label],
+                [self.input_X2, self.x2_inter_2, self.input_X2 - self.x2_inter_2, self.input_X2 * self.x2_inter_2],
                 axis=-1)  # [Batch, len, 4 * dimension]
             self.fusion_output_2 = tf.layers.dense(inputs=self.fusion_output_2, units=self.config.mlp_output,
                                                    name='fusion-fnn')
+            self.fusion_output_2 = tf.layers.dense(inputs=tf.concat([self.fusion_output_2,self.x2_label],axis=-2),units=self.config.mlp_output,name='fusion-fnn-2')
             self.fusion_output_max_2 = tf.reduce_max(self.fusion_output_2, axis=-1)
 
         with tf.variable_scope("third-CNN-layer"):
@@ -69,7 +70,7 @@ class MultiGranularityCNNModel:
 
         with tf.variable_scope("fusion-layer-3"):
             self.x2_inter_3 = self.inter_rep_3 * self.input_X2
-            self.fusion_output_3 = tf.concat([self.input_X2,self.x2_inter_3,self.input_X2 - self.x2_inter_3, self.input_X2 * self.x2_inter_3, self.x2_label], axis=-1)  # [Batch, len, 2 + 4 * dimension]
+            self.fusion_output_3 = tf.concat([self.input_X2,self.x2_inter_3,self.input_X2 - self.x2_inter_3, self.input_X2 * self.x2_inter_3], axis=-1)  # [Batch, len, 2 + 4 * dimension]
             self.fusion_output_3 = tf.layers.dense(inputs=self.fusion_output_3,units=self.config.mlp_output,name='fusion-fnn')
             self.fusion_output_max_3 = tf.reduce_max(self.fusion_output_3,axis=-1) #[B,l]
 
