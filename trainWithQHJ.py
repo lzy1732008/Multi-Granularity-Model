@@ -219,12 +219,18 @@ def test(test_data, Path):
 
     print('check.......')
     print('interaction......')
+    print('inter1...')
     print(inter_1[9])
+    print('inter2...')
     print(inter_2[9])
+    print('inter3...')
     print(inter_3[9])
     print('maxpooling.....')
+    print('pool 1...')
     print(pool_1[9])
+    print('pool 2...')
     print(pool_2[9])
+    print('pool 3...')
     print(pool_3[9])
 
     return y_test_cls,y_pred_cls
