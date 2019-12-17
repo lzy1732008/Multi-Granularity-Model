@@ -17,7 +17,7 @@ import models.parameter as param
 
 save_dir = 'result/model/Arc-1'  #修改处
 # param_des = 'initparam-3CNN-v1'
-param_des = 'v1-qj'
+param_des = 'v1-hj'
 save_path = os.path.join(save_dir,param_des+'/checkpoints/best_validation')
 tensorboard_dir = os.path.join(save_dir,param_des+'/tensorboard')
 
@@ -88,7 +88,7 @@ def train():
     print("Loading training and validation data...")
     # 载入训练集与验证集
     start_time = time.time()
-    train_data, test_data, val_data = data_load_lawone(param.BaseConfig.trainPath,param.BaseConfig.valPath,None,model,rfModel=rf,flag=0)
+    train_data, test_data, val_data = data_load_lawone(param.BaseConfig.trainPath,param.BaseConfig.valPath,None,model,rfModel=rf,flag=1)
 
     train_x1_word, train_x2_word,  train_y = train_data
     val_x1_word,  val_x2_word,  val_y = val_data
@@ -159,7 +159,7 @@ def train():
 def test():
     print("Loading test data...")
     start_time = time.time()
-    test_data = data_load_test_lawone(model,rf,flag=0)
+    test_data = data_load_test_lawone(model,rf,flag=1)
     test_x1_word,  test_x2_word,  test_y = test_data
 
 
