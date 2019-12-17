@@ -19,7 +19,7 @@ class Rules:
         return False
 
     #"XXX"这种名词性规则
-    def rule3(self):
+    def  rule3(self):
         pattern = r"^\"\S+\"$"
         if re.search(pattern,self.x, re.M|re.I):
             return True

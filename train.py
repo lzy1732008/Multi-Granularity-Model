@@ -9,13 +9,13 @@ from sklearn import metrics
 import os
 import sys
 
-from models.MGC_15 import MultiGranularityCNNModel,MultiGraConfig
+from models.arc_1 import MultiGranularityCNNModel,MultiGraConfig
 from preps.data_load import *
 import models.parameter as param
 
-save_dir = 'result/model/MCG_15'  #修改处
+save_dir = 'result/model/Arc-1'  #修改处
 # param_des = 'initparam-3CNN-v1'
-param_des = 'v1'
+param_des = 'v1-whole'
 save_path = os.path.join(save_dir,param_des+'/checkpoints/best_validation')
 tensorboard_dir = os.path.join(save_dir,param_des+'/tensorboard')
 
