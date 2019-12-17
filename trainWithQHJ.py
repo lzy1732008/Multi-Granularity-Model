@@ -196,8 +196,7 @@ def test(test_data, Path):
             model.dropout_rate: 1.0   #这个表示测试时不使用dropout对神经元过滤
         }
         y_pred_cls[start_id:end_id] = session.run(model.pred_y,feed_dict=feed_dict)   #将所有批次的预测结果都存放在y_pred_cls中
-        if i == 9:
-           inter_1, inter_2,inter_3,pool_1,pool_2,pool_3 = session.run([model.inter_1,model.inter_2,model.inter_3,
+        inter_1, inter_2,inter_3,pool_1,pool_2,pool_3 = session.run([model.inter_1,model.inter_2,model.inter_3,
                                                                      model.fusion_output_max_1,model.fusion_output_max_2,model.fusion_output_max_3],
                                                                     feed_dict=feed_dict)
 
@@ -220,13 +219,13 @@ def test(test_data, Path):
 
     print('check.......')
     print('interaction......')
-    print(inter_1)
-    print(inter_2)
-    print(inter_3)
+    print(inter_1[9])
+    print(inter_2[9])
+    print(inter_3[9])
     print('maxpooling.....')
-    print(pool_1)
-    print(pool_2)
-    print(pool_3)
+    print(pool_1[9])
+    print(pool_2[9])
+    print(pool_3[9])
 
     return y_test_cls,y_pred_cls
 
