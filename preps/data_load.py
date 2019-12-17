@@ -10,6 +10,7 @@ import numpy as np
 from preps import preprocess as pre
 import tensorflow.contrib.keras as kr
 import models.parameter as param
+import preps.data_load_generic as generic
 
 def get_batch_data_test(a_word,b_word,y, batch_size = 64):
     data_len = len(a_word)
@@ -38,6 +39,31 @@ def get_batch_data(a_word,b_word,y,batch_size = 64):
         yield a_word_shuffle[start_id:end_id],\
               b_word_shuffle[start_id:end_id],\
               y_shuffle[start_id:end_id]
+
+
+def data_load_lawone(trainPath, valPath, testPath,model,rfModel,flag=0):
+    env = pre.setUp_inputs_QHJ_lawone(trainPath=trainPath, valPath=valPath, testPath=testPath, rfModel=rfModel,flag=flag)
+    train_data = env['train']
+    test_data = env['test']
+    val_data = env['val']
+    train = []
+    test = []
+    val = []
+
+    if trainPath:
+       train = generic.processInitDataWithoutQHJ(train_data,model)
+    if valPath:
+       val = generic.processInitDataWithoutQHJ(val_data,model)
+    if testPath:
+       test = generic.processInitDataWithoutQHJ(test_data,model)
+    return train, test, val
+
+def data_load_test_lawone(model,rfModel,flag=0):
+    env = pre.setUp_inputs_QHJ_lawone(trainPath=None, valPath=None,
+                            testPath=param.BaseConfig.testPath,rfModel=rfModel,flag=flag)
+    test_data = env['test']
+    test = generic.processInitDataWithoutQHJ(test_data,model)
+    return test
 
 
 def data_load(trainPath, valPath, testPath,model):
@@ -80,6 +106,7 @@ def processInitData(data,model):
     a_data_word = kr.preprocessing.sequence.pad_sequences(np.array(a_data_word), model.config.X_maxlen)
     b_data_word = kr.preprocessing.sequence.pad_sequences(np.array(b_data_word), model.config.Y_maxlen)
     return a_data_word,b_data_word, np.array(y)
+
 
 #法条前后件预测用到的
 import  re

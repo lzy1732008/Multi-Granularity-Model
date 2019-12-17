@@ -91,7 +91,6 @@ def processInitDataWithoutQHJ(data,model):
         else:
             y.append([1,0])
 
-
     a_data_word = kr.preprocessing.sequence.pad_sequences(np.array(a_data_word), model.config.X_maxlen)
     b_data_word = kr.preprocessing.sequence.pad_sequences(np.array(b_data_word), model.config.Y_maxlen)
     return a_data_word,b_data_word, np.array(y)
