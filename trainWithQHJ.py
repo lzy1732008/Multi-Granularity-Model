@@ -17,7 +17,7 @@ import models.parameter as param
 class basicPath:
     def __init__(self,time):
         self.save_dir = 'result/model/MGC_15'  # 修改处
-        self.param_des = 'v3-addmeanpooling-' + str(time) +'times'
+        self.param_des = 'v1' + str(time) +'times'
         self.save_path = os.path.join(self.save_dir, self.param_des + '/checkpoints/best_validation')
         self.tensorboard_dir = os.path.join(self.save_dir, self.param_des + '/tensorboard')
 
@@ -179,10 +179,12 @@ def test(test_data, Path):
 
     batch_size = param.BaseConfig.batch_size
     data_len = len(test_x1_word)
-    num_batch = int((data_len) / batch_size)
+    # num_batch = int((data_len) / batch_size)
+    num_batch = 1
 
     y_test_cls = np.argmax(test_y, 1)
     y_pred_cls = np.zeros(shape=data_len, dtype=np.int32)  # 保存预测结果
+
     for i in range(num_batch):  # 逐批次处理
         start_id = i * batch_size
         end_id = min((i + 1) * batch_size, data_len)
@@ -194,6 +196,11 @@ def test(test_data, Path):
             model.dropout_rate: 1.0   #这个表示测试时不使用dropout对神经元过滤
         }
         y_pred_cls[start_id:end_id] = session.run(model.pred_y,feed_dict=feed_dict)   #将所有批次的预测结果都存放在y_pred_cls中
+        if i == 9:
+           inter_1, inter_2,inter_3,pool_1,pool_2,pool_3 = session.run([model.inter_1,model.inter_2,model.inter_3,
+                                                                     model.fusion_output_max_1,model.fusion_output_max_2,model.fusion_output_max_3],
+                                                                    feed_dict=feed_dict)
+
 
 
 
@@ -210,6 +217,16 @@ def test(test_data, Path):
 
     # print("beta value", beta1,beta2,beta3)
     #check error prediction
+
+    print('check.......')
+    print('interaction......')
+    print(inter_1)
+    print(inter_2)
+    print(inter_3)
+    print('maxpooling.....')
+    print(pool_1)
+    print(pool_2)
+    print(pool_3)
 
     return y_test_cls,y_pred_cls
 
@@ -245,13 +262,13 @@ def run_mutli():
     # 载入随机森林模型
     with open(param.BaseConfig.rf_model_path, 'rb') as fr:
         rf = pickle.load(fr)
-    train_data, val_data, test_data = data_load(param.BaseConfig.trainPath, param.BaseConfig.valPath, param.BaseConfig.testPath, model, rf)
-    # train_data, val_data, test_data = data_load(None, None,
-    #                                             param.BaseConfig.testPath, model, rf)
+    # train_data, val_data, test_data = data_load(param.BaseConfig.trainPath, param.BaseConfig.valPath, param.BaseConfig.testPath, model, rf)
+    train_data, val_data, test_data = data_load(None, None,
+                                                param.BaseConfig.testPath, model, rf)
     print('train data shape:{0}\n val data shape:{1}\n test data shape:{2}'.format(len(train_data), len(val_data), len(test_data)))
-    for i in range(1):
-        Path = basicPath(i)
-        train(train_data,val_data,Path)
+    # for i in range(1):
+    #     Path = basicPath(i)
+    #     train(train_data,val_data,Path)
 
 
     for j in range(1):
