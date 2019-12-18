@@ -38,7 +38,7 @@ class MultiGranularityCNNModel:
             self.output_x2_1 = tf.layers.conv1d(self.input_X2,filters=self.config.filters_num,kernel_size=self.config.first_kernel_size,padding='same',name='first-cnn2')
 
         with tf.variable_scope("knowledge-gate"):
-            self.new_x1 = self.gate1(self.output_x1_1)
+            self.new_x1 = self.gate1(ks=self.ks,inputx=self.output_x1_1)
 
         with tf.variable_scope("first-interaction"):
             self.inter_1 = self.interaction(self.output_x1_1, self.output_x2_1)
