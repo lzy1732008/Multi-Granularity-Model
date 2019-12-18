@@ -40,6 +40,12 @@ class MultiGranularityCNNModel:
         with tf.variable_scope("knowledge-gate"):
             self.new_x1 = self.gate1(ks=self.ks,inputx=self.output_x1_1)
 
+        with tf.variable_scope("inputx-CNN-layer"):
+            self.new_x1_ = tf.layers.conv1d(self.new_x1, filters=self.config.filters_num,
+                                                kernel_size=self.config.first_kernel_size, padding='same',
+                                                name='first-cnn1')
+            self.new_x1_ = tf.reduce_max(self.new_x1_,axis=-1)
+
         with tf.variable_scope("first-interaction"):
             self.inter_1 = self.interaction(self.output_x1_1, self.output_x2_1)
             self.inter_rep_1 = tf.reshape(
@@ -100,7 +106,7 @@ class MultiGranularityCNNModel:
                 tf.layers.dense(inputs=self.fusion_output_x2, units=self.config.mlp_output, name='fnn1'))
 
             self.fusion_output_x1 =  tf.nn.relu(
-                tf.layers.dense(inputs=self.new_x1, units=self.config.mlp_output, name='fnn2'))
+                tf.layers.dense(inputs=self.new_x1_, units=self.config.mlp_output, name='fnn2'))
 
             self.fusion_output = tf.concat([self.fusion_output_x1,self.fusion_output_x2],axis=-1)
 
