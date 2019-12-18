@@ -177,10 +177,9 @@ def processInitData_Generic_OneHotQHJ(data,model):
         else:
             output_data[-1].append([1,0])
 
-    for i, output in enumerate(output_data[:-1]):
-        if i == 0:
-            output_data[i] = kr.preprocessing.sequence.pad_sequences(output, model.config.X_maxlen)
-        else:
-            output_data[i] = kr.preprocessing.sequence.pad_sequences(output, model.config.Y_maxlen)
-    output_data[-1] = np.array(output_data[-1])
+    output_data[0] = kr.preprocessing.sequence.pad_sequences(output_data[0], model.config.X_maxlen)
+    output_data[1] = kr.preprocessing.sequence.pad_sequences(output_data[1], model.config.Y_maxlen)
+    output_data[2] = np.array(output_data[2])
+    output_data[3] = kr.preprocessing.sequence.pad_sequences(output_data[3], model.config.Y_maxlen)
+    output_data[4] = np.array(output_data[-1])
     return output_data
