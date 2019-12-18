@@ -16,8 +16,8 @@ from preps.data_load import *
 import models.parameter as param
 
 save_dir = 'result/model/MultiGranularityCNN'  #修改处
-# param_des = 'initparam-3CNN-v1'
-param_des = 'initparam-qj'
+param_des = 'initparam-3CNN-v1'
+# param_des = 'initparam-qj'
 save_path = os.path.join(save_dir,param_des+'/checkpoints/best_validation')
 tensorboard_dir = os.path.join(save_dir,param_des+'/tensorboard')
 
@@ -90,7 +90,9 @@ def train():
     print("Loading training and validation data...")
     # 载入训练集与验证集
     start_time = time.time()
-    train_data, test_data, val_data = data_load_lawone(param.BaseConfig.trainPath,param.BaseConfig.valPath,None,model,rfModel=rf,flag=qhj_label)
+    # train_data, test_data, val_data = data_load_lawone(param.BaseConfig.trainPath,param.BaseConfig.valPath,None,model,rfModel=rf,flag=qhj_label)
+    train_data, test_data, val_data = data_load(param.BaseConfig.trainPath, param.BaseConfig.valPath, None,
+                                                       model)
 
     train_x1_word, train_x2_word,  train_y = train_data
     val_x1_word,  val_x2_word,  val_y = val_data
@@ -161,7 +163,8 @@ def train():
 def test():
     print("Loading test data...")
     start_time = time.time()
-    test_data = data_load_test_lawone(model,rf,flag=qhj_label)
+    # test_data = data_load_test_lawone(model,rf,flag=qhj_label)
+    test_data = data_load_test(model)
     test_x1_word,  test_x2_word,  test_y = test_data
 
 
@@ -181,6 +184,7 @@ def test():
 
     y_test_cls = np.argmax(test_y, 1)
     y_pred_cls = np.zeros(shape=data_len, dtype=np.int32)  # 保存预测结果
+    inter_1,inter_2,inter_3 = [],[],[]
     for i in range(num_batch):  # 逐批次处理
         start_id = i * batch_size
         end_id = min((i + 1) * batch_size, data_len)
@@ -191,6 +195,8 @@ def test():
             model.dropout_rate: 1.0   #这个表示测试时不使用dropout对神经元过滤
         }
         y_pred_cls[start_id:end_id] = session.run(model.pred_y, feed_dict=feed_dict)   #将所有批次的预测结果都存放在y_pred_cls中
+        inter_1, inter_2, inter_3 = session.run([model.inter1_output_x2, model.inter2_output_x2, model.inter3_output_x2],
+                                                                        feed_dict=feed_dict)
 
 
 
@@ -204,10 +210,22 @@ def test():
 
     time_dif = get_time_dif(start_time)
     print("Time usage:", time_dif)
+
+    print('predict..')
+    print(y_pred_cls)
+
+    print('inetr1...')
+    print(inter_1)
+
+    print('inter2...')
+    print(inter_2)
+
+    print('inter3....')
+    print(inter_3)
     return y_test_cls,y_pred_cls
 
 
-train()
+# train()
 y_test_cls,y_pred_cls = test()
 
 # wsnamels = getwslist(model=model)

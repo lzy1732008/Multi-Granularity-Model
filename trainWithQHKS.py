@@ -10,14 +10,14 @@ import os
 import sys
 import pickle
 
-from models.MGC_15 import *
+from models.MGCQ_ks_1 import *
 from preps.data_load_generic import *
 import models.parameter as param
 
 class basicPath:
     def __init__(self,time):
-        self.save_dir = 'result/model/MGC_15'  # 修改处
-        self.param_des = 'v1' + str(time) +'times'
+        self.save_dir = 'result/model/MGCQ_ks_1'  # 修改处
+        self.param_des = 'v1-' + str(time) +'times'
         self.save_path = os.path.join(self.save_dir, self.param_des + '/checkpoints/best_validation')
         self.tensorboard_dir = os.path.join(self.save_dir, self.param_des + '/tensorboard')
 
@@ -40,11 +40,12 @@ def get_time_dif(start_time):
     return timedelta(seconds=int(round(time_dif)))
 
 
-def feed_data(a_word,b_word,c_word,y_batch,dropout_rate):
+def feed_data(a_word,b_word,c_word,d_word,y_batch,dropout_rate):
     feed_dict = {
         model.input_X1: a_word,
         model.input_X2: b_word,
-        model.x2_label: c_word,
+        model.ks: c_word,
+        model.x2_label: d_word,
         model.y: y_batch,
         model.dropout_rate: dropout_rate,
     }
@@ -52,15 +53,15 @@ def feed_data(a_word,b_word,c_word,y_batch,dropout_rate):
     return feed_dict
 
 
-def evaluate(sess,a_word,b_word,c_word, y):
+def evaluate(sess,a_word,b_word,c_word, d_word, y):
     """评估在某一数据上的准确率和损失"""
     data_len = len(a_word)
-    batch_eval = get_batch_data_test(a_word, b_word,c_word, y, batch_size=param.BaseConfig.batch_size)
+    batch_eval = get_batch_data_test(a_word, b_word,c_word,d_word, y, batch_size=param.BaseConfig.batch_size)
     total_loss = 0.0
     total_acc = 0.0
-    for a_word_batch, b_word_batch,c_word_batch, y_batch in batch_eval:
+    for a_word_batch, b_word_batch,c_word_batch,d_word_batch, y_batch in batch_eval:
         batch_len = len(a_word_batch)
-        feed_dict = feed_data(a_word_batch, b_word_batch,c_word_batch, y_batch,1.0)
+        feed_dict = feed_data(a_word_batch, b_word_batch,c_word_batch, d_word_batch, y_batch,1.0)
         loss, acc = sess.run([model.loss, model.acc], feed_dict=feed_dict)
         total_loss += loss * batch_len
         total_acc += acc * batch_len
@@ -92,8 +93,8 @@ def train(train_data, val_data,Path):
     # 载入训练集与验证集
     start_time = time.time()
 
-    train_x1_word, train_x2_word, train_x2_label, train_y = train_data
-    val_x1_word,  val_x2_word, val_x2_label, val_y = val_data
+    train_x1_word, train_x2_word, train_ks, train_x2_label,  train_y = train_data
+    val_x1_word,  val_x2_word, val_ks, val_x2_label, val_y = val_data
 
     print('train len',len(train_x1_word))
     print('val_len',len(val_x1_word))
@@ -116,9 +117,9 @@ def train(train_data, val_data,Path):
     flag = False
     for epoch in range(param.BaseConfig.num_epochs):
         print('Epoch:', epoch + 1)
-        batch_train = get_batch_data(train_x1_word, train_x2_word, train_x2_label, train_y, batch_size=param.BaseConfig.batch_size)
-        for a_word_batch, b_word_batch, c_word_batch, y_batch in batch_train:
-            feed_dict = feed_data(a_word_batch, b_word_batch, c_word_batch,y_batch,model.config.dropout_rate)
+        batch_train = get_batch_data(train_x1_word, train_x2_word, train_ks, train_x2_label, train_y, batch_size=param.BaseConfig.batch_size)
+        for a_word_batch, b_word_batch, c_word_batch, d_word_batch, y_batch in batch_train:
+            feed_dict = feed_data(a_word_batch, b_word_batch, c_word_batch,d_word_batch, y_batch,model.config.dropout_rate)
 
             if total_batch % param.BaseConfig.save_per_batch == 0:
                 # 每多少轮次将训练结果写入tensorboard scalar
@@ -130,7 +131,7 @@ def train(train_data, val_data,Path):
 
                 feed_dict[model.dropout_rate] = 1.0
                 loss_train, acc_train,pre_y, logit, true_y = session.run([model.loss, model.acc,model.pred_y,model.logit,model.y], feed_dict=feed_dict)
-                loss_val, acc_val = evaluate(session, val_x1_word,  val_x2_word,  val_x2_label, val_y)  # 验证当前会话中的模型的loss和acc
+                loss_val, acc_val = evaluate(session, val_x1_word,  val_x2_word, val_ks, val_x2_label, val_y)  # 验证当前会话中的模型的loss和acc
 
 
                 if acc_val > best_acc_val:
@@ -164,7 +165,7 @@ def test(test_data, Path):
     print("Loading test data...")
     start_time = time.time()
 
-    test_x1_word,  test_x2_word, test_x2_label, test_y = test_data
+    test_x1_word,  test_x2_word, test_ks, test_x2_label, test_y = test_data
 
 
     session = tf.Session()
@@ -173,7 +174,7 @@ def test(test_data, Path):
     saver.restore(sess=session, save_path=Path.save_path)  # 读取保存的模型
 
     print('Testing...')
-    loss_test, acc_test = evaluate(session, test_x1_word, test_x2_word, test_x2_label, test_y)
+    loss_test, acc_test = evaluate(session, test_x1_word, test_x2_word, test_ks, test_x2_label, test_y)
     msg = 'Test Loss: {0:>6.2}, Test Acc: {1:>7.2%}'
     print(msg.format(loss_test, acc_test))
 
@@ -192,6 +193,7 @@ def test(test_data, Path):
             model.input_X1: test_x1_word[start_id:end_id],
             model.input_X2: test_x2_word[start_id:end_id],
             model.x2_label: test_x2_label[start_id:end_id],
+            model.ks: test_ks[start_id:end_id],
             model.y: test_y,
             model.dropout_rate: 1.0   #这个表示测试时不使用dropout对神经元过滤
         }
@@ -217,14 +219,14 @@ def test(test_data, Path):
     #check error prediction
     print(y_pred_cls)
 
-    print('check.......')
-    print('maxpooling.....')
-    print('pool 1...')
-    print(pool_1[0])
-    print('pool 2...')
-    print(pool_2[0])
-    print('pool 3...')
-    print(pool_3[0])
+    # print('check.......')
+    # print('maxpooling.....')
+    # print('pool 1...')
+    # print(pool_1[0])
+    # print('pool 2...')
+    # print(pool_2[0])
+    # print('pool 3...')
+    # print(pool_3[0])
 
     return y_test_cls,y_pred_cls
 
@@ -260,13 +262,13 @@ def run_mutli():
     # 载入随机森林模型
     with open(param.BaseConfig.rf_model_path, 'rb') as fr:
         rf = pickle.load(fr)
-    # train_data, val_data, test_data = data_load(param.BaseConfig.trainPath, param.BaseConfig.valPath, param.BaseConfig.testPath, model, rf)
-    train_data, val_data, test_data = data_load(None, None,
-                                                param.BaseConfig.testPath, model, rf)
+    train_data, val_data, test_data = data_load(param.BaseConfig.trainPath, param.BaseConfig.valPath, param.BaseConfig.testPath, model, rf)
+    # train_data, val_data, test_data = data_load(None, None,
+    #                                             param.BaseConfig.testPath, model, rf)
     print('train data shape:{0}\n val data shape:{1}\n test data shape:{2}'.format(len(train_data), len(val_data), len(test_data)))
-    # for i in range(1):
-    #     Path = basicPath(i)
-    #     train(train_data,val_data,Path)
+    for i in range(1):
+        Path = basicPath(i)
+        train(train_data,val_data,Path)
 
 
     for j in range(1):

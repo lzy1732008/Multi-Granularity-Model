@@ -590,7 +590,41 @@ def processLawForRf(lawText):
     return outputTexts, rfInputVector
 
 
+# build knowledge json
+def buildksfile(sourcefile, targetfile):
+    fr = open(sourcefile, 'r', encoding='utf-8')
+    fw = open(targetfile, 'w', encoding='utf-8')
+    pattern_article = '\(\d{4}\)'
+    regx_article = re.compile(pattern_article)
 
+    law_dict = {}
+    lines = fr.read().split('\n')
+    for line in lines:
+        line = line.strip()
+        if line != "":
+            elements = line.split('|')
+            article = elements[1]
+            ks = elements[0]
+            res_article = regx_article.split(article)
+            assert len(res_article) == 2, ValueError("Wrong law:" + article + "line:"+line)
+            law_name = res_article[0]
+            charp = ''
+            section = ''
+            if ks != '?':
+                ks_split = ks.split()
+                for k in ks_split:
+                    if k[0] == '?' or k[0] == '节':
+                        section = k[2:]
+                    elif k[0] == '章':
+                        charp = k[2:]
+                law_dict[article] = [law_name, charp, section]
+
+    json.dump(law_dict,fw)
+
+
+# sourcePath = 'resource/ft_nr_先验知识.txt'
+# targetPath = 'resource/ft_ks.json'
+# buildksfile(sourcePath,targetPath)
 
 
 
