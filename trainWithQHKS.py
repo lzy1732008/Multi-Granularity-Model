@@ -119,7 +119,7 @@ def train(train_data, val_data,Path):
         print('Epoch:', epoch + 1)
         batch_train = get_batch_data(train_x1_word, train_x2_word, train_ks, train_x2_label, train_y, batch_size=param.BaseConfig.batch_size)
         for a_word_batch, b_word_batch, c_word_batch, d_word_batch, y_batch in batch_train:
-            feed_dict = feed_data(a_word_batch, b_word_batch, c_word_batch,d_word_batch, y_batch,model.config.dropout_rate)
+            feed_dict = feed_data(a_word_batch, b_word_batch, c_word_batch,d_word_batch, y_batch, model.config.dropout_rate)
 
             if total_batch % param.BaseConfig.save_per_batch == 0:
                 # 每多少轮次将训练结果写入tensorboard scalar
@@ -197,8 +197,8 @@ def test(test_data, Path):
             model.dropout_rate: 1.0   #这个表示测试时不使用dropout对神经元过滤
         }
         y_pred_cls[start_id:end_id] = session.run(model.pred_y,feed_dict=feed_dict)   #将所有批次的预测结果都存放在y_pred_cls中
-        pool_1,pool_2,pool_3 = session.run([model.fusion_output_max_1,model.fusion_output_max_2,model.fusion_output_max_3],
-                                                                    feed_dict=feed_dict)
+        # pool_1,pool_2,pool_3 = session.run([model.fusion_output_max_1,model.fusion_output_max_2,model.fusion_output_max_3],
+        #                                                             feed_dict=feed_dict)
 
 
 
@@ -262,18 +262,19 @@ def run_mutli():
     with open(param.BaseConfig.rf_model_path, 'rb') as fr:
         rf = pickle.load(fr)
     train_data, val_data, test_data = data_load(param.BaseConfig.trainPath, param.BaseConfig.valPath, param.BaseConfig.testPath, model, rf)
+    print(train_data[-1])
     # train_data, val_data, test_data = data_load(None, None,
     #                                             param.BaseConfig.testPath, model, rf)
     print('train data shape:{0}\n val data shape:{1}\n test data shape:{2}'.format(len(train_data), len(val_data), len(test_data)))
-    for i in range(1):
-        Path = basicPath(i)
-        train(train_data,val_data,Path)
-
-
-    for j in range(1):
-        print("the {0}nd testing......".format(str(j)))
-        Path = basicPath(j)
-        test(test_data, Path)
+    # for i in range(1):
+    #     Path = basicPath(i)
+    #     train(train_data,val_data,Path)
+    #
+    #
+    # for j in range(1):
+    #     print("the {0}nd testing......".format(str(j)))
+    #     Path = basicPath(j)
+    #     test(test_data, Path)
 
 
 
