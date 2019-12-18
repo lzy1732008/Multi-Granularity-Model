@@ -617,7 +617,7 @@ def buildksfile(sourcefile, targetfile):
                         section = k[2:]
                     elif k[0] == '章':
                         charp = k[2:]
-                law_dict[article] = [law_name, charp, section]
+            law_dict[article] = [law_name, charp, section]
 
     json.dump(law_dict,fw)
 
