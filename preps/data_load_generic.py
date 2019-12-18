@@ -56,16 +56,15 @@ def data_load(trainPath, valPath, testPath,model,rfModel):
         dataset['test'] = [test[0].tolist(), test[1].tolist(), test[2].tolist(), test[3].tolist(), test[4].tolist()]
         json.dump(dataset, fw)
 
-    # with open('resource/dataSet50oneHot.json', 'r', encoding='utf-8') as fr:
+    # with open('resource/dataSet50oneHotKS.json', 'r', encoding='utf-8') as fr:
     #     dataset = json.load(fr)
     #     train = dataset['train']
     #     val = dataset['val']
     #     test = dataset['test']
     #
-    #     train = np.array(train[0]),np.array(train[1]),np.array(train[2]),np.array(train[3])
-    #     val = np.array(val[0]), np.array(val[1]), np.array(val[2]), np.array(val[3])
-    #     test = np.array(test[0]), np.array(test[1]), np.array(test[2]), np.array(test[3])
-
+    #     train = np.array(train[0]),np.array(train[1]),np.array(train[2]),np.array(train[3]), np.array(train[4])
+    #     val = np.array(val[0]), np.array(val[1]), np.array(val[2]), np.array(val[3]), np.array(val[4])
+    #     test = np.array(test[0]), np.array(test[1]), np.array(test[2]), np.array(test[3]), np.array(test[3])
 
     return train,val, test
 
@@ -179,6 +178,9 @@ def processInitData_Generic_OneHotQHJ(data,model):
             output_data[-1].append([1,0])
 
     for i, output in enumerate(output_data[:-1]):
-        output_data[i] = kr.preprocessing.sequence.pad_sequences(output, model.config.X_maxlen)
+        if i == 0:
+            output_data[i] = kr.preprocessing.sequence.pad_sequences(output, model.config.X_maxlen)
+        else:
+            output_data[i] = kr.preprocessing.sequence.pad_sequences(output, model.config.Y_maxlen)
     output_data[-1] = np.array(output_data[-1])
     return output_data
