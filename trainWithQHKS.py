@@ -180,8 +180,7 @@ def test(test_data, Path):
 
     batch_size = param.BaseConfig.batch_size
     data_len = len(test_x1_word)
-    # num_batch = int((data_len) / batch_size)
-    num_batch = 1
+    num_batch = int((data_len) / batch_size)
 
     y_test_cls = np.argmax(test_y, 1)
     y_pred_cls = np.zeros(shape=data_len, dtype=np.int32)  # 保存预测结果
