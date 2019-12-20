@@ -179,8 +179,8 @@ def test(test_data, Path):
 
     batch_size = param.BaseConfig.batch_size
     data_len = len(test_x1_word)
-    # num_batch = int((data_len) / batch_size)
-    num_batch = 1
+    num_batch = int((data_len) / batch_size)
+    # num_batch = 1
 
     y_test_cls = np.argmax(test_y, 1)
     y_pred_cls = np.zeros(shape=data_len, dtype=np.int32)  # 保存预测结果
@@ -213,7 +213,7 @@ def test(test_data, Path):
     time_dif = get_time_dif(start_time)
     print("Time usage:", time_dif)
 
-    checkPrediction(y_pred_cls,y_test_cls)
+    # checkPrediction(y_pred_cls,y_test_cls)
     # print("beta value", beta1,beta2,beta3)
     #check error prediction
     # print(y_pred_cls)
@@ -265,9 +265,9 @@ def run_mutli():
     # train_data, val_data, test_data = data_load(None, None,
     #                                             param.BaseConfig.testPath, model, rf)
     print('train data shape:{0}\n val data shape:{1}\n test data shape:{2}'.format(len(train_data), len(val_data), len(test_data)))
-    for i in range(1):
-        Path = basicPath(i)
-        train(train_data,val_data,Path)
+    # for i in range(1):
+    #     Path = basicPath(i)
+    #     train(train_data,val_data,Path)
 
 
     for j in range(1):
