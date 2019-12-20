@@ -39,13 +39,13 @@ def data_load(trainPath, valPath, testPath,model,rfModel):
     # train = []
     # test = []
     # val = []
-    #
+
     # if trainPath:
-    #    train = processInitData_Generic_OneHotQHJ(train_data,model)
+    #    train = processInitData2(train_data,model)
     # if valPath:
-    #    val = processInitData_Generic_OneHotQHJ(val_data,model)
+    #    val = processInitData2(val_data,model)
     # if testPath:
-    #    test = processInitData_Generic_OneHotQHJ(test_data,model)
+    #    test = processInitData2(test_data,model)
     #
     #
     #
@@ -58,15 +58,15 @@ def data_load(trainPath, valPath, testPath,model,rfModel):
 
     #================================================================================
 
-    with open('resource/dataSet50oneHotKS.json', 'r', encoding='utf-8') as fr:
+    with open('resource/dataSet50oneHot.json', 'r', encoding='utf-8') as fr:
         dataset = json.load(fr)
         train = dataset['train']
         val = dataset['val']
         test = dataset['test']
 
-        train = np.array(train[0]),np.array(train[1]),np.array(train[2]),np.array(train[3]), np.array(train[4])
-        val = np.array(val[0]), np.array(val[1]), np.array(val[2]), np.array(val[3]), np.array(val[4])
-        test = np.array(test[0]), np.array(test[1]), np.array(test[2]), np.array(test[3]), np.array(test[4])
+        train = np.array(train[0]),np.array(train[1]),np.array(train[2]),np.array(train[3])
+        val = np.array(val[0]), np.array(val[1]), np.array(val[2]), np.array(val[3])
+        test = np.array(test[0]), np.array(test[1]), np.array(test[2]), np.array(test[3])
 
     return train,val, test
 

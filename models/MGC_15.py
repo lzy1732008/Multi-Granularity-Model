@@ -56,7 +56,12 @@ class MultiGranularityCNNModel:
             self.output_x2_1 = tf.layers.conv1d(self.input_X2,filters=self.config.filters_num,kernel_size=self.config.first_kernel_size,padding='same',name='first-cnn2')
 
         with tf.variable_scope("first-interaction"):
-            self.inter_1 = self.interaction(self.output_x1_1, self.output_x2_1)
+            interaction = Interaction(8, self.output_x1_1, self.output_x2_1, self.x2_label)
+            self.inter_1 = interaction.exeInteraction()
+
+            #=======================
+            # self.inter_1 = self.interaction(self.output_x1_1, self.output_x2_1)
+
             self.inter_rep_1 = tf.reshape(
                 tf.keras.backend.repeat_elements(self.inter_1, rep=param.BaseConfig.word_dimension, axis=1),
                 shape=[-1, self.config.Y_maxlen, param.BaseConfig.word_dimension])
@@ -76,7 +81,9 @@ class MultiGranularityCNNModel:
             self.output_x2_2 = tf.layers.conv1d(self.output_x2_1,filters=self.config.filters_num,kernel_size=self.config.second_kernel_size,padding='same',name='second-cnn2')
 
         with tf.variable_scope("second-interaction"):
-            self.inter_2 = self.interaction(self.output_x1_2,self.output_x2_2)
+            interaction = Interaction(8, self.output_x1_2, self.output_x2_2, self.x2_label)
+            self.inter_2 = interaction.exeInteraction()
+            # self.inter_2 = self.interaction(self.output_x1_2,self.output_x2_2)
             self.inter_rep_2 = tf.reshape(tf.keras.backend.repeat_elements(self.inter_2, rep=param.BaseConfig.word_dimension, axis=1),shape=[-1,self.config.Y_maxlen,param.BaseConfig.word_dimension])
 
         with tf.variable_scope("fusion-layer-2"):
@@ -98,7 +105,10 @@ class MultiGranularityCNNModel:
                                                 kernel_size=self.config.third_kernel_size, padding='same',
                                                 name='second-cnn2')
         with tf.variable_scope("third-interaction"):
-            self.inter_3 = self.interaction(self.output_x1_3,self.output_x2_3)
+            interaction = Interaction(8, self.output_x1_3, self.output_x2_3, self.x2_label)
+            self.inter_3 = interaction.exeInteraction()
+
+            # self.inter_3 = self.interaction(self.output_x1_3,self.output_x2_3)
             self.inter_rep_3 = tf.reshape(tf.keras.backend.repeat_elements(self.inter_3, rep=param.BaseConfig.word_dimension, axis=1),shape=[-1,self.config.Y_maxlen,param.BaseConfig.word_dimension])
 
         with tf.variable_scope("fusion-layer-3"):
@@ -154,15 +164,6 @@ class MultiGranularityCNNModel:
         x2_weight = tf.reshape(x2_weight,shape=[-1,len2])
         return x2_weight
 
-    def selfAttention(self,input):
-        Q = tf.layers.dense(input, param.BaseConfig.word_dimension, activation=tf.nn.relu)  # (N, T_q, C)
-        K = tf.layers.dense(input, param.BaseConfig.word_dimension, activation=tf.nn.relu)  # (N, T_k, C)
-        V = tf.layers.dense(input, param.BaseConfig.word_dimension, activation=tf.nn.relu)  # (N, T_k, C)
-        outputs = tf.matmul(Q, tf.transpose(K, [0, 2, 1]))
-        outputs = outputs / (K.get_shape().as_list()[-1] ** 0.5)
-        outputs = tf.nn.softmax(outputs)
-        outputs = tf.matmul(outputs, V)
-        return outputs
 
 
 

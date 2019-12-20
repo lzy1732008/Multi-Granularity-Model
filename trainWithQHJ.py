@@ -17,7 +17,7 @@ import models.parameter as param
 class basicPath:
     def __init__(self,time):
         self.save_dir = 'result/model/MGC_15'  # 修改处
-        self.param_des = 'v1' + str(time) +'times'
+        self.param_des = 'v8-' + str(time) +'times'
         self.save_path = os.path.join(self.save_dir, self.param_des + '/checkpoints/best_validation')
         self.tensorboard_dir = os.path.join(self.save_dir, self.param_des + '/tensorboard')
 
@@ -213,18 +213,19 @@ def test(test_data, Path):
     time_dif = get_time_dif(start_time)
     print("Time usage:", time_dif)
 
+    checkPrediction(y_pred_cls,y_test_cls)
     # print("beta value", beta1,beta2,beta3)
     #check error prediction
-    print(y_pred_cls)
-
-    print('check.......')
-    print('maxpooling.....')
-    print('pool 1...')
-    print(pool_1[0])
-    print('pool 2...')
-    print(pool_2[0])
-    print('pool 3...')
-    print(pool_3[0])
+    # print(y_pred_cls)
+    #
+    # print('check.......')
+    # print('maxpooling.....')
+    # print('pool 1...')
+    # print(pool_1[0])
+    # print('pool 2...')
+    # print(pool_2[0])
+    # print('pool 3...')
+    # print(pool_3[0])
 
     return y_test_cls,y_pred_cls
 
@@ -260,13 +261,13 @@ def run_mutli():
     # 载入随机森林模型
     with open(param.BaseConfig.rf_model_path, 'rb') as fr:
         rf = pickle.load(fr)
-    # train_data, val_data, test_data = data_load(param.BaseConfig.trainPath, param.BaseConfig.valPath, param.BaseConfig.testPath, model, rf)
-    train_data, val_data, test_data = data_load(None, None,
-                                                param.BaseConfig.testPath, model, rf)
+    train_data, val_data, test_data = data_load(param.BaseConfig.trainPath, param.BaseConfig.valPath, param.BaseConfig.testPath, model, rf)
+    # train_data, val_data, test_data = data_load(None, None,
+    #                                             param.BaseConfig.testPath, model, rf)
     print('train data shape:{0}\n val data shape:{1}\n test data shape:{2}'.format(len(train_data), len(val_data), len(test_data)))
-    # for i in range(1):
-    #     Path = basicPath(i)
-    #     train(train_data,val_data,Path)
+    for i in range(1):
+        Path = basicPath(i)
+        train(train_data,val_data,Path)
 
 
     for j in range(1):
