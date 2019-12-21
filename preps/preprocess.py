@@ -111,6 +111,7 @@ def setUp_inputs_QHJ(trainPath = None, valPath = None, testPath = None, rfModel=
     env = {'train': train, 'test': test, 'val': val}
     return env
 
+#只使用前件或者后件的正文
 def setUp_inputs_QHJ_lawone(trainPath = None, valPath = None, testPath = None, rfModel=None,flag=0):
     #read word info
     f_word = open(param.BaseConfig.w2vModel, 'r', encoding='utf-8')
@@ -153,7 +154,7 @@ def _setUp_inputs_QHJ_lawone(sourcePath, wordEmbedding, wordVocab,rfModel,start,
         if line != '':
             items = line.split('|')
             assert len(items) == 4, ValueError("The number of items in this line is less than 4, content:" + line)
-            fact_input = processTextWithoutStpDict(items[1],wordEmbedding, wordVocab,stp)
+            fact_input = processTextWithStpDict(items[1],wordEmbedding, wordVocab,stp)
             if len(fact_input) == 0: continue
             law_units = items[2].split(':')
             law_name = law_units[0]
@@ -192,7 +193,7 @@ def _setUp_inputs_QHJ(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,fla
         if line != '':
             items = line.split('|')
             assert len(items) == 4, ValueError("The number of items in this line is less than 4, content:" + line)
-            fact_input = processTextWithoutStpDict(items[1],wordEmbedding, wordVocab,stp)
+            fact_input = processTextWithStpDict(items[1],wordEmbedding, wordVocab,stp)
             if len(fact_input) == 0: continue
             law_units = items[2].split(':')
             law_name = law_units[0]
@@ -234,7 +235,7 @@ def _setUp_inputs_QHJ_2(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,f
         if line != '':
             items = line.split('|')
             assert len(items) == 4, ValueError("The number of items in this line is less than 4, content:" + line)
-            fact_input = processTextWithoutStpDict(items[1],wordEmbedding, wordVocab,stp)
+            fact_input = processTextWithStpDict(items[1],wordEmbedding, wordVocab,stp)
             if len(fact_input) == 0: continue
             law_units = items[2].split(':')
             law_name = law_units[0]
@@ -254,6 +255,75 @@ def _setUp_inputs_QHJ_2(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,f
             print("precessing {0}/{1} samples".format(count,len(lines)))
     return result
 
+def setUp_inputs_QHJ_lawtwo(trainPath = None, valPath = None, testPath = None, rfModel=None,flag=0):
+    #read word info
+    f_word = open(param.BaseConfig.w2vModel, 'r', encoding='utf-8')
+    wordEmbedding = json.load(f_word)
+    if '<UNK>' not in wordEmbedding.keys():
+        wordEmbedding['<UNK>'] = '\t'.join(['0' for _ in range(param.BaseConfig.word_dimension)])
+    wordVocab = wordEmbedding.keys()
+
+    assert '<UNK>' in wordEmbedding.keys(), ValueError('space and unk not in word dict')
+    assert len(wordVocab) == param.BaseConfig.word_vocab_size, ValueError('the number of word vocab is wrong, {0}'.format(len(wordVocab)))
+
+    train = []
+    test = []
+    val = []
+    if trainPath:
+        train = _setUp_inputs_QHJ_split(trainPath, wordEmbedding, wordVocab, rfModel, 0, 15000,flag)
+
+    if valPath:
+        val = _setUp_inputs_QHJ_split(valPath, wordEmbedding, wordVocab, rfModel, 0, 1000, flag)
+
+    if testPath:
+        test = _setUp_inputs_QHJ_split(testPath, wordEmbedding, wordVocab, rfModel, 0, 1000, flag)
+
+    env = {'train': train, 'test': test, 'val': val}
+    return env
+#不添加法条的前后件信息，将法条的前件作为一个输入，法条的后件作为一个输入
+def _setUp_inputs_QHJ_split(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,flag):
+    stp = open(param.BaseConfig.stpPath,'r',encoding='utf-8').read().split('\n')
+
+    with open(sourcePath,'r',encoding='utf-8') as fr:
+        lines = fr.readlines()
+    result = []
+    count = 0
+    if start >= len(lines):
+        return
+    end = min(len(lines), end)
+
+    for line in lines[start:end]:
+        line = line.strip()
+        if line != '':
+            items = line.split('|')
+            assert len(items) == 4, ValueError("The number of items in this line is less than 4, content:" + line)
+            fact_input = processTextWithStpDict(items[1],wordEmbedding, wordVocab,stp)
+            if len(fact_input) == 0: continue
+            law_units = items[2].split(':')
+            law_name = law_units[0]
+            law_content = items[2][len(law_name) + 1:]
+            law_content, law_input_vector = psLaw.processLawForRf(law_content)
+            #接下来将法条的前后件拆分放在不同列表里
+            law_labels = rfModel.predict(law_input_vector)
+            content_split = re.split(r"[，；。：]",law_content)
+            content_split = list(filter(lambda x: x != "", list(map(lambda x: x.strip(), content_split))))
+            law_input_qj = []
+            law_input_hj = []
+            assert len(content_split) == len(law_labels), ValueError("content_split:{0}, law_label:{1}, line:{3}".format(len(content_split), len(law_labels), line))
+            for law_label,content in zip(law_labels,content_split):
+                content_vector = processTextWithoutDict(content, wordEmbedding, wordVocab)
+                if law_label == 0:
+                    law_input_qj.extend(content_vector)
+                else:
+                    law_input_hj.extend(content_vector)
+
+            assert items[3] in ['0', '1'], ValueError("Label is not in [0,1]!")
+            label = items[3]
+            result.append([fact_input, law_input_qj, law_input_hj, label])
+            count += 1
+            print("precessing {0}/{1} samples".format(count,len(lines)))
+    return result
+
 def processTextWithoutDict(line,wordEmbedding, wordVocab):
     initContent = line.strip()
     if initContent != "":
@@ -269,7 +339,7 @@ def processTextWithoutDict(line,wordEmbedding, wordVocab):
 
 #只保留特定词性的词
 import jieba.posseg as pos
-def processTextWithoutStpDict(line,wordEmbedding, wordVocab,stp):
+def processTextWithStpDict(line,wordEmbedding, wordVocab,stp):
     initContent = line.strip()
     if initContent != "":
         content = pos.cut(initContent)

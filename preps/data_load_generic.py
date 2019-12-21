@@ -32,41 +32,41 @@ def get_batch_data(*data, batch_size = 64):
 import json
 
 def data_load(trainPath, valPath, testPath,model,rfModel):
-    # env = pre.setUp_inputs_QHJ(trainPath=trainPath,valPath=valPath,testPath=testPath,rfModel=rfModel)
-    # train_data = env['train']
-    # test_data = env['test']
-    # val_data = env['val']
-    # train = []
-    # test = []
-    # val = []
+    env = pre.setUp_inputs_QHJ_lawtwo(trainPath=trainPath,valPath=valPath,testPath=testPath,rfModel=rfModel)
+    train_data = env['train']
+    test_data = env['test']
+    val_data = env['val']
+    train = []
+    test = []
+    val = []
 
-    # if trainPath:
-    #    train = processInitData2(train_data,model)
-    # if valPath:
-    #    val = processInitData2(val_data,model)
-    # if testPath:
-    #    test = processInitData2(test_data,model)
-    #
-    #
-    #
-    # with open('resource/dataSet50oneHotKS.json','w',encoding='utf-8') as fw:
-    #     dataset = {}
-    #     dataset['train'] = [train[0].tolist(), train[1].tolist(), train[2].tolist(), train[3].tolist(),train[4].tolist()]
-    #     dataset['val'] = [val[0].tolist(), val[1].tolist(), val[2].tolist(), val[3].tolist(), val[4].tolist()]
-    #     dataset['test'] = [test[0].tolist(), test[1].tolist(), test[2].tolist(), test[3].tolist(), test[4].tolist()]
-    #     json.dump(dataset, fw)
+    len_lst = [model.config.X_maxlen,model.config.Y_maxlen, model.config.Y_maxlen]
+    if trainPath:
+       train = processInitDataWithoutQHJ_Generic(train_data,len_lst)
+    if valPath:
+       val = processInitDataWithoutQHJ_Generic(val_data,len_lst)
+    if testPath:
+       test = processInitDataWithoutQHJ_Generic(test_data,len_lst)
+
+
+    with open('resource/dataSet30_lawSplit.json','w',encoding='utf-8') as fw:
+        dataset = {}
+        dataset['train'] = [train[0].tolist(), train[1].tolist(), train[2].tolist(), train[3].tolist()]
+        dataset['val'] = [val[0].tolist(), val[1].tolist(), val[2].tolist(), val[3].tolist()]
+        dataset['test'] = [test[0].tolist(), test[1].tolist(), test[2].tolist(), test[3].tolist()]
+        json.dump(dataset, fw)
 
     #================================================================================
 
-    with open('resource/dataSet50oneHot.json', 'r', encoding='utf-8') as fr:
-        dataset = json.load(fr)
-        train = dataset['train']
-        val = dataset['val']
-        test = dataset['test']
-
-        train = np.array(train[0]),np.array(train[1]),np.array(train[2]),np.array(train[3])
-        val = np.array(val[0]), np.array(val[1]), np.array(val[2]), np.array(val[3])
-        test = np.array(test[0]), np.array(test[1]), np.array(test[2]), np.array(test[3])
+    # with open('resource/dataSet50oneHot.json', 'r', encoding='utf-8') as fr:
+    #     dataset = json.load(fr)
+    #     train = dataset['train']
+    #     val = dataset['val']
+    #     test = dataset['test']
+    #
+    #     train = np.array(train[0]),np.array(train[1]),np.array(train[2]),np.array(train[3])
+    #     val = np.array(val[0]), np.array(val[1]), np.array(val[2]), np.array(val[3])
+    #     test = np.array(test[0]), np.array(test[1]), np.array(test[2]), np.array(test[3])
 
     return train,val, test
 
@@ -76,6 +76,8 @@ def data_load_test(model,rfModel):
     test_data = env['test']
     test = processInitData(test_data,model)
     return test
+
+
 
 def processInitDataWithoutQHJ(data,model):
     a_data_word = []
@@ -96,7 +98,27 @@ def processInitDataWithoutQHJ(data,model):
     b_data_word = kr.preprocessing.sequence.pad_sequences(np.array(b_data_word), model.config.Y_maxlen)
     return a_data_word,b_data_word, np.array(y)
 
+def processInitDataWithoutQHJ_Generic(data,len_list):
+    output_data = [[] for _ in range(len(data[0]))]
+
+    for sample in data:
+        assert len(sample) == len(data[0]), ValueError("the number of elemengs in this sample is {0}".format(len(sample)))
+        target_y = int(sample[-1])
+        for i in range(len(sample)-1):
+            output_data[i].append(list(map(lambda x:pre.getVector(x), sample[i])))
+
+        if target_y == 1:
+            output_data[-1].append([0,1])
+        else:
+            output_data[-1].append([1,0])
+
+    for i in range(len(data[0]) - 1):
+        output_data[i] = kr.preprocessing.sequence.pad_sequences(np.array(output_data[i]), len_list[i])
+    output_data[-1] = np.array(output_data[-1])
+    return output_data
+
 #process data from env
+#使用index表示前后件信息
 def processInitData(data,model):
     a_data_word = []
     b_data_word = []

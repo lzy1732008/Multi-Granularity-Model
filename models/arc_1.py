@@ -22,6 +22,8 @@ class MultiGranularityCNNModel:
                                           shape=[None, self.config.X_maxlen, param.BaseConfig.word_dimension])
         self.input_X2 = tf.placeholder(name="inputX2_word", dtype=tf.float32,
                                           shape=[None, self.config.Y_maxlen, param.BaseConfig.word_dimension])
+        self.input_X3 = tf.placeholder(name="inputX3_word",dtype=tf.float32,
+                                          shape=[None,self.config.Y_maxlen,param.BaseConfig.word_dimension])
         self.y = tf.placeholder(name="target_y", dtype=tf.int32, shape=[None, 2])
         self.dropout_rate = tf.placeholder(tf.float32, name='keep_prob')
 
@@ -31,21 +33,30 @@ class MultiGranularityCNNModel:
         with tf.variable_scope("first-CNN-layer"):
             self.output_x1_1 = tf.layers.conv1d(self.input_X1,filters=self.config.filters_num,kernel_size=self.config.first_kernel_size,padding='same',name='first-cnn1')
             self.output_x2_1 = tf.layers.conv1d(self.input_X2,filters=self.config.filters_num,kernel_size=self.config.first_kernel_size,padding='same',name='first-cnn2')
-
+            self.output_x3_1 = tf.layers.conv1d(self.input_X3, filters=self.config.filters_num,
+                                                kernel_size=self.config.first_kernel_size, padding='same',
+                                                name='first-cnn3')
 
         with tf.variable_scope("second-CNN-layer"):
             self.output_x1_2 = tf.layers.conv1d(self.output_x1_1,filters=self.config.filters_num,kernel_size=self.config.second_kernel_size,padding='same',name='second-cnn1')
             self.output_x2_2 = tf.layers.conv1d(self.output_x2_1,filters=self.config.filters_num,kernel_size=self.config.second_kernel_size,padding='same',name='second-cnn2')
-
+            self.output_x3_2 = tf.layers.conv1d(self.output_x3_1, filters=self.config.filters_num,
+                                                kernel_size=self.config.second_kernel_size, padding='same',
+                                                name='second-cnn3')
 
         with tf.variable_scope("third-CNN-layer"):
             self.output_x1_3 = tf.layers.conv1d(self.output_x1_2,filters=self.config.filters_num,kernel_size=self.config.third_kernel_size,padding='same',name='third-cnn1')
             self.output_x2_3 = tf.layers.conv1d(self.output_x2_2,filters=self.config.filters_num,kernel_size=self.config.third_kernel_size,padding='same',name='third-cnn2')
-            self.x1_maxpooling = tf.reduce_max(self.output_x1_3,axis=-1)
-            self.x2_maxpooling = tf.reduce_max(self.output_x2_3,axis=-1)
+            self.output_x3_3 = tf.layers.conv1d(self.output_x3_2, filters=self.config.filters_num,
+                                                kernel_size=self.config.third_kernel_size, padding='same',
+                                                name='third-cnn3')
+
+            self.x1_maxpooling = tf.reduce_max(self.output_x1_3, axis=-1)
+            self.x2_maxpooling = tf.reduce_max(self.output_x2_3, axis=-1)
+            self.x3_maxpooling = tf.reduce_max(self.output_x3_3, axis=-1)
 
         with tf.variable_scope("fusion-layer"):
-            self.fusion_output = tf.concat([self.x1_maxpooling,self.x2_maxpooling],axis=-1)
+            self.fusion_output = tf.concat([self.x1_maxpooling,self.x2_maxpooling,self.x3_maxpooling],axis=-1)
 
         with tf.variable_scope("predict-layer"):
             self.output_ = tf.nn.relu(tf.layers.dense(inputs=self.fusion_output,units=self.config.mlp_output,name='fnn1'))
