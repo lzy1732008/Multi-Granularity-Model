@@ -56,12 +56,18 @@ class MultiGranularityCNNModel:
             self.x3_maxpooling = tf.reduce_max(self.output_x3_3, axis=-1)
 
         with tf.variable_scope("fusion-layer"):
-            self.fusion_output = tf.concat([self.x1_maxpooling,self.x2_maxpooling,self.x3_maxpooling],axis=-1)
+            self.fusion_output_12 = tf.concat([self.x1_maxpooling, self.x2_maxpooling],axis=-1)
+            self.fusion_output_13 = tf.concat([self.x1_maxpooling, self.x3_maxpooling], axis=-1)
 
         with tf.variable_scope("predict-layer"):
-            self.output_ = tf.nn.relu(tf.layers.dense(inputs=self.fusion_output,units=self.config.mlp_output,name='fnn1'))
-            self.output_ = tf.layers.dropout(self.output_,rate=self.config.dropout_rate)
-            self.logit = tf.layers.dense(inputs=self.output_,units=2,name='fnn2')
+            self.output_12 = tf.nn.relu(tf.layers.dense(inputs=self.fusion_output_12,units=self.config.mlp_output,name='fnn1'))
+            self.output_12 = tf.layers.dropout(self.output_12,rate=self.config.dropout_rate)
+
+            self.output_13 = tf.nn.relu(
+                tf.layers.dense(inputs=self.fusion_output_13, units=self.config.mlp_output, name='fnn2'))
+            self.output_13 = tf.layers.dropout(self.output_13, rate=self.config.dropout_rate)
+
+            self.logit = tf.layers.dense(inputs=tf.concat([self.output_12,self.output_13],axis=-1),units=2,name='fnn3')
 
         with tf.variable_scope("optimize-layer"):
             self.pred_y = tf.argmax(tf.nn.softmax(self.logit), 1)

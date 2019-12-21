@@ -10,15 +10,15 @@ import os
 import sys
 import pickle
 
-from models.arc_1 import *
+from models.MGC_15 import *
 from preps.data_load_generic import *
 import models.parameter as param
-from util.feedDict import feed_data_2
+from util.feedDict import feed_data_1 as feed_data
 
 class basicPath:
     def __init__(self,time):
-        self.save_dir = 'result/model/ARC_1'  # 修改处
-        self.param_des = 'three-input-' + str(time) +'times'
+        self.save_dir = 'result/model/MGC_15'  # 修改处
+        self.param_des = 'v1' + str(time) +'times'
         self.save_path = os.path.join(self.save_dir, self.param_des + '/checkpoints/best_validation')
         self.tensorboard_dir = os.path.join(self.save_dir, self.param_des + '/tensorboard')
 
@@ -62,7 +62,7 @@ def evaluate(sess,a_word,b_word,c_word, y):
     total_acc = 0.0
     for a_word_batch, b_word_batch,c_word_batch, y_batch in batch_eval:
         batch_len = len(a_word_batch)
-        feed_dict = feed_data_2(model,a_word_batch, b_word_batch,c_word_batch, y_batch,1.0)
+        feed_dict = feed_data(model,a_word_batch, b_word_batch,c_word_batch, y_batch,1.0)
         loss, acc = sess.run([model.loss, model.acc], feed_dict=feed_dict)
         total_loss += loss * batch_len
         total_acc += acc * batch_len
@@ -120,7 +120,7 @@ def train(train_data, val_data,Path):
         print('Epoch:', epoch + 1)
         batch_train = get_batch_data(train_x1_word, train_x2_word, train_x2_label, train_y, batch_size=param.BaseConfig.batch_size)
         for a_word_batch, b_word_batch, c_word_batch, y_batch in batch_train:
-            feed_dict = feed_data_2(model,a_word_batch, b_word_batch, c_word_batch,y_batch,model.config.dropout_rate)
+            feed_dict = feed_data(model,a_word_batch, b_word_batch, c_word_batch,y_batch,model.config.dropout_rate)
 
             if total_batch % param.BaseConfig.save_per_batch == 0:
                 # 每多少轮次将训练结果写入tensorboard scalar
@@ -190,7 +190,7 @@ def test(test_data, Path):
     for i in range(num_batch):  # 逐批次处理
         start_id = i * batch_size
         end_id = min((i + 1) * batch_size, data_len)
-        feed_dict = feed_data_2(model,test_x1_word[start_id:end_id],test_x2_word[start_id:end_id],test_x2_label[start_id:end_id],test_y,1.0)
+        feed_dict = feed_data(model,test_x1_word[start_id:end_id],test_x2_word[start_id:end_id],test_x2_label[start_id:end_id],test_y,1.0)
         # feed_dict = {
         #     model.input_X1: test_x1_word[start_id:end_id],
         #     model.input_X2: test_x2_word[start_id:end_id],
@@ -216,7 +216,7 @@ def test(test_data, Path):
     time_dif = get_time_dif(start_time)
     print("Time usage:", time_dif)
 
-    # checkPrediction(y_pred_cls,y_test_cls)
+    checkPrediction(y_pred_cls,y_test_cls)
     # print("beta value", beta1,beta2,beta3)
     #check error prediction
     # print(y_pred_cls)
@@ -253,8 +253,8 @@ def checkPrediction(pred_cls, target_y):
             else:wrong.append(s)
             index += 1
 
-    print('predction is right.......')
-    print('\n'.join(right[:5]))
+    # print('predction is right.......')
+    # print('\n'.join(right[:5]))
 
     print('prediction is wrong')
     print('\n'.join(wrong))
@@ -264,13 +264,13 @@ def run_mutli():
     # 载入随机森林模型
     with open(param.BaseConfig.rf_model_path, 'rb') as fr:
         rf = pickle.load(fr)
-    train_data, val_data, test_data = data_load(param.BaseConfig.trainPath, param.BaseConfig.valPath, param.BaseConfig.testPath, model, rf)
-    # train_data, val_data, test_data = data_load(None, None,
-    #                                             param.BaseConfig.testPath, model, rf)
+    # train_data, val_data, test_data = data_load(param.BaseConfig.trainPath, param.BaseConfig.valPath, param.BaseConfig.testPath, model, rf)
+    train_data, val_data, test_data = data_load(None, None,
+                                                param.BaseConfig.testPath, model, rf)
     print('train data shape:{0}\n val data shape:{1}\n test data shape:{2}'.format(len(train_data), len(val_data), len(test_data)))
-    for i in range(1):
-        Path = basicPath(i)
-        train(train_data,val_data,Path)
+    # for i in range(1):
+    #     Path = basicPath(i)
+    #     train(train_data,val_data,Path)
 
 
     for j in range(1):
