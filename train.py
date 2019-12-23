@@ -13,6 +13,7 @@ import pickle
 from models.MultiGranularityCNN import MultiGranularityCNNModel,MultiGraConfig
 from preps.data_load import *
 
+
 import models.parameter as param
 
 save_dir = 'result/model/MultiGranularityCNN'  #修改处
@@ -184,6 +185,7 @@ def test():
 
     y_test_cls = np.argmax(test_y, 1)
     y_pred_cls = np.zeros(shape=data_len, dtype=np.int32)  # 保存预测结果
+    probs = np.zeros(shape=[data_len,2], dtype=np.float32)
     inter_1,inter_2,inter_3 = [],[],[]
     for i in range(num_batch):  # 逐批次处理
         start_id = i * batch_size
@@ -194,7 +196,7 @@ def test():
             model.y: test_y,
             model.dropout_rate: 1.0   #这个表示测试时不使用dropout对神经元过滤
         }
-        y_pred_cls[start_id:end_id] = session.run(model.pred_y, feed_dict=feed_dict)   #将所有批次的预测结果都存放在y_pred_cls中
+        y_pred_cls[start_id:end_id], probs[start_id:end_id] = session.run([model.pred_y,model.logit], feed_dict=feed_dict)   #将所有批次的预测结果都存放在y_pred_cls中
         inter_1, inter_2, inter_3 = session.run([model.inter1_output_x2, model.inter2_output_x2, model.inter3_output_x2],
                                                                         feed_dict=feed_dict)
 
@@ -208,22 +210,51 @@ def test():
     cm = metrics.confusion_matrix(y_test_cls, y_pred_cls)
     print(cm)
 
-    time_dif = get_time_dif(start_time)
-    print("Time usage:", time_dif)
-
-    print('predict..')
-    print(y_pred_cls)
-
-    print('inetr1...')
-    print(inter_1)
-
-    print('inter2...')
-    print(inter_2)
-
-    print('inter3....')
-    print(inter_3)
+    # time_dif = get_time_dif(start_time)
+    # print("Time usage:", time_dif)
+    #
+    # print('predict..')
+    # print(y_pred_cls)
+    #
+    # print('inetr1...')
+    # print(inter_1)
+    #
+    # print('inter2...')
+    # print(inter_2)
+    #
+    # print('inter3....')
+    # print(inter_3)
+    # checkPrediction(y_pred_cls,y_test_cls,probs)
     return y_test_cls,y_pred_cls
+import json
+def checkPrediction(pred_cls, target_y,probs):
+    test_content = open('resource/test-init.txt','r',encoding='utf-8').read()
+    lines = test_content.split('\n')
+    index = 0
+    right = []
+    wrong = []
+    result = []
+    law_result = {}
+    for line in lines:
+        line = line.strip()
+        if line != '':
+            items = line.split('|')
+            assert len(items) == 4, ValueError("The number of items in this line is less than 4, content:" + line)
+            fact = items[1]
+            law = items[2]
+            y = int(items[-1])
+            s = 'fact:{0}, law:{1}, pred:{2}, y:{3}'.format(fact,law,pred_cls[index], y)
+            # result.append([fact,law,pred_cls[index],y,probs[index]])
+            if law not in law_result.keys():
+                law_result[law] = {}
+            law_result[law][fact] = [int(pred_cls[index]),int(y),list(map(str,list(probs[index])))]
+            assert y == target_y[index],ValueError(s)
+            # if target_y[index] == pred_cls[index]: right.append(s)
+            # else:wrong.append(s)
+            index += 1
 
+    with open('resource/预测结果分析/MultiGranularityCNN_predictAna.json','w',encoding='utf-8') as fw:
+        json.dump(law_result,fw)
 
 # train()
 y_test_cls,y_pred_cls = test()

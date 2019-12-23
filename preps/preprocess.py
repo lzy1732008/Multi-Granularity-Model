@@ -36,7 +36,7 @@ def _setUp_inputs_(sourcePath, wordEmbedding, wordVocab):
     with open(sourcePath,'r',encoding='utf-8') as fr:
         lines = fr.readlines()
     result = []
-    for line in lines:
+    for line in lines[:300]:
         line = line.strip()
         if line != '':
             items = line.split('|')
@@ -139,7 +139,7 @@ def setUp_inputs_QHJ_lawone(trainPath = None, valPath = None, testPath = None, r
     return env
 
 def _setUp_inputs_QHJ_lawone(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,flag):
-    stp = open(param.BaseConfig.stpPath,'r',encoding='utf-8').read().split('\n')
+    stp = list(map(lambda x: x.strip(), open(param.BaseConfig.stpPath, 'r', encoding='utf-8').read().split('\n')))
 
     with open(sourcePath,'r',encoding='utf-8') as fr:
         lines = fr.readlines()
@@ -178,8 +178,7 @@ def _setUp_inputs_QHJ_lawone(sourcePath, wordEmbedding, wordVocab,rfModel,start,
     return result
 
 def _setUp_inputs_QHJ(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,flag):
-    stp = open(param.BaseConfig.stpPath,'r',encoding='utf-8').read().split('\n')
-
+    stp = list(map(lambda x: x.strip(), open(param.BaseConfig.stpPath, 'r', encoding='utf-8').read().split('\n')))
     with open(sourcePath,'r',encoding='utf-8') as fr:
         lines = fr.readlines()
     result = []
@@ -194,7 +193,14 @@ def _setUp_inputs_QHJ(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,fla
             items = line.split('|')
             assert len(items) == 4, ValueError("The number of items in this line is less than 4, content:" + line)
             fact_input = processTextWithStpDict(items[1],wordEmbedding, wordVocab,stp)
-            if len(fact_input) == 0: continue
+            if len(fact_input) == 0:
+                if flag != 2:
+                   print("Ignore fact:" + line)
+                   continue
+                else:
+                    fact_input = [[0 for _ in range(len(param.BaseConfig.word_dimension))]]
+                    print("None fact")
+
             law_units = items[2].split(':')
             law_name = law_units[0]
             law_content = items[2][len(law_name) + 1:]
@@ -220,7 +226,7 @@ def _setUp_inputs_QHJ(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,fla
 
 #不添加前后件信息
 def _setUp_inputs_QHJ_2(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,flag):
-    stp = open(param.BaseConfig.stpPath,'r',encoding='utf-8').read().split('\n')
+    stp = list(map(lambda x: x.strip(), open(param.BaseConfig.stpPath, 'r', encoding='utf-8').read().split('\n')))
 
     with open(sourcePath,'r',encoding='utf-8') as fr:
         lines = fr.readlines()
@@ -282,7 +288,7 @@ def setUp_inputs_QHJ_lawtwo(trainPath = None, valPath = None, testPath = None, r
     return env
 #不添加法条的前后件信息，将法条的前件作为一个输入，法条的后件作为一个输入
 def _setUp_inputs_QHJ_split(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,flag):
-    stp = open(param.BaseConfig.stpPath,'r',encoding='utf-8').read().split('\n')
+    stp = list(map(lambda x:x.strip(),open(param.BaseConfig.stpPath,'r',encoding='utf-8').read().split('\n')))
 
     with open(sourcePath,'r',encoding='utf-8') as fr:
         lines = fr.readlines()
@@ -349,7 +355,7 @@ def processTextWithStpDict(line,wordEmbedding, wordVocab,stp):
             if word == "" or word in stp or w.flag in ['nr','ns','p','u']: continue
             contentcut.append(word)
 
-        if len(contentcut) == 0:  return []
+        if len(contentcut) == 0: return []
         wordEmbs = []
         for word in contentcut:
             wordEmb = processWord(word,wordEmbedding,wordVocab)
@@ -420,7 +426,7 @@ def _setUp_inputs_QHJ_KS(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,
         if line != '':
             items = line.split('|')
             assert len(items) == 4, ValueError("The number of items in this line is less than 4, content:" + line)
-            fact_input = processTextWithoutStpDict(items[1],wordEmbedding, wordVocab,stp)
+            fact_input = processTextWithStpDict(items[1],wordEmbedding, wordVocab,stp)
             if len(fact_input) == 0: continue
             law_units = items[2].split(':')
             law_name = law_units[0]

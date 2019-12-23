@@ -10,15 +10,15 @@ import os
 import sys
 import pickle
 
-from models.arc_1 import *
+from models.MGC_15 import *
 from preps.data_load_generic import *
 import models.parameter as param
-from util.feedDict import feed_data_2 as feed_data
+from util.feedDict import feed_data_1 as feed_data
 
 class basicPath:
     def __init__(self,time):
-        self.save_dir = 'result/model/arc-I'  # 修改处
-        self.param_des = 'three-input-splitDense-' + str(time) +'times'
+        self.save_dir = 'result/model/MGC_15'  # 修改处
+        self.param_des = 'v1-del1-' + str(time) +'times'
         self.save_path = os.path.join(self.save_dir, self.param_des + '/checkpoints/best_validation')
         self.tensorboard_dir = os.path.join(self.save_dir, self.param_des + '/tensorboard')
 
@@ -181,11 +181,12 @@ def test(test_data, Path):
 
     batch_size = param.BaseConfig.batch_size
     data_len = len(test_x1_word)
-    num_batch = int((data_len) / batch_size)
-    # num_batch = 1
+    # num_batch = int((data_len) / batch_size)
+    num_batch = 1
 
     y_test_cls = np.argmax(test_y, 1)
     y_pred_cls = np.zeros(shape=data_len, dtype=np.int32)  # 保存预测结果
+    probs = np.zeros(shape=[data_len,2],dtype=np.float32)
 
     for i in range(num_batch):  # 逐批次处理
         start_id = i * batch_size
@@ -198,13 +199,21 @@ def test(test_data, Path):
         #     model.y: test_y,
         #     model.dropout_rate: 1.0   #这个表示测试时不使用dropout对神经元过滤
         # }
-        y_pred_cls[start_id:end_id] = session.run(model.pred_y,feed_dict=feed_dict)   #将所有批次的预测结果都存放在y_pred_cls中
-        # pool_1,pool_2,pool_3 = session.run([model.fusion_output_max_1,model.fusion_output_max_2,model.fusion_output_max_3],
+        y_pred_cls[start_id:end_id], probs[start_id:end_id] = session.run([model.pred_y,model.logit],feed_dict=feed_dict)   #将所有批次的预测结果都存放在y_pred_cls中
+        # inter_1, pool_1,pool_2,pool_3 = session.run([model.inter_1,model.fusion_output_max_1,model.fusion_output_max_2,model.fusion_output_max_3],
         #                                                             feed_dict=feed_dict)
+        # print('pooling 1....')
+        # print(pool_1)
+        # print('pooling 2....')
+        # print(pool_2)
+        # print('pooling 3....')
+        # print(pool_3)
+        # print('inter 1.....')
+        # print(inter_1)
 
 
 
-
+    # print(y_pred_cls)
     print("Precision, Recall and F1-Score...")
     print(metrics.classification_report(y_test_cls, y_pred_cls,digits=4))#直接计算准确率，召回率和f值
 
@@ -212,33 +221,27 @@ def test(test_data, Path):
     print("Confusion Matrix...")
     cm = metrics.confusion_matrix(y_test_cls, y_pred_cls)
     print(cm)
+    #
+    # time_dif = get_time_dif(start_time)
+    # print("Time usage:", time_dif)
 
-    time_dif = get_time_dif(start_time)
-    print("Time usage:", time_dif)
-
-    checkPrediction(y_pred_cls,y_test_cls)
+    # checkPrediction(y_pred_cls,y_test_cls,probs)
     # print("beta value", beta1,beta2,beta3)
     #check error prediction
     # print(y_pred_cls)
     #
-    # print('check.......')
-    # print('maxpooling.....')
-    # print('pool 1...')
-    # print(pool_1[0])
-    # print('pool 2...')
-    # print(pool_2[0])
-    # print('pool 3...')
-    # print(pool_3[0])
 
     return y_test_cls,y_pred_cls
 
-
-def checkPrediction(pred_cls, target_y):
+import json
+def checkPrediction(pred_cls, target_y,probs):
     test_content = open('resource/test-init.txt','r',encoding='utf-8').read()
     lines = test_content.split('\n')
     index = 0
     right = []
     wrong = []
+    result = []
+    law_result = {}
     for line in lines:
         line = line.strip()
         if line != '':
@@ -248,16 +251,22 @@ def checkPrediction(pred_cls, target_y):
             law = items[2]
             y = int(items[-1])
             s = 'fact:{0}, law:{1}, pred:{2}, y:{3}'.format(fact,law,pred_cls[index], y)
+            # result.append([fact,law,pred_cls[index],y,probs[index]])
+            if law not in law_result.keys():
+                law_result[law] = {}
+            law_result[law][fact] = [int(pred_cls[index]),int(y),list(map(str,list(probs[index])))]
             assert y == target_y[index],ValueError(s)
-            if target_y[index] == pred_cls[index]: right.append(s)
-            else:wrong.append(s)
+            # if target_y[index] == pred_cls[index]: right.append(s)
+            # else:wrong.append(s)
             index += 1
+
+    with open('resource/预测结果分析/MGC_15predictAna.json','w',encoding='utf-8') as fw:
+        json.dump(law_result,fw)
 
     # print('predction is right.......')
     # print('\n'.join(right[:5]))
-
-    print('prediction is wrong')
-    print('\n'.join(wrong))
+    # print('prediction is wrong')
+    # print('\n'.join(wrong))
 
 
 def run_mutli():
