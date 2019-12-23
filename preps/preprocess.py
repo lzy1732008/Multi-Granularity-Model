@@ -195,7 +195,7 @@ def _setUp_inputs_QHJ(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,fla
             fact_input = processTextWithStpDict(items[1],wordEmbedding, wordVocab,stp)
             if len(fact_input) == 0:
                 if flag != 2:
-                   print("Ignore fact:" + line)
+                   print("Ignore fact!")
                    continue
                 else:
                     fact_input = [[0 for _ in range(len(param.BaseConfig.word_dimension))]]
