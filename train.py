@@ -256,7 +256,7 @@ def checkPrediction(pred_cls, target_y,probs):
     with open('resource/预测结果分析/MultiGranularityCNN_predictAna.json','w',encoding='utf-8') as fw:
         json.dump(law_result,fw)
 
-# train()
+train()
 y_test_cls,y_pred_cls = test()
 
 # wsnamels = getwslist(model=model)
