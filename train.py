@@ -11,7 +11,7 @@ import sys
 import pickle
 
 from models.MGCQ_16 import MultiGranularityCNNModel,MultiGraConfig
-from preps.data_load_generic import *
+from preps.data_load import *
 
 
 import models.parameter as param
@@ -91,9 +91,9 @@ def train():
     print("Loading training and validation data...")
     # 载入训练集与验证集
     start_time = time.time()
-    # train_data, test_data, val_data = data_load_lawone(param.BaseConfig.trainPath,param.BaseConfig.valPath,None,model,rfModel=rf,flag=qhj_label)
-    train_data, test_data, val_data = data_load(param.BaseConfig.trainPath, param.BaseConfig.valPath, None,
-                                                       model)
+    train_data, test_data, val_data = data_load_lawone(param.BaseConfig.trainPath,param.BaseConfig.valPath,None,model,rfModel=rf,flag=qhj_label)
+    # train_data, test_data, val_data = data_load(param.BaseConfig.trainPath, param.BaseConfig.valPath, None,
+    #                                                    model)
 
     train_x1_word, train_x2_word,  train_y = train_data
     val_x1_word,  val_x2_word,  val_y = val_data
