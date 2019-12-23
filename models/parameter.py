@@ -1,6 +1,6 @@
 class BaseConfig:
-    trainPath = 'resource/train-del1.txt'
-    valPath = 'resource/val-del1.txt'
+    trainPath = 'resource/train-init.txt'
+    valPath = 'resource/val-init.txt'
     testPath = 'resource/test-init.txt'
     w2vModel = 'resource/word_embedding.json'
     w2vModel_ex = 'resource/word_embedding_extend.json'  #这个是加入标点符号的embedding
