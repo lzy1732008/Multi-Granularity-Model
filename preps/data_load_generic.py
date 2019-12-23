@@ -32,31 +32,31 @@ def get_batch_data(*data, batch_size = 64):
 import json
 
 def data_load(trainPath, valPath, testPath,model,rfModel):
-    env = pre.setUp_inputs_QHJ(trainPath=trainPath,valPath=valPath,testPath=testPath,rfModel=rfModel)
+    env = pre.setUp_inputs_QHJ_lawone(trainPath=trainPath,valPath=valPath,testPath=testPath,rfModel=rfModel)
     train_data = env['train']
     test_data = env['test']
     val_data = env['val']
     train = []
     test = []
     val = []
-    # #
-    # # len_lst = [model.config.X_maxlen,model.config.Y_maxlen, model.config.Y_maxlen]
+    # # #
+    len_lst = [model.config.X_maxlen,model.config.Y_maxlen]
     if trainPath:
-       # train = processInitDataWithoutQHJ_Generic(train_data,len_lst)
-       train = processInitData2(train_data,model)
+       train = processInitDataWithoutQHJ_Generic(train_data,len_lst)
+       # train = processInitData2(train_data,model)
     if valPath:
-       # val = processInitDataWithoutQHJ_Generic(val_data,len_lst)
-       val = processInitData2(val_data,model)
+       val = processInitDataWithoutQHJ_Generic(val_data,len_lst)
+       # val = processInitData2(val_data,model)
     if testPath:
-       # test = processInitDataWithoutQHJ_Generic(test_data,len_lst)
-       test = processInitData2(test_data,model)
+       test = processInitDataWithoutQHJ_Generic(test_data,len_lst)
+       # test = processInitData2(test_data,model)
     #
-    with open('resource/dataset50-stp.json','w',encoding='utf-8') as fw:
-        dataset = {}
-        dataset['train'] = [train[0].tolist(), train[1].tolist(), train[2].tolist(), train[3].tolist()]
-        dataset['val'] = [val[0].tolist(), val[1].tolist(), val[2].tolist(), val[3].tolist()]
-        dataset['test'] = [test[0].tolist(), test[1].tolist(), test[2].tolist(), test[3].tolist()]
-        json.dump(dataset, fw)
+    # with open('resource/dataset50-stp.json','w',encoding='utf-8') as fw:
+    #     dataset = {}
+    #     dataset['train'] = [train[0].tolist(), train[1].tolist(), train[2].tolist(), train[3].tolist()]
+    #     dataset['val'] = [val[0].tolist(), val[1].tolist(), val[2].tolist(), val[3].tolist()]
+    #     dataset['test'] = [test[0].tolist(), test[1].tolist(), test[2].tolist(), test[3].tolist()]
+    #     json.dump(dataset, fw)
 
     #================================================================================
 

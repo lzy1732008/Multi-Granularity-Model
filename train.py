@@ -10,14 +10,14 @@ import os
 import sys
 import pickle
 
-from models.MultiGranularityCNN import MultiGranularityCNNModel,MultiGraConfig
-from preps.data_load import *
+from models.MGCQ_16 import MultiGranularityCNNModel,MultiGraConfig
+from preps.data_load_generic import *
 
 
 import models.parameter as param
 
-save_dir = 'result/model/MultiGranularityCNN'  #修改处
-param_des = 'initparam-3CNN-v1'
+save_dir = 'result/model/MGCQ_16'  #修改处
+param_des = 'v1'
 # param_des = 'initparam-qj'
 save_path = os.path.join(save_dir,param_des+'/checkpoints/best_validation')
 tensorboard_dir = os.path.join(save_dir,param_des+'/tensorboard')
@@ -197,8 +197,8 @@ def test():
             model.dropout_rate: 1.0   #这个表示测试时不使用dropout对神经元过滤
         }
         y_pred_cls[start_id:end_id], probs[start_id:end_id] = session.run([model.pred_y,model.logit], feed_dict=feed_dict)   #将所有批次的预测结果都存放在y_pred_cls中
-        inter_1, inter_2, inter_3 = session.run([model.inter1_output_x2, model.inter2_output_x2, model.inter3_output_x2],
-                                                                        feed_dict=feed_dict)
+        # inter_1, inter_2, inter_3 = session.run([model.inter1_output_x2, model.inter2_output_x2, model.inter3_output_x2],
+        #                                                                 feed_dict=feed_dict)
 
 
 
@@ -256,7 +256,7 @@ def checkPrediction(pred_cls, target_y,probs):
     with open('resource/预测结果分析/MultiGranularityCNN_predictAna.json','w',encoding='utf-8') as fw:
         json.dump(law_result,fw)
 
-# train()
+train()
 y_test_cls,y_pred_cls = test()
 
 # wsnamels = getwslist(model=model)

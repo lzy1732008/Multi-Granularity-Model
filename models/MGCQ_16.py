@@ -5,25 +5,6 @@ from models.modules import Interaction
 
 class MultiGraConfig:
     # v1
-    # X_maxlen = 30
-    # Y_maxlen = 50
-    # dropout_rate = 0.5
-    # first_kernel_size = 2
-    # second_kernel_size = 4
-    # filters_num = param.BaseConfig.word_dimension
-    # mlp_output = 2 * Y_maxlen
-
-    #v2
-    # X_maxlen = 30
-    # Y_maxlen = 50
-    # dropout_rate = 0.5
-    # first_kernel_size = 2
-    # second_kernel_size = 4
-    # filters_num = param.BaseConfig.word_dimension
-    # mlp_output = 64
-
-    # v3:
-
     X_maxlen = 30
     Y_maxlen = 50
     dropout_rate = 0.5
@@ -33,15 +14,6 @@ class MultiGraConfig:
     filters_num = param.BaseConfig.word_dimension
     mlp_output = 64
 
-    #v4
-    # X_maxlen = 30
-    # Y_maxlen = 50
-    # dropout_rate = 0.5
-    # first_kernel_size = 2
-    # second_kernel_size = 4
-    # third_kernel_size = 8
-    # filters_num = 256
-    # mlp_output = 64
 
 
 class MultiGranularityCNNModel:
@@ -52,8 +24,7 @@ class MultiGranularityCNNModel:
         self.input_X2 = tf.placeholder(name="inputX2_word", dtype=tf.float32,
                                           shape=[None, self.config.Y_maxlen, param.BaseConfig.word_dimension])
         self.y = tf.placeholder(name="target_y", dtype=tf.int32, shape=[None, 2])
-        self.x2_label = tf.placeholder(name="inputX2_label", dtype=tf.float32,
-                                       shape=[None, self.config.Y_maxlen, 2])
+
         self.dropout_rate = tf.placeholder(tf.float32, name='keep_prob')
 
         self.build_model()
@@ -65,10 +36,6 @@ class MultiGranularityCNNModel:
             self.output_x2_1 = tf.layers.conv1d(self.input_X2,filters=self.config.filters_num,kernel_size=self.config.first_kernel_size,padding='same',name='first-cnn2')
 
         with tf.variable_scope("first-interaction"):
-            # interaction = Interaction(8, self.output_x1_1, self.output_x2_1, self.x2_label)
-            # self.inter_1 = interaction.exeInteraction()
-
-            #=======================
             self.inter_1 = self.interaction(self.output_x1_1, self.output_x2_1)
 
             self.inter_rep_1 = tf.reshape(
@@ -78,8 +45,7 @@ class MultiGranularityCNNModel:
         with tf.variable_scope("fusion-layer-1"):
             self.x2_inter_1 = self.inter_rep_1 * self.input_X2
             self.fusion_output_1 = tf.concat(
-                [self.input_X2, self.x2_inter_1, self.input_X2 - self.x2_inter_1, self.input_X2 * self.x2_inter_1,
-                 self.x2_label],
+                [self.input_X2, self.x2_inter_1, self.input_X2 - self.x2_inter_1, self.input_X2 * self.x2_inter_1],
                 axis=-1)  # [Batch, len, 4 * dimension]
             self.fusion_output_1 = tf.layers.dense(inputs=self.fusion_output_1, units=self.config.mlp_output,
                                                    name='fusion-fnn')
@@ -90,8 +56,6 @@ class MultiGranularityCNNModel:
             self.output_x2_2 = tf.layers.conv1d(self.output_x2_1,filters=self.config.filters_num,kernel_size=self.config.second_kernel_size,padding='same',name='second-cnn2')
 
         with tf.variable_scope("second-interaction"):
-            # interaction = Interaction(8, self.output_x1_2, self.output_x2_2, self.x2_label)
-            # self.inter_2 = interaction.exeInteraction()
 
             self.inter_2 = self.interaction(self.output_x1_2,self.output_x2_2)
             self.inter_rep_2 = tf.reshape(tf.keras.backend.repeat_elements(self.inter_2, rep=param.BaseConfig.word_dimension, axis=1),shape=[-1,self.config.Y_maxlen,param.BaseConfig.word_dimension])
@@ -99,7 +63,7 @@ class MultiGranularityCNNModel:
         with tf.variable_scope("fusion-layer-2"):
             self.x2_inter_2 = self.inter_rep_2 * self.input_X2
             self.fusion_output_2 = tf.concat(
-                [self.input_X2, self.x2_inter_2, self.input_X2 - self.x2_inter_2, self.input_X2 * self.x2_inter_2, self.x2_label],
+                [self.input_X2, self.x2_inter_2, self.input_X2 - self.x2_inter_2, self.input_X2 * self.x2_inter_2],
                 axis=-1)  # [Batch, len, 4 * dimension]
             self.fusion_output_2 = tf.layers.dense(inputs=self.fusion_output_2, units=self.config.mlp_output,
                                                    name='fusion-fnn')
