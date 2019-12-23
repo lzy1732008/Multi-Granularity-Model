@@ -164,8 +164,8 @@ def train():
 def test():
     print("Loading test data...")
     start_time = time.time()
-    # test_data = data_load_test_lawone(model,rf,flag=qhj_label)
-    test_data = data_load_test(model)
+    test_data = data_load_test_lawone(model,rf,flag=qhj_label)
+    # test_data = data_load_test(model)
     test_x1_word,  test_x2_word,  test_y = test_data
 
 
@@ -256,7 +256,7 @@ def checkPrediction(pred_cls, target_y,probs):
     with open('resource/预测结果分析/MultiGranularityCNN_predictAna.json','w',encoding='utf-8') as fw:
         json.dump(law_result,fw)
 
-train()
+# train()
 y_test_cls,y_pred_cls = test()
 
 # wsnamels = getwslist(model=model)
