@@ -224,11 +224,11 @@ def test():
     #
     # print('inter3....')
     # print(inter_3)
-    # checkPrediction(y_pred_cls,y_test_cls,probs)
+    checkPrediction(y_pred_cls,y_test_cls,probs)
     return y_test_cls,y_pred_cls
 import json
 def checkPrediction(pred_cls, target_y,probs):
-    test_content = open('resource/test-init.txt','r',encoding='utf-8').read()
+    test_content = open('resource/test-init-完整.txt','r',encoding='utf-8').read()
     lines = test_content.split('\n')
     index = 0
     right = []
@@ -253,11 +253,13 @@ def checkPrediction(pred_cls, target_y,probs):
             # else:wrong.append(s)
             index += 1
 
-    with open('resource/预测结果分析/MultiGranularityCNN_predictAna.json','w',encoding='utf-8') as fw:
+    with open('resource/预测结果分析/MGCQ_16_predictAna.json','w',encoding='utf-8') as fw:
         json.dump(law_result,fw)
 
-train()
-y_test_cls,y_pred_cls = test()
+# train()
+# y_test_cls,y_pred_cls = test()
+
+data_load_lawone(param.BaseConfig.trainPath,param.BaseConfig.valPath,None,model,rfModel=rf,flag=qhj_label)
 
 # wsnamels = getwslist(model=model)
 # wsevaluate(y_test_cls, y_pred_cls,wsnamels)
