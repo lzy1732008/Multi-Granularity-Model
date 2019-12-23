@@ -18,7 +18,7 @@ from util.feedDict import feed_data_1 as feed_data
 class basicPath:
     def __init__(self,time):
         self.save_dir = 'result/model/MGC_15'  # 修改处
-        self.param_des = 'v1-del1-' + str(time) +'times'
+        self.param_des = 'v1-del1intrainval-' + str(time) +'times'
         self.save_path = os.path.join(self.save_dir, self.param_des + '/checkpoints/best_validation')
         self.tensorboard_dir = os.path.join(self.save_dir, self.param_des + '/tensorboard')
 
@@ -213,7 +213,7 @@ def test(test_data, Path):
 
 
 
-    # print(y_pred_cls)
+    print(y_pred_cls)
     print("Precision, Recall and F1-Score...")
     print(metrics.classification_report(y_test_cls, y_pred_cls,digits=4))#直接计算准确率，召回率和f值
 
@@ -221,9 +221,9 @@ def test(test_data, Path):
     print("Confusion Matrix...")
     cm = metrics.confusion_matrix(y_test_cls, y_pred_cls)
     print(cm)
-    #
-    # time_dif = get_time_dif(start_time)
-    # print("Time usage:", time_dif)
+
+    time_dif = get_time_dif(start_time)
+    print("Time usage:", time_dif)
 
     # checkPrediction(y_pred_cls,y_test_cls,probs)
     # print("beta value", beta1,beta2,beta3)
@@ -235,7 +235,7 @@ def test(test_data, Path):
 
 import json
 def checkPrediction(pred_cls, target_y,probs):
-    test_content = open('resource/test-init.txt','r',encoding='utf-8').read()
+    test_content = open('resource/test-init-完整.txt','r',encoding='utf-8').read()
     lines = test_content.split('\n')
     index = 0
     right = []
@@ -255,12 +255,12 @@ def checkPrediction(pred_cls, target_y,probs):
             if law not in law_result.keys():
                 law_result[law] = {}
             law_result[law][fact] = [int(pred_cls[index]),int(y),list(map(str,list(probs[index])))]
-            assert y == target_y[index],ValueError(s)
+            assert y == target_y[index],ValueError(s+str(target_y[index]))
             # if target_y[index] == pred_cls[index]: right.append(s)
             # else:wrong.append(s)
             index += 1
 
-    with open('resource/预测结果分析/MGC_15predictAna.json','w',encoding='utf-8') as fw:
+    with open('resource/预测结果分析/MGC_15predictAna-del1.json','w',encoding='utf-8') as fw:
         json.dump(law_result,fw)
 
     # print('predction is right.......')
@@ -277,9 +277,9 @@ def run_mutli():
     # train_data, val_data, test_data = data_load(None, None,
     #                                             param.BaseConfig.testPath, model, rf)
     print('train data shape:{0}\n val data shape:{1}\n test data shape:{2}'.format(len(train_data), len(val_data), len(test_data)))
-    # for i in range(3):
-    #     Path = basicPath(i)
-    #     train(train_data,val_data,Path)
+    for i in range(3):
+        Path = basicPath(i)
+        train(train_data,val_data,Path)
 
 
     for j in range(3):
