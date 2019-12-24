@@ -28,7 +28,7 @@ model = MultiGranularityCNNModel()
 with open(param.BaseConfig.rf_model_path, 'rb') as fr:
     rf = pickle.load(fr)
 
-qhj_label = 0
+qhj_label = 1
 
 if not os.path.exists(save_path):
     os.makedirs(save_path)

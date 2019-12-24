@@ -57,7 +57,7 @@ def data_load_lawone(trainPath, valPath, testPath,model,rfModel,flag=0):
     if testPath:
        test = generic.processInitDataWithoutQHJ(test_data,model)
 
-    with open('resource/dataset50-withstp-lawone-qj.json', 'w', encoding='utf-8') as fw:
+    with open('resource/dataset50-withstp-lawone-hj.json', 'w', encoding='utf-8') as fw:
         dataset = {}
         dataset['train'] = [train[0].tolist(), train[1].tolist(), train[2].tolist()]
         dataset['val'] = [val[0].tolist(), val[1].tolist(), val[2].tolist()]
