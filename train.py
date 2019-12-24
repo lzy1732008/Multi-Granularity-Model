@@ -224,7 +224,7 @@ def test():
     #
     # print('inter3....')
     # print(inter_3)
-    checkPrediction(y_pred_cls,y_test_cls,probs)
+    # checkPrediction(y_pred_cls,y_test_cls,probs)
     return y_test_cls,y_pred_cls
 import json
 def checkPrediction(pred_cls, target_y,probs):
@@ -256,10 +256,10 @@ def checkPrediction(pred_cls, target_y,probs):
     with open('resource/预测结果分析/MGCQ_16_predictAna.json','w',encoding='utf-8') as fw:
         json.dump(law_result,fw)
 
-# train()
-# y_test_cls,y_pred_cls = test()
+train()
+y_test_cls,y_pred_cls = test()
 
-data_load_lawone(param.BaseConfig.trainPath,param.BaseConfig.valPath,param.BaseConfig.testPath,model,rfModel=rf,flag=qhj_label)
+# data_load_lawone(param.BaseConfig.trainPath,param.BaseConfig.valPath,param.BaseConfig.testPath,model,rfModel=rf,flag=qhj_label)
 # data_load_lawone(param.BaseConfig.trainPath,param.BaseConfig.valPath,param.BaseConfig.testPath,model,rfModel=rf,flag=qhj_label)
 
 # wsnamels = getwslist(model=model)
