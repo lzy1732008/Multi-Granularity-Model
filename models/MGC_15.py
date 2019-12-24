@@ -83,7 +83,7 @@ class MultiGranularityCNNModel:
                 axis=-1)  # [Batch, len, 4 * dimension]
             self.fusion_output_1 = tf.layers.dense(inputs=self.fusion_output_1, units=self.config.mlp_output,
                                                    name='fusion-fnn')
-            self.fusion_output_max_1 = tf.reduce_max(self.fusion_output_1, axis=-1)
+            self.fusion_output_max_1 = tf.reduce_max(self.fusion_output_1, axis=1)
 
         with tf.variable_scope("second-CNN-layer"):
             self.output_x1_2 = tf.layers.conv1d(self.output_x1_1,filters=self.config.filters_num,kernel_size=self.config.second_kernel_size,padding='same',name='second-cnn1')
@@ -105,7 +105,7 @@ class MultiGranularityCNNModel:
                                                    name='fusion-fnn')
             # self.fusion_output_2 = tf.nn.top_k(input=self.fusion_output_2,k=5,sorted=False)
             # self.fusion_output_2 = tf.layers.dense(inputs=tf.concat([self.fusion_output_2[0],self.x2_label],axis=-1),units=self.config.mlp_output,name='fusion-fnn-2')
-            self.fusion_output_max_2 = tf.reduce_max(self.fusion_output_2, axis=-1)
+            self.fusion_output_max_2 = tf.reduce_max(self.fusion_output_2, axis=1)
 
         with tf.variable_scope("third-CNN-layer"):
             self.output_x1_3 = tf.layers.conv1d(self.output_x1_2, filters=self.config.filters_num,
@@ -125,7 +125,7 @@ class MultiGranularityCNNModel:
             self.x2_inter_3 = self.inter_rep_3 * self.input_X2
             self.fusion_output_3 = tf.concat([self.input_X2,self.x2_inter_3,self.input_X2 - self.x2_inter_3, self.input_X2 * self.x2_inter_3], axis=-1)  # [Batch, len, 2 + 4 * dimension]
             self.fusion_output_3 = tf.layers.dense(inputs=self.fusion_output_3,units=self.config.mlp_output,name='fusion-fnn')
-            self.fusion_output_max_3 = tf.reduce_max(self.fusion_output_3,axis=-1) #[B,l]
+            self.fusion_output_max_3 = tf.reduce_max(self.fusion_output_3,axis=1) #[B,l]
 
         with tf.variable_scope("Augment-layer"):
             self.fusion_output = tf.concat([self.fusion_output_max_1,self.fusion_output_max_2,self.fusion_output_max_3],

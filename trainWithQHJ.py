@@ -18,7 +18,7 @@ from util.feedDict import feed_data_1 as feed_data
 class basicPath:
     def __init__(self,time):
         self.save_dir = 'result/model/MGC_15'  # 修改处
-        self.param_des = 'v4-' + str(time) +'times'
+        self.param_des = 'v3-maxpooling1-' + str(time) +'times'
         self.save_path = os.path.join(self.save_dir, self.param_des + '/checkpoints/best_validation')
         self.tensorboard_dir = os.path.join(self.save_dir, self.param_des + '/tensorboard')
 
@@ -213,7 +213,7 @@ def test(test_data, Path):
 
 
 
-    print(y_pred_cls)
+    # print(y_pred_cls)
     print("Precision, Recall and F1-Score...")
     print(metrics.classification_report(y_test_cls, y_pred_cls,digits=4))#直接计算准确率，召回率和f值
 
