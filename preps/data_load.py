@@ -42,52 +42,50 @@ def get_batch_data(a_word,b_word,y,batch_size = 64):
 
 
 def data_load_lawone(trainPath, valPath, testPath,model,rfModel,flag=0):
-    env = pre.setUp_inputs_QHJ_lawone(trainPath=trainPath, valPath=valPath, testPath=testPath, rfModel=rfModel,flag=flag)
-    train_data = env['train']
-    test_data = env['test']
-    val_data = env['val']
-    train = []
-    test = []
-    val = []
-
-    if trainPath:
-       train = generic.processInitDataWithoutQHJOutputLength(train_data,model)
-    if valPath:
-       val = generic.processInitDataWithoutQHJOutputLength(val_data,model)
-    if testPath:
-       test = generic.processInitDataWithoutQHJOutputLength(test_data,model)
-
-    with open('resource/dataset50-withstp-lawone-qj-addinputslength.json', 'w', encoding='utf-8') as fw:
-        dataset = {}
-        dataset['train'] = [train[0].tolist(), train[1].tolist(), train[2].tolist(),train[3].tolist(),train[4].tolist()]
-        dataset['val'] = [val[0].tolist(), val[1].tolist(), val[2].tolist(), val[3].tolist(), val[4].tolist()]
-        dataset['test'] = [test[0].tolist(), test[1].tolist(), test[2].tolist(), test[3].tolist(), test[4].tolist()]
-        json.dump(dataset, fw)
-
-    # with open('resource/dataset50-withstp-lawone-qj.json', 'r', encoding='utf-8') as fr:
-    #     dataset = json.load(fr)
-    #     train = dataset['train']
-    #     val = dataset['val']
-    #     test = dataset['test']
+    # env = pre.setUp_inputs_QHJ_lawone(trainPath=trainPath, valPath=valPath, testPath=testPath, rfModel=rfModel,flag=flag)
+    # train_data = env['train']
+    # test_data = env['test']
+    # val_data = env['val']
+    # train = []
+    # test = []
+    # val = []
     #
-    #     train = np.array(train[0]),np.array(train[1]),np.array(train[2])
-    #     val = np.array(val[0]), np.array(val[1]), np.array(val[2])
-    #     test = np.array(test[0]), np.array(test[1]), np.array(test[2])
+    # if trainPath:
+    #    train = generic.processInitDataWithoutQHJOutputLength(train_data,model)
+    # if valPath:
+    #    val = generic.processInitDataWithoutQHJOutputLength(val_data,model)
+    # if testPath:
+    #    test = generic.processInitDataWithoutQHJOutputLength(test_data,model)
+    #
+    # with open('resource/dataset50-withstp-lawone-qj-addinputslength.json', 'w', encoding='utf-8') as fw:
+    #     dataset = {}
+    #     dataset['train'] = [train[0].tolist(), train[1].tolist(), train[2].tolist(),train[3].tolist(),train[4].tolist()]
+    #     dataset['val'] = [val[0].tolist(), val[1].tolist(), val[2].tolist(), val[3].tolist(), val[4].tolist()]
+    #     dataset['test'] = [test[0].tolist(), test[1].tolist(), test[2].tolist(), test[3].tolist(), test[4].tolist()]
+    #     json.dump(dataset, fw)
+
+    with open('resource/dataset50-withstp-lawone-qj-addinputslength.json', 'r', encoding='utf-8') as fr:
+        dataset = json.load(fr)
+        train = dataset['train']
+        val = dataset['val']
+        test = dataset['test']
+
+        train = np.array(train[0]),np.array(train[1]),np.array(train[2]),np.array(train[3]), np.array(train[4])
+        val = np.array(val[0]), np.array(val[1]), np.array(val[2]), np.array(val[3]), np.array(val[4])
+        test = np.array(test[0]), np.array(test[1]), np.array(test[2]), np.array(test[3]), np.array(test[4])
     return train, test, val
 
 def data_load_test_lawone(model,rfModel,flag=0):
-    env = pre.setUp_inputs_QHJ_lawone(trainPath=None, valPath=None,
-                            testPath=param.BaseConfig.testPath,rfModel=rfModel,flag=flag)
-    test_data = env['test']
-    test = generic.processInitDataWithoutQHJOutputLength(test_data,model)
+    # env = pre.setUp_inputs_QHJ_lawone(trainPath=None, valPath=None,
+    #                         testPath=param.BaseConfig.testPath,rfModel=rfModel,flag=flag)
+    # test_data = env['test']
+    # test = generic.processInitDataWithoutQHJOutputLength(test_data,model)
 
-    # with open('resource/dataset50-withstp-lawone-qj.json', 'r', encoding='utf-8') as fr:
-    #     dataset = json.load(fr)
-    #     train = dataset['train']
-    #     val = dataset['val']
-    #     test = dataset['test']
-    #
-    #     test = np.array(test[0]), np.array(test[1]), np.array(test[2])
+    with open('resource/dataset50-withstp-lawone-qj-addinputslength.json', 'r', encoding='utf-8') as fr:
+        dataset = json.load(fr)
+        test = dataset['test']
+
+        test = np.array(test[0]), np.array(test[1]), np.array(test[2]), np.array(test[3]), np.array(test[4])
     return test
 
 
