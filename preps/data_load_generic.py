@@ -21,6 +21,7 @@ def get_batch_data(*data, batch_size = 64):
 
     indices = np.random.permutation(np.arange(data_len))
     data_shuffle = []
+    print(len(data))
     for i in range(len(data)):
         data_shuffle.append(data[i][indices])
 

@@ -7,7 +7,7 @@ import math
 #     exp_sum = sum(exp_input)
 #     return [float(x)/exp_sum for x in exp_input]
 #
-fr1 = open('resource/预测结果分析/MGC_15predictAna.json','r',encoding='utf-8')
+fr1 = open('resource/预测结果分析/MGCQ_16_predictAna-hj.json','r',encoding='utf-8')
 fr2 = open('resource/预测结果分析/MGCQ_16_predictAna-qj.json','r',encoding='utf-8')
 model1_result = json.load(fr1)
 model2_result = json.load(fr2)
@@ -28,9 +28,10 @@ for k,v in model1_result.items():
         v_1_2 = list(map(float,v_1[2]))
         ft = '中华人民共和国刑法(2015)第一百三十三条:违反交通运输管理法规，因而发生重大事故，致人重伤、死亡或者使公私财产遭受重大损失的，处三年以下有期徒刑或者拘役；交通运输肇事后逃逸或者有其他特别恶劣情节的，处三年以上七年以下有期徒刑；因逃逸致人死亡的，处七年以上有期徒刑。'
         if k == ft and v_1[0] == 0 and v_1[1] == 0:
-            count_right += 1
-        if k == ft:
-            count += 1
+            print(k_1)
+        #     count_right += 1
+        # if k == ft:
+        #     count += 1
         # if v_1[0] != v_1[1]:
         #     predict_wrong.append([k,k_1,v_1])
         # model2_v_1 = list(map(float,model2_result[k][k_1][2]))
@@ -47,7 +48,7 @@ for k,v in model1_result.items():
         # else:
         #     if dis[1] > 0:
         #         enhanced_1.append([k,k_1,v_1,dis[1]])
-print('0的准确率:'+str(count_right/count))
+# print('0的准确率:'+str(count_right/count))
 # with open('resource/预测结果分析/模型16预测错误-基于法条排序.txt','w',encoding='utf-8') as fw:
 #     fw.write('wrong to right.....\n'+'\n'.join(list(map(str,predict_wrong)))+'\n')
     # fw.write('right to wrong.....\n' + '\n'.join(list(map(str, right_to_wrong))))

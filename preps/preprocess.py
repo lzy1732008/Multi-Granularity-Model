@@ -127,7 +127,7 @@ def setUp_inputs_QHJ_lawone(trainPath = None, valPath = None, testPath = None, r
     test = []
     val = []
     if trainPath:
-        train = _setUp_inputs_QHJ_lawone(trainPath, wordEmbedding, wordVocab, rfModel, 0, 1500,flag)
+        train = _setUp_inputs_QHJ_lawone(trainPath, wordEmbedding, wordVocab, rfModel, 0, 15000,flag)
 
     if valPath:
         val = _setUp_inputs_QHJ_lawone(valPath, wordEmbedding, wordVocab, rfModel, 0, 1000, flag)
