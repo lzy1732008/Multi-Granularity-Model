@@ -89,7 +89,7 @@ class MultiGranularityCNNModel:
 
         with tf.variable_scope("third-CNN-layer"):
             self.output_x1_2 = self.q1_mask_inter * self.output_x1_2
-            self.output_x2_2 = self.q1_mask_inter * self.output_x2_2
+            self.output_x2_2 = self.q2_mask_inter * self.output_x2_2
 
             self.output_x1_3 = tf.layers.conv1d(self.output_x1_2, filters=self.config.filters_num,
                                                 kernel_size=self.config.third_kernel_size, padding='same',
