@@ -76,10 +76,17 @@ def data_load_lawone(trainPath, valPath, testPath,model,rfModel,flag=0):
     return train, test, val
 
 def data_load_test_lawone(model,rfModel,flag=0):
-    env = pre.setUp_inputs_QHJ_lawone(trainPath=None, valPath=None,
-                            testPath=param.BaseConfig.testPath,rfModel=rfModel,flag=flag)
-    test_data = env['test']
-    test = generic.processInitDataWithoutQHJ(test_data,model)
+    # env = pre.setUp_inputs_QHJ_lawone(trainPath=None, valPath=None,
+    #                         testPath=param.BaseConfig.testPath,rfModel=rfModel,flag=flag)
+    # test_data = env['test']
+    # test = generic.processInitDataWithoutQHJ(test_data,model)
+    with open('resource/dataset50-withstp-lawone-qj.json', 'r', encoding='utf-8') as fr:
+        dataset = json.load(fr)
+        train = dataset['train']
+        val = dataset['val']
+        test = dataset['test']
+
+        test = np.array(test[0]), np.array(test[1]), np.array(test[2])
     return test
 
 

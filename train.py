@@ -10,13 +10,13 @@ import os
 import sys
 import pickle
 
-from models.MGCQ_16 import MultiGranularityCNNModel,MultiGraConfig
+from models.MGC_17 import MultiGranularityCNNModel,MultiGraConfig
 from preps.data_load import *
 
 
 import models.parameter as param
 
-save_dir = 'result/model/MGCQ_16'  #修改处
+save_dir = 'result/model/MGC_17'  #修改处
 param_des = 'v1-qj'
 # param_des = 'initparam-qj'
 save_path = os.path.join(save_dir,param_des+'/checkpoints/best_validation')
@@ -228,7 +228,7 @@ def test():
     return y_test_cls,y_pred_cls
 import json
 def checkPrediction(pred_cls, target_y,probs):
-    test_content = open('resource/test-init-完整.txt','r',encoding='utf-8').read()
+    test_content = open('resource/test-init.txt','r',encoding='utf-8').read()
     lines = test_content.split('\n')
     index = 0
     right = []
@@ -253,7 +253,7 @@ def checkPrediction(pred_cls, target_y,probs):
             # else:wrong.append(s)
             index += 1
 
-    with open('resource/预测结果分析/MGCQ_16_predictAna.json','w',encoding='utf-8') as fw:
+    with open('resource/预测结果分析/MGCQ_16_predictAna-hj.json','w',encoding='utf-8') as fw:
         json.dump(law_result,fw)
 
 train()
