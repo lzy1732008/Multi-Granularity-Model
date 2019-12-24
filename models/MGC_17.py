@@ -42,7 +42,7 @@ class MultiGranularityCNNModel:
             self.q1_mask_inter = tf.keras.backend.repeat_elements(self.q1_mask,rep=param.BaseConfig.word_dimension, axis=-1) #[B,l,d]
             self.q2_mask_inter = tf.keras.backend.repeat_elements(self.q2_mask,rep=param.BaseConfig.word_dimension, axis=-1) #[B,l,d]
 
-            self.q2_mask_fusion = tf.keras.backend.repeat_elements(self.q1_mask, rep=self.config.mlp_output, axis=1)
+            self.q2_mask_fusion = tf.keras.backend.repeat_elements(self.q2_mask, rep=self.config.mlp_output, axis=-1)
 
         with tf.variable_scope("first-CNN-layer"):
             self.output_x1_1 = tf.layers.conv1d(self.input_X1,filters=self.config.filters_num,kernel_size=self.config.first_kernel_size,padding='same',name='first-cnn1')
