@@ -100,6 +100,30 @@ def processInitDataWithoutQHJ(data,model):
     b_data_word = kr.preprocessing.sequence.pad_sequences(np.array(b_data_word), model.config.Y_maxlen)
     return a_data_word,b_data_word, np.array(y)
 
+
+def processInitDataWithoutQHJOutputLength(data,model):
+    a_data_word = []
+    b_data_word = []
+    len_1 = []
+    len_2 = []
+    y = []
+
+    for sample in data:
+        assert len(sample) == 3, ValueError("the number of elemengs in this sample is {0}".format(len(sample)))
+        input_a, input_b,  target_y = sample[0],sample[1],int(sample[2])
+        a_data_word.append(list(map(lambda x:pre.getVector(x), input_a)))
+        b_data_word.append(list(map(lambda x:pre.getVector(x), input_b)))
+        if target_y == 1:
+            y.append([0,1])
+        else:
+            y.append([1,0])
+        len_1.append(len(input_a))
+        len_2.append(len(input_b))
+
+    a_data_word = kr.preprocessing.sequence.pad_sequences(np.array(a_data_word), model.config.X_maxlen,padding='post')
+    b_data_word = kr.preprocessing.sequence.pad_sequences(np.array(b_data_word), model.config.Y_maxlen,padding='post')
+    return a_data_word,b_data_word, np.array(len_1), np.array(len_2), np.array(y)
+
 def processInitDataWithoutQHJ_Generic(data,len_list):
     output_data = [[] for _ in range(len(data[0]))]
 

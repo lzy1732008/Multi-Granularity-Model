@@ -17,7 +17,7 @@ from preps.data_load import *
 import models.parameter as param
 
 save_dir = 'result/model/MGCQ_16'  #修改处
-param_des = 'v1'
+param_des = 'v1-qj'
 # param_des = 'initparam-qj'
 save_path = os.path.join(save_dir,param_des+'/checkpoints/best_validation')
 tensorboard_dir = os.path.join(save_dir,param_des+'/tensorboard')
@@ -28,7 +28,7 @@ model = MultiGranularityCNNModel()
 with open(param.BaseConfig.rf_model_path, 'rb') as fr:
     rf = pickle.load(fr)
 
-qhj_label = 1
+qhj_label = 0
 
 if not os.path.exists(save_path):
     os.makedirs(save_path)

@@ -64,7 +64,7 @@ def data_load_lawone(trainPath, valPath, testPath,model,rfModel,flag=0):
     #     dataset['test'] = [test[0].tolist(), test[1].tolist(), test[2].tolist()]
     #     json.dump(dataset, fw)
 
-    with open('resource/dataset50-withstp-lawone-hj.json', 'r', encoding='utf-8') as fr:
+    with open('resource/dataset50-withstp-lawone-qj.json', 'r', encoding='utf-8') as fr:
         dataset = json.load(fr)
         train = dataset['train']
         val = dataset['val']
@@ -123,6 +123,7 @@ def processInitData(data,model):
     a_data_word = kr.preprocessing.sequence.pad_sequences(np.array(a_data_word), model.config.X_maxlen)
     b_data_word = kr.preprocessing.sequence.pad_sequences(np.array(b_data_word), model.config.Y_maxlen)
     return a_data_word,b_data_word, np.array(y)
+
 
 
 #法条前后件预测用到的
