@@ -64,7 +64,7 @@ def evaluate(sess,a_word,b_word,seq_1, seq_2, y):
     total_acc = 0.0
     for a_word_batch, b_word_batch,seq_1_batch, seq_2_batch, y_batch in batch_eval:
         batch_len = len(a_word_batch)
-        feed_dict = feed_data(a_word_batch, b_word_batch,seq_1_batch, seq_2_batch, y_batch,1.0)
+        feed_dict = feed_data(model,a_word_batch, b_word_batch,seq_1_batch, seq_2_batch, y_batch,1.0)
         loss, acc = sess.run([model.loss, model.acc], feed_dict=feed_dict)
         total_loss += loss * batch_len
         total_acc += acc * batch_len
@@ -128,13 +128,7 @@ def train():
         print('Epoch:', epoch + 1)
         batch_train = get_batch_data(train_x1_word, train_x2_word,  train_seq_1, train_seq_2, train_y, batch_size=param.BaseConfig.batch_size)
         for a_word_batch, b_word_batch, seq_1_batch, seq_2_batch, y_batch in batch_train:
-            feed_dict = feed_data(model=model,
-                                  a_word_batch=a_word_batch,
-                                  b_word_batch=b_word_batch,
-                                  seq_1_batch=seq_1_batch,
-                                  seq_2_batch = seq_2_batch,
-                                  y_batch=y_batch,
-                                  dropout_rate=model.config.dropout_rate)
+            feed_dict = feed_data(model,a_word_batch,b_word_batch,seq_1_batch,seq_2_batch,y_batch,model.config.dropout_rate)
 
             if total_batch % param.BaseConfig.save_per_batch == 0:
                 # 每多少轮次将训练结果写入tensorboard scalar
