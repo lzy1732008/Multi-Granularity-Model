@@ -208,7 +208,7 @@ def test():
         #     model.y: test_y,
         #     model.dropout_rate: 1.0   #这个表示测试时不使用dropout对神经元过滤
         # }
-        y_pred_cls[start_id:end_id] = session.run([model.pred_y], feed_dict=feed_dict)   #将所有批次的预测结果都存放在y_pred_cls中
+        y_pred_cls[start_id:end_id] = session.run(model.pred_y, feed_dict=feed_dict)   #将所有批次的预测结果都存放在y_pred_cls中
         # inter_3,logit = session.run([model.fusion_output_max_3,model.logit],
         #                                                                 feed_dict=feed_dict)
         # print('inter.......')
@@ -224,6 +224,9 @@ def test():
     print("Confusion Matrix...")
     cm = metrics.confusion_matrix(y_test_cls, y_pred_cls)
     print(cm)
+
+    print('prediction...')
+    print(y_pred_cls)
 
     # time_dif = get_time_dif(start_time)
     # print("Time usage:", time_dif)
@@ -271,7 +274,7 @@ def checkPrediction(pred_cls, target_y,probs):
     with open('resource/预测结果分析/MGCQ_16_predictAna-hj.json','w',encoding='utf-8') as fw:
         json.dump(law_result,fw)
 
-train()
+# train()
 y_test_cls,y_pred_cls = test()
 
 # data_load_lawone(param.BaseConfig.trainPath,param.BaseConfig.valPath,param.BaseConfig.testPath,model,rfModel=rf,flag=qhj_label)
