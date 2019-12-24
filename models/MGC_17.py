@@ -36,11 +36,11 @@ class MultiGranularityCNNModel:
 
     def build_model(self):
         with tf.variable_scope("mask"):
-            self.q1_mask = tf.expand_dims(tf.sequence_mask(self.seq1_len, dtype=tf.float32), dim=1)
-            self.q2_mask = tf.expand_dims(tf.sequence_mask(self.seq2_len, dtype=tf.float32), dim=1)
+            self.q1_mask = tf.expand_dims(tf.sequence_mask(self.seq1_len, maxlen=self.config.X_maxlen, dtype=tf.float32), dim=-1) #[B,l,1]
+            self.q2_mask = tf.expand_dims(tf.sequence_mask(self.seq2_len, maxlen=self.config.Y_maxlen, dtype=tf.float32), dim=-1) #[B,l,1]
 
-            self.q1_mask_inter = tf.keras.backend.repeat_elements(self.q1_mask,rep=param.BaseConfig.word_dimension, axis=1)
-            self.q2_mask_inter = tf.keras.backend.repeat_elements(self.q2_mask,rep=param.BaseConfig.word_dimension, axis=1)
+            self.q1_mask_inter = tf.keras.backend.repeat_elements(self.q1_mask,rep=param.BaseConfig.word_dimension, axis=-1) #[B,l,d]
+            self.q2_mask_inter = tf.keras.backend.repeat_elements(self.q2_mask,rep=param.BaseConfig.word_dimension, axis=-1) #[B,l,d]
 
             self.q2_mask_fusion = tf.keras.backend.repeat_elements(self.q1_mask, rep=self.config.mlp_output, axis=1)
 
