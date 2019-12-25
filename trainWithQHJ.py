@@ -282,7 +282,7 @@ def run_mutli():
     #     train(train_data,val_data,Path)
 
 
-    for j in range(0):
+    for j in range(1):
         print("the {0}nd testing......".format(str(j)))
         Path = basicPath(j)
         test(test_data, Path)
