@@ -19,7 +19,7 @@ from util.feedDict import feed_data_4 as feed_data  #修改处
 import models.parameter as param
 
 save_dir = 'result/model/MGCQ_16'  #修改处
-param_des = 'v1-qj'
+param_des = 'v1'
 # param_des = 'initparam-qj'
 save_path = os.path.join(save_dir,param_des+'/checkpoints/best_validation')
 tensorboard_dir = os.path.join(save_dir,param_des+'/tensorboard')
