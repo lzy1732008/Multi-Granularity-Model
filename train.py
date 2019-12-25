@@ -19,7 +19,7 @@ from util.feedDict import feed_data_4 as feed_data  #修改处
 import models.parameter as param
 
 save_dir = 'result/model/MGCQ_16'  #修改处
-param_des = 'v1-qj'
+param_des = 'v2-qj'
 # param_des = 'initparam-qj'
 save_path = os.path.join(save_dir,param_des+'/checkpoints/best_validation')
 tensorboard_dir = os.path.join(save_dir,param_des+'/tensorboard')
@@ -112,12 +112,12 @@ def train():
     # train_data, test_data, val_data = data_load(param.BaseConfig.trainPath, param.BaseConfig.valPath, None,
     #                                                    model)
 
-    # train_x1_word, train_x2_word,  train_y = train_data
-    # val_x1_word,  val_x2_word,  val_y = val_data
+    train_x1_word, train_x2_word,  train_y = train_data
+    val_x1_word,  val_x2_word,  val_y = val_data
 
 
-    train_x1_word, train_x2_word,  train_seq_1, train_seq_2, train_y = train_data
-    val_x1_word,  val_x2_word, val_seq_1, val_seq_2, val_y = val_data
+    # train_x1_word, train_x2_word,  train_seq_1, train_seq_2, train_y = train_data
+    # val_x1_word,  val_x2_word, val_seq_1, val_seq_2, val_y = val_data
 
 
     print('train len',len(train_x1_word))
@@ -141,10 +141,14 @@ def train():
     flag = False
     for epoch in range(param.BaseConfig.num_epochs):
         print('Epoch:', epoch + 1)
-        batch_train = get_batch_data(train_x1_word, train_x2_word,  train_seq_1, train_seq_2, train_y, batch_size=param.BaseConfig.batch_size)
-        for a_word_batch, b_word_batch, seq_1_batch, seq_2_batch, y_batch in batch_train:
-            feed_dict = feed_data(model,a_word_batch,b_word_batch,seq_1_batch,seq_2_batch,y_batch,model.config.dropout_rate)
-
+        batch_train = get_batch_data(train_x1_word, train_x2_word, train_y,
+                                     batch_size=param.BaseConfig.batch_size)
+        # batch_train = get_batch_data(train_x1_word, train_x2_word,  train_seq_1, train_seq_2, train_y, batch_size=param.BaseConfig.batch_size)
+        # for a_word_batch, b_word_batch, seq_1_batch, seq_2_batch, y_batch in batch_train:
+        for a_word_batch, b_word_batch, y_batch in batch_train:
+            # feed_dict = feed_data(model,a_word_batch,b_word_batch,seq_1_batch,seq_2_batch,y_batch,model.config.dropout_rate)
+            feed_dict = feed_data(model, a_word_batch, b_word_batch, y_batch,
+                                  model.config.dropout_rate)
             if total_batch % param.BaseConfig.save_per_batch == 0:
                 # 每多少轮次将训练结果写入tensorboard scalar
                 s = session.run(merged_summary, feed_dict=feed_dict)
@@ -155,8 +159,8 @@ def train():
 
                 feed_dict[model.dropout_rate] = 1.0
                 loss_train, acc_train,pre_y, logit, true_y, = session.run([model.loss, model.acc,model.pred_y,model.logit,model.y], feed_dict=feed_dict)
-                loss_val, acc_val = evaluate(session, val_x1_word,  val_x2_word, val_seq_1, val_seq_2, val_y )  # 验证当前会话中的模型的loss和acc
-
+                # loss_val, acc_val = evaluate(session, val_x1_word,  val_x2_word, val_seq_1, val_seq_2, val_y )  # 验证当前会话中的模型的loss和acc
+                loss_val, acc_val = evaluate(session, val_x1_word, val_x2_word,  val_y)
 
                 if acc_val > best_acc_val:
                     # 保存最好结果
@@ -241,8 +245,8 @@ def test():
     cm = metrics.confusion_matrix(y_test_cls, y_pred_cls)
     print(cm)
 
-    print('prediction...')
-    print(y_pred_cls)
+    # print('prediction...')
+    # print(y_pred_cls)
 
     # time_dif = get_time_dif(start_time)
     # print("Time usage:", time_dif)
@@ -290,7 +294,7 @@ def checkPrediction(pred_cls, target_y,probs):
     with open('resource/预测结果分析/MGCQ_16_predictAna-hj.json','w',encoding='utf-8') as fw:
         json.dump(law_result,fw)
 
-# train()
+train()
 y_test_cls,y_pred_cls = test()
 
 # data_load_lawone(param.BaseConfig.trainPath,param.BaseConfig.valPath,param.BaseConfig.testPath,model,rfModel=rf,flag=qhj_label)

@@ -2,30 +2,17 @@
 import tensorflow as tf
 import models.parameter as param
 from models.modules import Interaction
-import math
 
 class MultiGraConfig:
     # v1
-    # X_maxlen = 30
-    # Y_maxlen = 50
-    # dropout_rate = 0.5
-    # first_kernel_size = 2
-    # second_kernel_size = 4
-    # third_kernel_size = 8
-    # filters_num = param.BaseConfig.word_dimension
-    # mlp_output = 64
-
-
-    #v2
     X_maxlen = 30
-    Y_maxlen = 30
+    Y_maxlen = 50
     dropout_rate = 0.5
     first_kernel_size = 2
     second_kernel_size = 4
     third_kernel_size = 8
     filters_num = param.BaseConfig.word_dimension
     mlp_output = 64
-
 
 
 class MultiGranularityCNNModel:
@@ -35,28 +22,26 @@ class MultiGranularityCNNModel:
                                           shape=[None, self.config.X_maxlen, param.BaseConfig.word_dimension])
         self.input_X2 = tf.placeholder(name="inputX2_word", dtype=tf.float32,
                                           shape=[None, self.config.Y_maxlen, param.BaseConfig.word_dimension])
-        # self.seq1_len = tf.placeholder(name="seq1_len",dtype=tf.int32,
-        #                                   shape=[None])
-        # self.seq2_len = tf.placeholder(name="seq2_len",dtype=tf.int32,
-        #                                   shape=[None])
         self.y = tf.placeholder(name="target_y", dtype=tf.int32, shape=[None, 2])
-
+        self.x2_label = tf.placeholder(name="inputX2_label", dtype=tf.float32,
+                                       shape=[None, self.config.Y_maxlen, 2])
         self.dropout_rate = tf.placeholder(tf.float32, name='keep_prob')
 
         self.build_model()
 
     def build_model(self):
-        # with tf.variable_scope("mask"):
-        #     self.q1_mask = tf.keras.backend.repeat_elements(tf.expand_dims(tf.sequence_mask(self.seq1_len, dtype=tf.float32), dim=-1),rep=param.BaseConfig.word_dimension,axis=-1)
-        #     self.q2_mask = tf.keras.backend.repeat_elements(tf.expand_dims(tf.sequence_mask(self.seq2_len, dtype=tf.float32), dim=-1),rep=param.BaseConfig.word_dimension,axis=-1)
 
         with tf.variable_scope("first-CNN-layer"):
             self.output_x1_1 = tf.layers.conv1d(self.input_X1,filters=self.config.filters_num,kernel_size=self.config.first_kernel_size,padding='same',name='first-cnn1')
             self.output_x2_1 = tf.layers.conv1d(self.input_X2,filters=self.config.filters_num,kernel_size=self.config.first_kernel_size,padding='same',name='first-cnn2')
 
         with tf.variable_scope("first-interaction"):
-            # self.inter_1 = self.interactionSuper(self.output_x1_1, self.output_x2_1, self.q1_mask, self.q2_mask)
-            self.inter_1  =self.interaction(self.input_X1,self.input_X2)
+            # interaction = Interaction(8, self.output_x1_1, self.output_x2_1, self.x2_label)
+            # self.inter_1 = interaction.exeInteraction()
+
+            #=======================
+            self.inter_1 = self.interaction(self.output_x1_1, self.output_x2_1)
+
             self.inter_rep_1 = tf.reshape(
                 tf.keras.backend.repeat_elements(self.inter_1, rep=param.BaseConfig.word_dimension, axis=1),
                 shape=[-1, self.config.Y_maxlen, param.BaseConfig.word_dimension])
@@ -64,18 +49,20 @@ class MultiGranularityCNNModel:
         with tf.variable_scope("fusion-layer-1"):
             self.x2_inter_1 = self.inter_rep_1 * self.input_X2
             self.fusion_output_1 = tf.concat(
-                [self.input_X2, self.x2_inter_1, self.input_X2 - self.x2_inter_1, self.input_X2 * self.x2_inter_1],
+                [self.input_X2, self.x2_inter_1, self.input_X2 - self.x2_inter_1, self.input_X2 * self.x2_inter_1,
+                 self.x2_label],
                 axis=-1)  # [Batch, len, 4 * dimension]
             self.fusion_output_1 = tf.layers.dense(inputs=self.fusion_output_1, units=self.config.mlp_output,
                                                    name='fusion-fnn')
             self.fusion_output_max_1 = tf.reduce_max(self.fusion_output_1, axis=-1)
 
         with tf.variable_scope("second-CNN-layer"):
-
             self.output_x1_2 = tf.layers.conv1d(self.output_x1_1,filters=self.config.filters_num,kernel_size=self.config.second_kernel_size,padding='same',name='second-cnn1')
             self.output_x2_2 = tf.layers.conv1d(self.output_x2_1,filters=self.config.filters_num,kernel_size=self.config.second_kernel_size,padding='same',name='second-cnn2')
 
         with tf.variable_scope("second-interaction"):
+            # interaction = Interaction(8, self.output_x1_2, self.output_x2_2, self.x2_label)
+            # self.inter_2 = interaction.exeInteraction()
 
             self.inter_2 = self.interaction(self.output_x1_2,self.output_x2_2)
             self.inter_rep_2 = tf.reshape(tf.keras.backend.repeat_elements(self.inter_2, rep=param.BaseConfig.word_dimension, axis=1),shape=[-1,self.config.Y_maxlen,param.BaseConfig.word_dimension])
@@ -83,7 +70,7 @@ class MultiGranularityCNNModel:
         with tf.variable_scope("fusion-layer-2"):
             self.x2_inter_2 = self.inter_rep_2 * self.input_X2
             self.fusion_output_2 = tf.concat(
-                [self.input_X2, self.x2_inter_2, self.input_X2 - self.x2_inter_2, self.input_X2 * self.x2_inter_2],
+                [self.input_X2, self.x2_inter_2, self.input_X2 - self.x2_inter_2, self.input_X2 * self.x2_inter_2, self.x2_label],
                 axis=-1)  # [Batch, len, 4 * dimension]
             self.fusion_output_2 = tf.layers.dense(inputs=self.fusion_output_2, units=self.config.mlp_output,
                                                    name='fusion-fnn')
@@ -157,30 +144,6 @@ class MultiGranularityCNNModel:
         x2_weight = tf.matmul(x1_weight_, x1_2_x2)  #[Batch, 1, len2]
         x2_weight = tf.reshape(x2_weight,shape=[-1,len2])
         return x2_weight
-
-    def interactionSuper(self,inputX1,inputX2,mask_a,mask_b):
-        len1 = inputX1.get_shape().as_list()[1]
-        len2 = inputX2.get_shape().as_list()[1]
-        temperature = tf.get_variable('temperature', shape=(), dtype=tf.float32, trainable=True,
-                                      initializer=tf.constant_initializer(math.sqrt(1 / param.BaseConfig.word_dimension)))
-        attention = self._attention(inputX1, inputX2, temperature,self.config.dropout_rate)
-        attention_mask = tf.matmul(mask_a, mask_b, transpose_b=True)
-        attention = attention_mask * attention + (1 - attention_mask) * tf.float32.min
-        x1_2_x2 = tf.nn.softmax(attention, axis=2)  # x1对x2每个词的关注度
-        x2_2_x1 = tf.nn.softmax(attention, axis=1)  # x2对x1每个词的关注度
-
-        # 计算x1每个词获取的总weight
-        x1_weight = tf.reduce_mean(x2_2_x1, axis=2)  # [Batch, len1]
-
-        # 计算x2最后获取的每个词的总的weight
-        x1_weight_ = tf.expand_dims(x1_weight, axis=1)  # [Batch, 1, len1]
-        x2_weight = tf.matmul(x1_weight_, x1_2_x2)  # [Batch, 1, len2]
-        x2_weight = tf.reshape(x2_weight, shape=[-1, len2])
-        return x2_weight
-
-
-    def _attention(self, a, b, t, _):
-        return tf.matmul(a, b, transpose_b=True) * t
 
 
 
