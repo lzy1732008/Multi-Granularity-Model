@@ -14,7 +14,7 @@ import numpy as np
 from models.MGCQ_16 import MultiGranularityCNNModel,MultiGraConfig   #修改处
 from preps.data_load import data_load_lawone,data_load_test_lawone
 from preps.data_load_generic import get_batch_data,get_batch_data_test
-from util.feedDict import feed_data_3 as feed_data  #修改处
+from util.feedDict import feed_data_4 as feed_data  #修改处
 
 import models.parameter as param
 
