@@ -342,7 +342,7 @@ def processTextWithoutDict(line,wordEmbedding, wordVocab):
         for word in contentcut:
             wordEmb = processWord(word,wordEmbedding,wordVocab)
             wordEmbs.append(wordEmb)
-        return wordEmbs 
+        return wordEmbs
     return []
 
 #只保留特定词性的词
