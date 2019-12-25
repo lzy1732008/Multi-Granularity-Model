@@ -25,7 +25,7 @@ class basicPath:
         if not os.path.exists(self.save_path):
             os.makedirs(self.save_path)
         if not os.path.exists(self.tensorboard_dir):
-            os.makedirs(self.tensorboard_dir) 
+            os.makedirs(self.tensorboard_dir)
 
 
 
