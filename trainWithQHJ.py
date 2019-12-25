@@ -225,6 +225,12 @@ def test(test_data, Path):
     time_dif = get_time_dif(start_time)
     print("Time usage:", time_dif)
 
+    count_true = 0
+    for pred, true in zip(y_pred_cls,y_test_cls):
+        if pred == true:
+            count_true += 1
+    print("手动计算准确率为:"+str(float(count_true/len(y_test_cls))))
+
     # checkPrediction(y_pred_cls,y_test_cls,probs)
     # print("beta value", beta1,beta2,beta3)
     #check error prediction

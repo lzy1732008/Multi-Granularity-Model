@@ -127,19 +127,19 @@ def setUp_inputs_QHJ_lawone(trainPath = None, valPath = None, testPath = None, r
     test = []
     val = []
     if trainPath:
-        train = _setUp_inputs_QHJ_lawone(trainPath, wordEmbedding, wordVocab, rfModel, 0, 10,flag)
+        train = _setUp_inputs_QHJ_lawone(trainPath, wordEmbedding, wordVocab, rfModel, 0, 15000,flag)
 
     if valPath:
-        val = _setUp_inputs_QHJ_lawone(valPath, wordEmbedding, wordVocab, rfModel, 0, 10, flag)
+        val = _setUp_inputs_QHJ_lawone(valPath, wordEmbedding, wordVocab, rfModel, 0, 1000, flag)
 
     if testPath:
-        test = _setUp_inputs_QHJ_lawone(testPath, wordEmbedding, wordVocab, rfModel, 0, 10, flag)
+        test = _setUp_inputs_QHJ_lawone(testPath, wordEmbedding, wordVocab, rfModel, 0, 1000, flag)
 
     env = {'train': train, 'test': test, 'val': val}
     return env
 
 def _setUp_inputs_QHJ_lawone(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,flag):
-    stp = list(map(lambda x: x.strip(), open(param.BaseConfig.stpPath, 'r', encoding='utf-8').read().split('\n')))
+    # stp = list(map(lambda x: x.strip(), open(param.BaseConfig.stpPath, 'r', encoding='utf-8').read().split('\n')))
 
     with open(sourcePath,'r',encoding='utf-8') as fr:
         lines = fr.readlines()
@@ -178,7 +178,8 @@ def _setUp_inputs_QHJ_lawone(sourcePath, wordEmbedding, wordVocab,rfModel,start,
     return result
 
 def _setUp_inputs_QHJ(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,flag):
-    stp = list(map(lambda x: x.strip(), open(param.BaseConfig.stpPath, 'r', encoding='utf-8').read().split('\n')))
+    stp = []
+    # stp = list(map(lambda x: x.strip(), open(param.BaseConfig.stpPath, 'r', encoding='utf-8').read().split('\n')))
     with open(sourcePath,'r',encoding='utf-8') as fr:
         lines = fr.readlines()
     result = []
@@ -226,8 +227,9 @@ def _setUp_inputs_QHJ(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,fla
 
 #不添加前后件信息
 def _setUp_inputs_QHJ_2(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,flag):
-    stp = list(map(lambda x: x.strip(), open(param.BaseConfig.stpPath, 'r', encoding='utf-8').read().split('\n')))
-
+    stp = []
+    # stp = list(map(lambda x: x.strip(), open(param.BaseConfig.stpPath, 'r', encoding='utf-8').read().split('\n')))
+    #
     with open(sourcePath,'r',encoding='utf-8') as fr:
         lines = fr.readlines()
     result = []

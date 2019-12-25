@@ -24,7 +24,7 @@ right_to_wrong = []
 predict_wrong = []
 count_right = 0
 count = 0
-for k,v in model2_result.items():
+for k,v in model1_result.items():
     true_y = []
     pred_y = []
     for k_1, v_1 in v.items():
