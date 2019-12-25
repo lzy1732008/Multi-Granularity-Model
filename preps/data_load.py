@@ -42,7 +42,7 @@ def get_batch_data(a_word,b_word,y,batch_size = 64):
 
 
 def data_load_lawone(trainPath, valPath, testPath,model,rfModel,flag=0):
-    # env = pre.setUp_inputs_QHJ_lawone(trainPath=trainPath, valPath=valPath, testPath=testPath, rfModel=rfModel,flag=flag)
+    env = pre.setUp_inputs_QHJ_lawone(trainPath=trainPath, valPath=valPath, testPath=testPath, rfModel=rfModel,flag=flag)
     # train_data = env['train']
     # test_data = env['test']
     # val_data = env['val']

@@ -34,7 +34,7 @@
 #
 # print("0:{0},1:{1}，2:{2}".format(num_0,num_1,num_2))
 import tensorflow as tf
-q = tf.sequence_mask([1,2,3], maxlen=5, dtype=tf.float32)
+q = tf.sequence_mask([1,2,3,8], maxlen=5, dtype=tf.float32)
 with tf.Session() as sess:
     print(sess.run(q))
 

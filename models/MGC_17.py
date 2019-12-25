@@ -6,8 +6,18 @@ import math
 
 class MultiGraConfig:
     # v1
+    # X_maxlen = 30
+    # Y_maxlen = 50
+    # dropout_rate = 0.5
+    # first_kernel_size = 2
+    # second_kernel_size = 4
+    # third_kernel_size = 8
+    # filters_num = param.BaseConfig.word_dimension
+    # mlp_output = 64
+
+    #v2
     X_maxlen = 30
-    Y_maxlen = 50
+    Y_maxlen = 30
     dropout_rate = 0.5
     first_kernel_size = 2
     second_kernel_size = 4
@@ -52,7 +62,7 @@ class MultiGranularityCNNModel:
             self.inter_1 = self.interactionSuper(self.output_x1_1, self.output_x2_1, self.q1_mask_inter, self.q2_mask_inter)
             # self.inter_1  =self.interaction(self.input_X1,self.input_X2)
             self.inter_rep_1 = tf.reshape(
-                tf.keras.backend.repeat_elements(self.inter_1, rep=param.BaseConfig.word_dimension, axis=1),
+                tf.keras.backend.repeat_elements(self.inter_1, rep=param.BaseConfig.word_dimension, axis=-1),
                 shape=[-1, self.config.Y_maxlen, param.BaseConfig.word_dimension])
 
         with tf.variable_scope("fusion-layer-1"):
