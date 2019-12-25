@@ -81,11 +81,11 @@ def data_load_test_lawone(model,rfModel,flag=0):
     # test_data = env['test']
     # test = generic.processInitDataWithoutQHJOutputLength(test_data,model)
 
-    with open('resource/dataset50-withstp-lawone-qj-addinputslength.json', 'r', encoding='utf-8') as fr:
+    with open('resource/dataset50-withstp-lawone-qj.json', 'r', encoding='utf-8') as fr:
         dataset = json.load(fr)
         test = dataset['test']
 
-        test = np.array(test[0]), np.array(test[1]), np.array(test[2]), np.array(test[3]), np.array(test[4])
+        test = np.array(test[0]), np.array(test[1]), np.array(test[2])
     return test
 
 

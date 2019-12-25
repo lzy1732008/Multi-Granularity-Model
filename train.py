@@ -11,14 +11,14 @@ import sys
 import pickle
 import numpy as np
 
-from models.MGC_17 import MultiGranularityCNNModel,MultiGraConfig   #修改处
+from models.MGCQ_16 import MultiGranularityCNNModel,MultiGraConfig   #修改处
 from preps.data_load import data_load_lawone,data_load_test_lawone
 from preps.data_load_generic import get_batch_data,get_batch_data_test
 from util.feedDict import feed_data_3 as feed_data  #修改处
 
 import models.parameter as param
 
-save_dir = 'result/model/MGC_17'  #修改处
+save_dir = 'result/model/MGCQ_16'  #修改处
 param_des = 'v1-qj'
 # param_des = 'initparam-qj'
 save_path = os.path.join(save_dir,param_des+'/checkpoints/best_validation')
@@ -274,7 +274,7 @@ def checkPrediction(pred_cls, target_y,probs):
     with open('resource/预测结果分析/MGCQ_16_predictAna-hj.json','w',encoding='utf-8') as fw:
         json.dump(law_result,fw)
 
-train()
+# train()
 y_test_cls,y_pred_cls = test()
 
 # data_load_lawone(param.BaseConfig.trainPath,param.BaseConfig.valPath,param.BaseConfig.testPath,model,rfModel=rf,flag=qhj_label)
