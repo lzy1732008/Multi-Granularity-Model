@@ -56,21 +56,36 @@ def get_time_dif(start_time):
 #     return feed_dict
 
 
-def evaluate(sess,a_word,b_word,seq_1, seq_2, y):
+# def evaluate(sess,a_word,b_word,seq_1, seq_2, y):
+#     """评估在某一数据上的准确率和损失"""
+#     data_len = len(a_word)
+#     batch_eval = get_batch_data_test(a_word, b_word,seq_1, seq_2, y, batch_size=param.BaseConfig.batch_size)
+#     total_loss = 0.0
+#     total_acc = 0.0
+#     for a_word_batch, b_word_batch,seq_1_batch, seq_2_batch, y_batch in batch_eval:
+#         batch_len = len(a_word_batch)
+#         feed_dict = feed_data(model,a_word_batch, b_word_batch,seq_1_batch, seq_2_batch, y_batch,1.0)
+#         loss, acc = sess.run([model.loss, model.acc], feed_dict=feed_dict)
+#         total_loss += loss * batch_len
+#         total_acc += acc * batch_len
+#
+#     return total_loss / data_len, total_acc / data_len
+
+
+def evaluate(sess,a_word,b_word,y):
     """评估在某一数据上的准确率和损失"""
     data_len = len(a_word)
-    batch_eval = get_batch_data_test(a_word, b_word,seq_1, seq_2, y, batch_size=param.BaseConfig.batch_size)
+    batch_eval = get_batch_data_test(a_word, b_word, y, batch_size=param.BaseConfig.batch_size)
     total_loss = 0.0
     total_acc = 0.0
-    for a_word_batch, b_word_batch,seq_1_batch, seq_2_batch, y_batch in batch_eval:
+    for a_word_batch, b_word_batch, y_batch in batch_eval:
         batch_len = len(a_word_batch)
-        feed_dict = feed_data(model,a_word_batch, b_word_batch,seq_1_batch, seq_2_batch, y_batch,1.0)
+        feed_dict = feed_data(model,a_word_batch, b_word_batch,y_batch,1.0)
         loss, acc = sess.run([model.loss, model.acc], feed_dict=feed_dict)
         total_loss += loss * batch_len
         total_acc += acc * batch_len
 
     return total_loss / data_len, total_acc / data_len
-
 
 def train():
     print("Configuring TensorBoard and Saver...")
@@ -173,8 +188,8 @@ def test():
     start_time = time.time()
     test_data = data_load_test_lawone(model,rf,flag=qhj_label)
     # test_data = data_load_test(model)
-    # test_x1_word,  test_x2_word,  test_y = test_data
-    test_x1_word, test_x2_word, test_seq_1, test_seq_2, test_y = test_data
+    test_x1_word,  test_x2_word,  test_y = test_data
+    # test_x1_word, test_x2_word, test_seq_1, test_seq_2, test_y = test_data
 
 
     session = tf.Session()
@@ -183,7 +198,8 @@ def test():
     saver.restore(sess=session, save_path=save_path)  # 读取保存的模型
 
     print('Testing...')
-    loss_test, acc_test = evaluate(session, test_x1_word, test_x2_word, test_seq_1, test_seq_2, test_y)
+    # loss_test, acc_test = evaluate(session, test_x1_word, test_x2_word, test_seq_1, test_seq_2, test_y)
+    loss_test, acc_test = evaluate(session, test_x1_word, test_x2_word, test_y)
     msg = 'Test Loss: {0:>6.2}, Test Acc: {1:>7.2%}'
     print(msg.format(loss_test, acc_test))
 
@@ -199,15 +215,15 @@ def test():
     for i in range(num_batch):  # 逐批次处理
         start_id = i * batch_size
         end_id = min((i + 1) * batch_size, data_len)
-        feed_dict = feed_data(model, test_x1_word[start_id:end_id], test_x2_word[start_id:end_id],
-                              test_seq_1[start_id:end_id], test_seq_2[start_id:end_id],test_y, 1.0)
+        # feed_dict = feed_data(model, test_x1_word[start_id:end_id], test_x2_word[start_id:end_id],
+        #                       test_seq_1[start_id:end_id], test_seq_2[start_id:end_id],test_y, 1.0)
 
-        # feed_dict = {
-        #     model.input_X1: test_x1_word[start_id:end_id],
-        #     model.input_X2: test_x2_word[start_id:end_id],
-        #     model.y: test_y,
-        #     model.dropout_rate: 1.0   #这个表示测试时不使用dropout对神经元过滤
-        # }
+        feed_dict = {
+            model.input_X1: test_x1_word[start_id:end_id],
+            model.input_X2: test_x2_word[start_id:end_id],
+            model.y: test_y,
+            model.dropout_rate: 1.0   #这个表示测试时不使用dropout对神经元过滤
+        }
         y_pred_cls[start_id:end_id] = session.run(model.pred_y, feed_dict=feed_dict)   #将所有批次的预测结果都存放在y_pred_cls中
         # inter_3,logit = session.run([model.fusion_output_max_3,model.logit],
         #                                                                 feed_dict=feed_dict)
