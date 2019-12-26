@@ -53,17 +53,17 @@ def data_load_lawone(trainPath, valPath, testPath,model,rfModel,flag=0):
     if trainPath:
        train = generic.processInitDataWithoutQHJ(train_data,model)
        align_train = generic.computeAlign(train[0],train[1])
-       train = train[0],train[1],np.array(align_train),train[2]
+       train = train[0],train[1],np.array(align_train,dtype=float),train[2]
     if valPath:
        val = generic.processInitDataWithoutQHJ(val_data,model)
        align_val = generic.computeAlign(val[0], val[1])
-       val = val[0], val[1], np.array(align_val), val[2]
+       val = val[0], val[1], np.array(align_val,dtype=float), val[2]
     if testPath:
        test = generic.processInitDataWithoutQHJ(test_data,model)
        align_test = generic.computeAlign(test[0],test[1])
-       test = test[0], test[1], np.array(align_test), test[2]
+       test = test[0], test[1], np.array(align_test,dtype=float), test[2]
     #
-    with open('resource/dataset50-withstp-lawone-qj-align.json', 'w', encoding='utf-8') as fw:
+    with open('resource/dataset50-withstp-lawone-qj-align-afterfixpooling.json', 'w', encoding='utf-8') as fw:
         dataset = {}
         dataset['train'] = [train[0].tolist(), train[1].tolist(), train[2].tolist(),train[3].tolist()]
         dataset['val'] = [val[0].tolist(), val[1].tolist(), val[2].tolist(), val[3].tolist()]
@@ -88,7 +88,7 @@ def data_load_test_lawone(model,rfModel,flag=0):
     # # test = generic.processInitDataWithoutQHJOutputLength(test_data,model)
     # test = generic.processInitDataWithoutQHJ(test_data,model)
 
-    with open('resource/dataset50-withstp-lawone-qj-align.json', 'r', encoding='utf-8') as fr:
+    with open('resource/dataset50-withstp-lawone-qj-align-afterfixpooling.json', 'r', encoding='utf-8') as fr:
         dataset = json.load(fr)
         test = dataset['test']
 
