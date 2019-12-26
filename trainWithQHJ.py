@@ -226,7 +226,7 @@ def test(test_data, Path):
     print("Time usage:", time_dif)
 
 
-    checkPrediction(y_pred_cls,y_test_cls,probs)
+    # checkPrediction(y_pred_cls,y_test_cls,probs)
     # print("beta value", beta1,beta2,beta3)
     #check error prediction
     # print(y_pred_cls)
@@ -278,9 +278,9 @@ def run_mutli():
     # train_data, val_data, test_data = data_load(None, None,
     #                                             param.BaseConfig.testPath, model, rf)
     print('train data shape:{0}\n val data shape:{1}\n test data shape:{2}'.format(len(train_data), len(val_data), len(test_data)))
-    for i in range(1):
-        Path = basicPath(i)
-        train(train_data,val_data,Path)
+    # for i in range(1):
+    #     Path = basicPath(i)
+    #     train(train_data,val_data,Path)
 
 
     for j in range(1):
