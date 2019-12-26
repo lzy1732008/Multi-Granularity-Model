@@ -199,7 +199,7 @@ def test(test_data, Path):
         #     model.y: test_y,
         #     model.dropout_rate: 1.0   #这个表示测试时不使用dropout对神经元过滤
         # }
-        y_pred_cls[start_id:end_id] = session.run(model.pred_y,feed_dict=feed_dict)   #将所有批次的预测结果都存放在y_pred_cls中
+        y_pred_cls[start_id:end_id],probs[start_id:end_id] = session.run([model.pred_y,model.logit],feed_dict=feed_dict)   #将所有批次的预测结果都存放在y_pred_cls中
         # inter_1, pool_1,pool_2,pool_3 = session.run([model.inter_1,model.fusion_output_max_1,model.fusion_output_max_2,model.fusion_output_max_3],
         #                                                             feed_dict=feed_dict)
         # print('pooling 1....')
@@ -226,7 +226,7 @@ def test(test_data, Path):
     print("Time usage:", time_dif)
 
 
-    # checkPrediction(y_pred_cls,y_test_cls,probs)
+    checkPrediction(y_pred_cls,y_test_cls,probs)
     # print("beta value", beta1,beta2,beta3)
     #check error prediction
     # print(y_pred_cls)
@@ -261,7 +261,7 @@ def checkPrediction(pred_cls, target_y,probs):
             # else:wrong.append(s)
             index += 1
 
-    with open('resource/预测结果分析/MGC_18predictAna.json','w',encoding='utf-8') as fw:
+    with open('resource/预测结果分析/MGC_15predictAna-使用修改后的padding.json','w',encoding='utf-8') as fw:
         json.dump(law_result,fw)
 
     # print('predction is right.......')
@@ -274,16 +274,16 @@ def run_mutli():
     # 载入随机森林模型
     with open(param.BaseConfig.rf_model_path, 'rb') as fr:
         rf = pickle.load(fr)
-    train_data, val_data, test_data = data_load(param.BaseConfig.trainPath, param.BaseConfig.valPath, param.BaseConfig.testPath, model, rf)
-    # train_data, val_data, test_data = data_load(None, None,
-    #                                             param.BaseConfig.testPath, model, rf)
+    # train_data, val_data, test_data = data_load(param.BaseConfig.trainPath, param.BaseConfig.valPath, param.BaseConfig.testPath, model, rf)
+    train_data, val_data, test_data = data_load(None, None,
+                                                param.BaseConfig.testPath, model, rf)
     print('train data shape:{0}\n val data shape:{1}\n test data shape:{2}'.format(len(train_data), len(val_data), len(test_data)))
-    for i in range(3):
-        Path = basicPath(i)
-        train(train_data,val_data,Path)
+    # for i in range(3):
+    #     Path = basicPath(i)
+    #     train(train_data,val_data,Path)
 
 
-    for j in range(3):
+    for j in range(1):
         print("the {0}nd testing......".format(str(j)))
         Path = basicPath(j)
         test(test_data, Path)

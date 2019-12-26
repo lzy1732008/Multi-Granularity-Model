@@ -52,10 +52,10 @@ def data_load(trainPath, valPath, testPath,model,rfModel):
        # test = processInitDataWithoutQHJ_Generic(test_data,len_lst)
        test = processInitData2(test_data,model)
     #
-    with open('resource/dataset50-wholeLaw-afterfixpadding.json','w',encoding='utf-8') as fw:
+    with open('resource/dataset50-wholeLaw-afterfixpadding-test.json','w',encoding='utf-8') as fw:
         dataset = {}
-        dataset['train'] = [train[0].tolist(), train[1].tolist(), train[2].tolist(), train[3].tolist()]
-        dataset['val'] = [val[0].tolist(), val[1].tolist(), val[2].tolist(), val[3].tolist()]
+        # dataset['train'] = [train[0].tolist(), train[1].tolist(), train[2].tolist(), train[3].tolist()]
+        # dataset['val'] = [val[0].tolist(), val[1].tolist(), val[2].tolist(), val[3].tolist()]
         dataset['test'] = [test[0].tolist(), test[1].tolist(), test[2].tolist(), test[3].tolist()]
         json.dump(dataset, fw)
 

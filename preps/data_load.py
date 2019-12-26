@@ -82,17 +82,19 @@ def data_load_lawone(trainPath, valPath, testPath,model,rfModel,flag=0):
     return train, test, val
 
 def data_load_test_lawone(model,rfModel,flag=0):
-    # env = pre.setUp_inputs_QHJ_lawone(trainPath=None, valPath=None,
-    #                         testPath=param.BaseConfig.testPath,rfModel=rfModel,flag=flag)
-    # test_data = env['test']
-    # # test = generic.processInitDataWithoutQHJOutputLength(test_data,model)
-    # test = generic.processInitDataWithoutQHJ(test_data,model)
+    env = pre.setUp_inputs_QHJ_lawone(trainPath=None, valPath=None,
+                            testPath=param.BaseConfig.testPath,rfModel=rfModel,flag=flag)
+    test_data = env['test']
+    # test = generic.processInitDataWithoutQHJOutputLength(test_data,model)
+    test = generic.processInitDataWithoutQHJ(test_data,model)
+    align_test = generic.computeAlign(test[0], test[1])
+    test = test[0], test[1], np.array(align_test, dtype=float), test[2]
 
-    with open('resource/dataset50-withstp-lawone-qj-align-afterfixpooling.json', 'r', encoding='utf-8') as fr:
-        dataset = json.load(fr)
-        test = dataset['test']
-
-        test = np.array(test[0]), np.array(test[1]), np.array(test[2], np.array([test[3]]))
+    # with open('resource/dataset50-withstp-lawone-qj-align-afterfixpooling.json', 'r', encoding='utf-8') as fr:
+    #     dataset = json.load(fr)
+    #     test = dataset['test']
+    #
+    #     test = np.array(test[0]), np.array(test[1]), np.array(test[2], np.array([test[3]]))
     return test
 
 
