@@ -169,29 +169,7 @@ class MultiGranularityCNNModel:
         x2_weight = tf.reshape(x2_weight,shape=[-1,len2])
         return x2_weight
 
-    def interactionSuper(self,inputX1,inputX2,mask_a,mask_b):
-        len1 = inputX1.get_shape().as_list()[1]
-        len2 = inputX2.get_shape().as_list()[1]
-        temperature = tf.get_variable('temperature', shape=(), dtype=tf.float32, trainable=True,
-                                      initializer=tf.constant_initializer(math.sqrt(1 / param.BaseConfig.word_dimension)))
-        attention = self._attention(inputX1, inputX2, temperature,self.config.dropout_rate)
-        attention_mask = tf.matmul(mask_a, mask_b, transpose_b=True)
-        attention = attention_mask * attention + (1 - attention_mask) * tf.float32.min
-        x1_2_x2 = tf.nn.softmax(attention, axis=2)  # x1对x2每个词的关注度
-        x2_2_x1 = tf.nn.softmax(attention, axis=1)  # x2对x1每个词的关注度
 
-        # 计算x1每个词获取的总weight
-        x1_weight = tf.reduce_mean(x2_2_x1, axis=2)  # [Batch, len1]
-
-        # 计算x2最后获取的每个词的总的weight
-        x1_weight_ = tf.expand_dims(x1_weight, axis=1)  # [Batch, 1, len1]
-        x2_weight = tf.matmul(x1_weight_, x1_2_x2)  # [Batch, 1, len2]
-        x2_weight = tf.reshape(x2_weight, shape=[-1, len2])
-        return x2_weight
-
-
-    def _attention(self, a, b, t, _):
-        return tf.matmul(a, b, transpose_b=True) * t
 
 
 

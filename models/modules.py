@@ -259,6 +259,8 @@ class Interaction:
         return new_x, new_y
 
 
+
+
 class Fusion:
     def __init__(self, method, *data):
         self.method = method

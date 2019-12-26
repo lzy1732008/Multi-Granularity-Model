@@ -33,43 +33,43 @@ def get_batch_data(*data, batch_size = 64):
 import json
 
 def data_load(trainPath, valPath, testPath,model,rfModel):
-    # env = pre.setUp_inputs_QHJ(trainPath=trainPath,valPath=valPath,testPath=testPath,rfModel=rfModel)
-    # train_data = env['train']
-    # test_data = env['test']
-    # val_data = env['val']
-    # train = []
-    # test = []
-    # val = []
-    # # # #
-    # len_lst = [model.config.X_maxlen,model.config.Y_maxlen]
-    # if trainPath:
-    #    # train = processInitDataWithoutQHJ_Generic(train_data,len_lst)
-    #    train = processInitData2(train_data,model)
-    # if valPath:
-    #    # val = processInitDataWithoutQHJ_Generic(val_data,len_lst)
-    #    val = processInitData2(val_data,model)
-    # if testPath:
-    #    # test = processInitDataWithoutQHJ_Generic(test_data,len_lst)
-    #    test = processInitData2(test_data,model)
-    # #
-    # with open('resource/dataset50.json','w',encoding='utf-8') as fw:
-    #     dataset = {}
-    #     dataset['train'] = [train[0].tolist(), train[1].tolist(), train[2].tolist(), train[3].tolist()]
-    #     dataset['val'] = [val[0].tolist(), val[1].tolist(), val[2].tolist(), val[3].tolist()]
-    #     dataset['test'] = [test[0].tolist(), test[1].tolist(), test[2].tolist(), test[3].tolist()]
-    #     json.dump(dataset, fw)
+    env = pre.setUp_inputs_QHJ(trainPath=trainPath,valPath=valPath,testPath=testPath,rfModel=rfModel)
+    train_data = env['train']
+    test_data = env['test']
+    val_data = env['val']
+    train = []
+    test = []
+    val = []
+    # # #
+    len_lst = [model.config.X_maxlen,model.config.Y_maxlen]
+    if trainPath:
+       # train = processInitDataWithoutQHJ_Generic(train_data,len_lst)
+       train = processInitData2(train_data,model)
+    if valPath:
+       # val = processInitDataWithoutQHJ_Generic(val_data,len_lst)
+       val = processInitData2(val_data,model)
+    if testPath:
+       # test = processInitDataWithoutQHJ_Generic(test_data,len_lst)
+       test = processInitData2(test_data,model)
+    #
+    with open('resource/dataset50-wholeLaw-afterfixpadding.json','w',encoding='utf-8') as fw:
+        dataset = {}
+        dataset['train'] = [train[0].tolist(), train[1].tolist(), train[2].tolist(), train[3].tolist()]
+        dataset['val'] = [val[0].tolist(), val[1].tolist(), val[2].tolist(), val[3].tolist()]
+        dataset['test'] = [test[0].tolist(), test[1].tolist(), test[2].tolist(), test[3].tolist()]
+        json.dump(dataset, fw)
 
     #================================================================================
 
-    with open('resource/dataset50.json', 'r', encoding='utf-8') as fr:
-        dataset = json.load(fr)
-        train = dataset['train']
-        val = dataset['val']
-        test = dataset['test']
-
-        train = np.array(train[0]),np.array(train[1]),np.array(train[2]),np.array(train[3])
-        val = np.array(val[0]), np.array(val[1]), np.array(val[2]), np.array(val[3])
-        test = np.array(test[0]), np.array(test[1]), np.array(test[2]), np.array(test[3])
+    # with open('resource/dataset50.json', 'r', encoding='utf-8') as fr:
+    #     dataset = json.load(fr)
+    #     train = dataset['train']
+    #     val = dataset['val']
+    #     test = dataset['test']
+    #
+    #     train = np.array(train[0]),np.array(train[1]),np.array(train[2]),np.array(train[3])
+    #     val = np.array(val[0]), np.array(val[1]), np.array(val[2]), np.array(val[3])
+    #     test = np.array(test[0]), np.array(test[1]), np.array(test[2]), np.array(test[3])
 
     return train,val, test
 
@@ -97,10 +97,26 @@ def processInitDataWithoutQHJ(data,model):
         else:
             y.append([1,0])
 
-    a_data_word = kr.preprocessing.sequence.pad_sequences(np.array(a_data_word), model.config.X_maxlen)
-    b_data_word = kr.preprocessing.sequence.pad_sequences(np.array(b_data_word), model.config.Y_maxlen)
+    a_data_word = kr.preprocessing.sequence.pad_sequences(np.array(a_data_word), model.config.X_maxlen,dtype=float)
+    b_data_word = kr.preprocessing.sequence.pad_sequences(np.array(b_data_word), model.config.Y_maxlen,dtype=float)
     return a_data_word,b_data_word, np.array(y)
 
+def computeAlign(inputX, inputY):
+    align = []
+    for i in range(len(inputX)):
+        line_align = []
+        for p in inputX[i]:
+            line_line_align = []
+            for q in inputY[i]:
+                if (p == q).all():
+                    temp = np.array(p) == np.zeros(shape=[128],dtype=float)
+                    if not temp.all():
+                       line_line_align.append(1)
+                       continue
+                line_line_align.append(0)
+            line_align.append(line_line_align)
+        align.append(line_align)
+    return align
 
 def processInitDataWithoutQHJOutputLength(data,model):
     a_data_word = []
@@ -121,8 +137,8 @@ def processInitDataWithoutQHJOutputLength(data,model):
         len_1.append(len(input_a))
         len_2.append(len(input_b))
 
-    a_data_word = kr.preprocessing.sequence.pad_sequences(np.array(a_data_word), model.config.X_maxlen,padding='post')
-    b_data_word = kr.preprocessing.sequence.pad_sequences(np.array(b_data_word), model.config.Y_maxlen,padding='post')
+    a_data_word = kr.preprocessing.sequence.pad_sequences(np.array(a_data_word,dtype=float), model.config.X_maxlen,padding='post',dtype=float)
+    b_data_word = kr.preprocessing.sequence.pad_sequences(np.array(b_data_word,dtype=float), model.config.Y_maxlen,padding='post',dtype=float)
     return a_data_word,b_data_word, np.array(len_1), np.array(len_2), np.array(y)
 
 def processInitDataWithoutQHJ_Generic(data,len_list):
@@ -140,7 +156,7 @@ def processInitDataWithoutQHJ_Generic(data,len_list):
             output_data[-1].append([1,0])
 
     for i in range(len(data[0]) - 1):
-        output_data[i] = kr.preprocessing.sequence.pad_sequences(np.array(output_data[i]), len_list[i])
+        output_data[i] = kr.preprocessing.sequence.pad_sequences(np.array(output_data[i],dtype=float), len_list[i],dtype=float)
     output_data[-1] = np.array(output_data[-1])
     return output_data
 
@@ -164,9 +180,9 @@ def processInitData(data,model):
             y.append([1,0])
 
 
-    a_data_word = kr.preprocessing.sequence.pad_sequences(np.array(a_data_word), model.config.X_maxlen)
-    b_data_word = kr.preprocessing.sequence.pad_sequences(np.array(b_data_word), model.config.Y_maxlen)
-    c_data_word = kr.preprocessing.sequence.pad_sequences(np.array(c_data_word), model.config.Y_maxlen)
+    a_data_word = kr.preprocessing.sequence.pad_sequences(np.array(a_data_word,dtype=float), model.config.X_maxlen,dtype=float)
+    b_data_word = kr.preprocessing.sequence.pad_sequences(np.array(b_data_word,dtype=float), model.config.Y_maxlen,dtype=float)
+    c_data_word = kr.preprocessing.sequence.pad_sequences(np.array(c_data_word,dtype=float), model.config.Y_maxlen,dtype=float)
     return a_data_word,b_data_word, c_data_word, np.array(y)
 
 #采用one-hot形式来表示前后件信息,其中最后两个一定是前后件和数据label
@@ -199,9 +215,9 @@ def processInitData2(data,model):
             y.append([1,0])
 
 
-    a_data_word = kr.preprocessing.sequence.pad_sequences(a_data_word, model.config.X_maxlen)
-    b_data_word = kr.preprocessing.sequence.pad_sequences(b_data_word, model.config.Y_maxlen)
-    c_data_word = kr.preprocessing.sequence.pad_sequences(c_data_word, model.config.Y_maxlen)
+    a_data_word = kr.preprocessing.sequence.pad_sequences(a_data_word, model.config.X_maxlen,dtype=float)
+    b_data_word = kr.preprocessing.sequence.pad_sequences(b_data_word, model.config.Y_maxlen,dtype=float)
+    c_data_word = kr.preprocessing.sequence.pad_sequences(c_data_word, model.config.Y_maxlen,dtype=float)
     return a_data_word,b_data_word, c_data_word, np.array(y)
 
 def processInitData_Generic_OneHotQHJ(data,model):
@@ -228,9 +244,9 @@ def processInitData_Generic_OneHotQHJ(data,model):
         else:
             output_data[-1].append([1,0])
 
-    output_data[0] = kr.preprocessing.sequence.pad_sequences(output_data[0], model.config.X_maxlen)
-    output_data[1] = kr.preprocessing.sequence.pad_sequences(output_data[1], model.config.Y_maxlen)
+    output_data[0] = kr.preprocessing.sequence.pad_sequences(output_data[0], model.config.X_maxlen,dtype=float)
+    output_data[1] = kr.preprocessing.sequence.pad_sequences(output_data[1], model.config.Y_maxlen,dtype=float)
     output_data[2] = np.array(output_data[2])
-    output_data[3] = kr.preprocessing.sequence.pad_sequences(output_data[3], model.config.Y_maxlen)
+    output_data[3] = kr.preprocessing.sequence.pad_sequences(output_data[3], model.config.Y_maxlen,dtype=float)
     output_data[4] = np.array(output_data[-1])
     return output_data

@@ -7,9 +7,9 @@ import math
 #     exp_sum = sum(exp_input)
 #     return [float(x)/exp_sum for x in exp_input]
 #
-# fr1 = open('resource/预测结果分析/MGC_15predictAna.json','r',encoding='utf-8')
+fr1 = open('resource/预测结果分析/MGC_18predictAna.json','r',encoding='utf-8')
 # fr2 = open('resource/预测结果分析/MGCQ_16_predictAna-qj.json','r',encoding='utf-8')
-# model1_result = json.load(fr1)
+model1_result = json.load(fr1)
 # model2_result = json.load(fr2)
 
 #分析模型2 对比 模型1中各类概率增大
@@ -24,22 +24,21 @@ from sklearn import metrics
 # predict_wrong = []
 # count_right = 0
 # count = 0
-# for k,v in model1_result.items():
-#     true_y = []
-#     pred_y = []
-#     for k_1, v_1 in v.items():
-        #==============计算每个法条的1的准确率和召回率=======
-    #     true_y.append(v_1[1])
-    #     pred_y.append(v_1[0])
-    # print('法条:'+k+'......')
-    # print('模型15......')
-    # print("Precision, Recall and F1-Score...")
-    # print(metrics.classification_report(np.array(true_y), np.array(pred_y), digits=4))  # 直接计算准确率，召回率和f值
-    #
-    # # 混淆矩阵
-    # print("Confusion Matrix...")
-    # cm = metrics.confusion_matrix(np.array(true_y), np.array(pred_y))
-    # print(cm)
+for k,v in model1_result.items():
+    true_y = []
+    pred_y = []
+    for k_1, v_1 in v.items():
+    #==============计算每个法条的1的准确率和召回率=======
+        true_y.append(v_1[1])
+        pred_y.append(v_1[0])
+    print('法条:'+k+'......')
+    print("Precision, Recall and F1-Score...")
+    print(metrics.classification_report(np.array(true_y), np.array(pred_y), digits=4))  # 直接计算准确率，召回率和f值
+
+    # 混淆矩阵
+    print("Confusion Matrix...")
+    cm = metrics.confusion_matrix(np.array(true_y), np.array(pred_y))
+    print(cm)
     #
     # true_y = []
     # pred_y = []
@@ -61,7 +60,8 @@ from sklearn import metrics
         # v_1_2 = list(map(float,v_1[2]))
         # ft = '最高人民法院关于审理交通肇事刑事案件具体应用法律若干问题的解释(2000)第二条:交通肇事具有下列情形之一的，处三年以下有期徒刑或者拘役：（一）死亡一人或者重伤三人以上，负事故全部或者主要责任的；（二）死亡三人以上，负事故同等责任的；（三）造成公共财产或者他人财产直接损失，负事故全部或者主要责任，无能力赔偿数额在三十万元以上的。交通肇事致一人以上重伤，负事故全部或者主要责任，并具有下列情形之一的，以交通肇事罪定罪处罚：（一）酒后、吸食毒品后驾驶机动车辆的；（二）无驾驶资格驾驶机动车辆的；（三）明知是安全装置不全或者安全机件失灵的机动车辆而驾驶的；（四）明知是无牌证或者已报废的机动车辆而驾驶的；（五）严重超载驾驶的；（六）为逃避法律追究逃离事故现场的。'
         # ft = '最高人民法院关于处理自首和立功具体应用法律若干问题的解释(1998)第三条:根据刑法第六十七条第一款的规定，对于自首的犯罪分子，可以从轻或者减轻处罚；对于犯罪较轻的，可以免除处罚。具体确定从轻、减轻还是免除处罚，应当根据犯罪轻重，并考虑自首的具体情节。'
-        # if k == ft:
+        # ft = '中华人民共和国刑法(2015)第一百三十三条:违反交通运输管理法规，因而发生重大事故，致人重伤、死亡或者使公私财产遭受重大损失的，处三年以下有期徒刑或者拘役；交通运输肇事后逃逸或者有其他特别恶劣情节的，处三年以上七年以下有期徒刑；因逃逸致人死亡的，处七年以上有期徒刑。'
+        # if k == ft and v_1[0] == v_1[1] == 0:
         #     print(k_1)
         #     count_right += 1
         # if k == ft:
