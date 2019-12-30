@@ -42,24 +42,24 @@ class MultiGraConfig:
     # mlp_output = 64
 
     #v5
-    # X_maxlen = 30
-    # Y_maxlen = 50
-    # dropout_rate = 0.5
-    # first_kernel_size = 2
-    # second_kernel_size = 4
-    # third_kernel_size = 8
-    # filters_num = 64
-    # mlp_output = 64
-
-    #v6
     X_maxlen = 30
     Y_maxlen = 50
     dropout_rate = 0.5
     first_kernel_size = 2
     second_kernel_size = 4
-    third_kernel_size = 6
+    third_kernel_size = 8
     filters_num = 64
     mlp_output = 64
+
+    #v6
+    # X_maxlen = 30
+    # Y_maxlen = 50
+    # dropout_rate = 0.5
+    # first_kernel_size = 2
+    # second_kernel_size = 4
+    # third_kernel_size = 6
+    # filters_num = 64
+    # mlp_output = 64
 
 
 
@@ -102,6 +102,7 @@ class MultiGranularityCNNModel:
                 axis=-1)  # [Batch, len, 4 * dimension]
             self.fusion_output_1 = tf.layers.dense(inputs=self.fusion_output_1, units=self.config.mlp_output,
                                                    name='fusion-fnn')
+            self.fusion_output_1 = tf.layers.dropout(self.fusion_output_1,rate=self.dropout_rate)
             self.fusion_output_max_1 = tf.reduce_max(self.fusion_output_1, axis=-1)
 
         with tf.variable_scope("second-CNN-layer"):
@@ -122,6 +123,7 @@ class MultiGranularityCNNModel:
                 axis=-1)  # [Batch, len, 4 * dimension]
             self.fusion_output_2 = tf.layers.dense(inputs=self.fusion_output_2, units=self.config.mlp_output,
                                                    name='fusion-fnn')
+            self.fusion_output_2 = tf.layers.dropout(self.fusion_output_2, rate=self.dropout_rate)
             # self.fusion_output_2 = tf.nn.top_k(input=self.fusion_output_2,k=5,sorted=False)
             # self.fusion_output_2 = tf.layers.dense(inputs=tf.concat([self.fusion_output_2[0],self.x2_label],axis=-1),units=self.config.mlp_output,name='fusion-fnn-2')
             self.fusion_output_max_2 = tf.reduce_max(self.fusion_output_2, axis=-1)
@@ -144,6 +146,7 @@ class MultiGranularityCNNModel:
             self.x2_inter_3 = self.inter_rep_3 * self.input_X2
             self.fusion_output_3 = tf.concat([self.input_X2,self.x2_inter_3,self.input_X2 - self.x2_inter_3, self.input_X2 * self.x2_inter_3], axis=-1)  # [Batch, len, 2 + 4 * dimension]
             self.fusion_output_3 = tf.layers.dense(inputs=self.fusion_output_3,units=self.config.mlp_output,name='fusion-fnn')
+            self.fusion_output_3 = tf.layers.dropout(self.fusion_output_3, rate=self.dropout_rate)
             self.fusion_output_max_3 = tf.reduce_max(self.fusion_output_3,axis=-1) #[B,l]
 
         with tf.variable_scope("Augment-layer"):

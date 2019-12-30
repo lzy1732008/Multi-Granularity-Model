@@ -4,6 +4,7 @@ import models.parameter as param
 import processLaw as psLaw
 import json
 import jieba
+import random
 
 
 
@@ -224,10 +225,45 @@ def _setUp_inputs_QHJ(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,fla
             print("precessing {0}/{1} samples".format(count,len(lines)))
     return result
 
+#不添加前后件信息,也不对输入法条文本进行过滤一些不属于前后件的词
+def _setUp_inputs_QJ(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,flag):
+    stp = list(map(lambda x: x.strip(), open(param.BaseConfig.stpPath, 'r', encoding='utf-8').read().split('\n')))
+    with open(sourcePath,'r',encoding='utf-8') as fr:
+        lines = fr.readlines()
+    result = []
+    count = 0
+    if start >= len(lines):
+        return
+    end = min(len(lines), end)
+
+    for line in lines[start:end]:
+        line = line.strip()
+        if line != '':
+            items = line.split('|')
+            assert len(items) == 4, ValueError("The number of items in this line is less than 4, content:" + line)
+            fact_input = processTextWithStpDict(items[1],wordEmbedding, wordVocab,stp)
+            if len(fact_input) == 0:
+                if flag != 2:
+                   print("Ignore fact!")
+                   continue
+                else:
+                    fact_input = [[0 for _ in range(len(param.BaseConfig.word_dimension))]]
+                    print("None fact")
+
+            law_units = items[2].split(':')
+            law_name = law_units[0]
+            law_content = items[2][len(law_name) + 1:]
+            law_input = processLawText(law_content, wordEmbedding,wordVocab)
+            assert items[3] in ['0', '1'], ValueError("Label is not in [0,1]!")
+            label = items[3]
+            result.append([fact_input, law_input, label])
+            count += 1
+            print("precessing {0}/{1} samples".format(count,len(lines)))
+    return result
+
 #不添加前后件信息
 def _setUp_inputs_QHJ_2(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,flag):
-    stp = []
-    # stp = list(map(lambda x: x.strip(), open(param.BaseConfig.stpPath, 'r', encoding='utf-8').read().split('\n')))
+    stp = list(map(lambda x: x.strip(), open(param.BaseConfig.stpPath, 'r', encoding='utf-8').read().split('\n')))
     #
     with open(sourcePath,'r',encoding='utf-8') as fr:
         lines = fr.readlines()
