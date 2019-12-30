@@ -99,9 +99,9 @@ def shuffleLaw(times_default, shuffle_num_default):
                     new_law_content_split[num - 1], new_law_content_split[num] = new_law_content_split[num], \
                                                                                  new_law_content_split[num - 1]
                 newlines.append('|'.join([items[0], items[1], '。'.join(new_law_content_split), items[-1]]))
-            # newlines.append(line)
-    print('总共样本数由{0}变为{1},其中前件只乱序一次的'.format(count, len(newlines)))
-    open('../resource/train-qj-augment.txt', 'w', encoding='utf-8').write('\n'.join(newlines))
+            newlines.append(line)
+    print('总共样本数由{0}变为{1}'.format(count, len(newlines)))
+    # open('../resource/train-qj-augment.txt', 'w', encoding='utf-8').write('\n'.join(newlines))
 
-shuffleLaw(times_default=2,shuffle_num_default=2)
+# shuffleLaw(times_default=2,shuffle_num_default=2)
 

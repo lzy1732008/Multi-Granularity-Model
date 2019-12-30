@@ -155,7 +155,7 @@ def setUp_inputs_QJ(trainPath = None, valPath = None, testPath = None, rfModel=N
     test = []
     val = []
     if trainPath:
-        train = _setUp_inputs_QJ(trainPath, wordEmbedding, wordVocab, rfModel, 0, 30000,flag=0)
+        train = _setUp_inputs_QJ(trainPath, wordEmbedding, wordVocab, rfModel, 0, 31000,flag=0)
 
     if valPath:
         val = _setUp_inputs_QJ(valPath, wordEmbedding, wordVocab, rfModel, 0, 1000, flag=2)
