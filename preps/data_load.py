@@ -66,8 +66,7 @@ def data_load_lawone(trainPath, valPath, testPath,model,rfModel,flag=0):
 
 
     if trainPath:
-        train = []
-       # train = generic.processInitDataWithoutQHJ(train_data,model)
+       train = generic.processInitDataWithoutQHJ(train_data,model)
        # align_train = generic.computeAlign(train[0],train[1])
        # train = train[0],train[1],np.array(align_train,dtype=float),train[2]
     if valPath:
