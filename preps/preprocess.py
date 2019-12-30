@@ -128,7 +128,7 @@ def setUp_inputs_QHJ_lawone(trainPath = None, valPath = None, testPath = None, r
     test = []
     val = []
     if trainPath:
-        train = _setUp_inputs_QHJ_lawone(trainPath, wordEmbedding, wordVocab, rfModel, 0, 15000,flag)
+        train = _setUp_inputs_QHJ_lawone(trainPath, wordEmbedding, wordVocab, rfModel, 0, 30000,flag)
 
     if valPath:
         val = _setUp_inputs_QHJ_lawone(valPath, wordEmbedding, wordVocab, rfModel, 0, 1000, flag)
@@ -138,6 +138,34 @@ def setUp_inputs_QHJ_lawone(trainPath = None, valPath = None, testPath = None, r
 
     env = {'train': train, 'test': test, 'val': val}
     return env
+
+#没有法条前后件信息：输入的法条是完整法条或者或者前件
+def setUp_inputs_QJ(trainPath = None, valPath = None, testPath = None, rfModel=None):
+    #read word info
+    f_word = open(param.BaseConfig.w2vModel, 'r', encoding='utf-8')
+    wordEmbedding = json.load(f_word)
+    if '<UNK>' not in wordEmbedding.keys():
+        wordEmbedding['<UNK>'] = '\t'.join(['0' for _ in range(param.BaseConfig.word_dimension)])
+    wordVocab = wordEmbedding.keys()
+
+    assert '<UNK>' in wordEmbedding.keys(), ValueError('space and unk not in word dict')
+    assert len(wordVocab) == param.BaseConfig.word_vocab_size, ValueError('the number of word vocab is wrong, {0}'.format(len(wordVocab)))
+
+    train = []
+    test = []
+    val = []
+    if trainPath:
+        train = _setUp_inputs_QJ(trainPath, wordEmbedding, wordVocab, rfModel, 0, 30000,flag=0)
+
+    if valPath:
+        val = _setUp_inputs_QJ(valPath, wordEmbedding, wordVocab, rfModel, 0, 1000, flag=2)
+
+    if testPath:
+        test = _setUp_inputs_QJ(testPath, wordEmbedding, wordVocab, rfModel, 0, 1000, flag=2)
+
+    env = {'train': train, 'test': test, 'val': val}
+    return env
+
 
 def _setUp_inputs_QHJ_lawone(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,flag):
     stp = list(map(lambda x: x.strip(), open(param.BaseConfig.stpPath, 'r', encoding='utf-8').read().split('\n')))

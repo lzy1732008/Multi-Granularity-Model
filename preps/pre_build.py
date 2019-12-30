@@ -74,10 +74,11 @@ def countPreNum():
 # countPreNum()
 
 #数据集扩增：通过对法条增加两条乱序
-def shuffleLaw(shuffle_num_default):
+def shuffleLaw(times_default, shuffle_num_default):
     lines = open('../resource/train-qj.txt', 'r', encoding='utf-8').read().split('\n')
     newlines = []
     count = 0
+
     for line in lines:
         line = line.strip()
         if line != "":
@@ -87,17 +88,20 @@ def shuffleLaw(shuffle_num_default):
             law_content_split = list(filter(lambda x:x.strip() != "", law_content_split))
             #乱序
             shuffle_num = min(shuffle_num_default, int(len(law_content_split)/2))
+            times = times_default
+            if len(law_content_split) <= 2:
+                times = 1
             # print("the length of law split:" + str(len(law_content_split)))
-            for i in range(shuffle_num):
+            for i in range(times):
                 new_law_content_split = list(law_content_split)
-                num = random.randint(1, len(law_content_split) - 1)
-                new_law_content_split[num - 1], new_law_content_split[num] = new_law_content_split[num], \
-                                                                             new_law_content_split[num - 1]
+                for i in range(shuffle_num):
+                    num = random.randint(1, len(law_content_split) - 1)
+                    new_law_content_split[num - 1], new_law_content_split[num] = new_law_content_split[num], \
+                                                                                 new_law_content_split[num - 1]
                 newlines.append('|'.join([items[0], items[1], '。'.join(new_law_content_split), items[-1]]))
-                print("Done swap!")
-            newlines.append(line)
-    # print('总共样本数由{0}变为{1}'.format(count, len(newlines)))
+            # newlines.append(line)
+    print('总共样本数由{0}变为{1},其中前件只乱序一次的'.format(count, len(newlines)))
     open('../resource/train-qj-augment.txt', 'w', encoding='utf-8').write('\n'.join(newlines))
 
-# shuffleLaw(shuffle_num_default=2)
+shuffleLaw(times_default=2,shuffle_num_default=2)
 
