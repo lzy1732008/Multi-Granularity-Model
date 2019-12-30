@@ -33,13 +33,24 @@
 #         elif int(c[1]) == 2: num_2 += 1
 #
 # print("0:{0},1:{1}，2:{2}".format(num_0,num_1,num_2))
-import tensorflow as tf
-q = tf.sequence_mask([1,2,3,8], maxlen=5, dtype=tf.float32)
-with tf.Session() as sess:
-    print(sess.run(q))
+# import tensorflow as tf
+# q = tf.sequence_mask([1,2,3,8], maxlen=5, dtype=tf.float32)
+# with tf.Session() as sess:
+#     print(sess.run(q))
 
 # import jieba
 # content = '违反交通运输管理法规，因而发生重大事故，致人重伤、死亡或者使公私财产遭受重大损失的，处三年以下有期徒刑或者拘役；交通运输肇事后逃逸或者有其他特别恶劣情节的，处三年以上七年以下有期徒刑；因逃逸致人死亡的，处七年以上有期徒刑。'
 # p = jieba.lcut(content)
 # print(p[-50:])
 # print(len(p[-50:]))
+
+import numpy as np
+array_1 = np.array([1,2,3,4])
+array_2 = np.array([1,2,3,4])
+array_3 = np.array([1,2,3,5])
+if (array_1 == array_2).all():
+    print("Yes")
+else:
+    print("No")
+
+print((array_1 == array_3))

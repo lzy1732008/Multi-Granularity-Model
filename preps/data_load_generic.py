@@ -215,9 +215,10 @@ def processInitData2(data,model):
             y.append([1,0])
 
 
-    a_data_word = kr.preprocessing.sequence.pad_sequences(a_data_word, model.config.X_maxlen,dtype=float)
-    b_data_word = kr.preprocessing.sequence.pad_sequences(b_data_word, model.config.Y_maxlen,dtype=float)
-    c_data_word = kr.preprocessing.sequence.pad_sequences(c_data_word, model.config.Y_maxlen,dtype=float)
+    a_data_word = kr.preprocessing.sequence.pad_sequences(a_data_word, model.config.X_maxlen)
+    b_data_word = kr.preprocessing.sequence.pad_sequences(b_data_word, model.config.Y_maxlen)
+    c_data_word = kr.preprocessing.sequence.pad_sequences(c_data_word, model.config.Y_maxlen)
+
     return a_data_word,b_data_word, c_data_word, np.array(y)
 
 def processInitData_Generic_OneHotQHJ(data,model):
