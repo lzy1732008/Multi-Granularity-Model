@@ -227,7 +227,7 @@ def _setUp_inputs_QHJ(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,fla
                    print("Ignore fact!")
                    continue
                 else:
-                    fact_input = [[0 for _ in range(len(param.BaseConfig.word_dimension))]]
+                    fact_input = [[0 for _ in range(param.BaseConfig.word_dimension)]]
                     print("None fact")
 
             law_units = items[2].split(':')
@@ -275,7 +275,7 @@ def _setUp_inputs_QJ(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,flag
                    print("Ignore fact!")
                    continue
                 else:
-                    fact_input = [[0 for _ in range(len(param.BaseConfig.word_dimension))]]
+                    fact_input = [[0 for _ in range(param.BaseConfig.word_dimension)]]
                     print("None fact")
 
             law_units = items[2].split(':')
