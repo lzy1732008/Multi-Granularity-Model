@@ -51,11 +51,11 @@ def data_load_lawone(trainPath, valPath, testPath,model,rfModel,flag=0):
     val = []
 
 
-    with open('resource/dataset50-withstp-qj.json', 'w', encoding='utf-8') as fw:
+    with open('resource/dataset50-withstp-qj-tagBefore.json', 'w', encoding='utf-8') as fw:
         dataset = {}
-        dataset['train'] = [train[0].tolist(), train[1].tolist(), train[2].tolist()]
-        dataset['val'] = [val[0].tolist(), val[1].tolist(), val[2].tolist()]
-        dataset['test'] = [test[0].tolist(), test[1].tolist(), test[2].tolist()]
+        dataset['train'] = train_data
+        dataset['val'] = val_data
+        dataset['test'] = test_data
         json.dump(dataset, fw)
 
 
@@ -96,8 +96,8 @@ def data_load_test_lawone(model,rfModel,flag=0):
     test_data = env['test']
     # test = generic.processInitDataWithoutQHJOutputLength(test_data,model)
     test = generic.processInitDataWithoutQHJ(test_data,model)
-    align_test = generic.computeAlign(test[0], test[1])
-    test = test[0], test[1], np.array(align_test, dtype=float), test[2]
+    # align_test = generic.computeAlign(test[0], test[1])
+    # test = test[0], test[1], np.array(align_test, dtype=float), test[2]
 
     # with open('resource/dataset50-withstp-lawone-qj-align-afterfixpooling.json', 'r', encoding='utf-8') as fr:
     #     dataset = json.load(fr)

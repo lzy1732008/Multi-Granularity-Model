@@ -53,3 +53,51 @@ def buildCorpusWithQJ():
     open('../resource/val-qj.txt','w',encoding='utf-8').write('\n'.join(newlines))
 
 # buildCorpusWithQJ()
+
+#统计每个法条的平均前件个数
+def countPreNum():
+    laws = {}
+    lines = open('../resource/train-init.txt', 'r', encoding='utf-8').read().split('\n')
+    for line in lines:
+        line = line.strip()
+        if line != "":
+            items = line.split('|')
+            if items[2] not in laws.keys():
+                laws[items[2]] = len(items[2].split('。'))
+            else:
+                continue
+
+    values = laws.values()
+    print(values)
+
+
+# countPreNum()
+
+#数据集扩增：通过对法条增加两条乱序
+def shuffleLaw(shuffle_num_default):
+    lines = open('../resource/train-qj.txt', 'r', encoding='utf-8').read().split('\n')
+    newlines = []
+    count = 0
+    for line in lines:
+        line = line.strip()
+        if line != "":
+            count += 1
+            items = line.split('|')
+            law_content_split = items[2].split('。')
+            law_content_split = list(filter(lambda x:x.strip() != "", law_content_split))
+            #乱序
+            shuffle_num = min(shuffle_num_default, int(len(law_content_split)/2))
+            # print("the length of law split:" + str(len(law_content_split)))
+            for i in range(shuffle_num):
+                new_law_content_split = list(law_content_split)
+                num = random.randint(1, len(law_content_split) - 1)
+                new_law_content_split[num - 1], new_law_content_split[num] = new_law_content_split[num], \
+                                                                             new_law_content_split[num - 1]
+                newlines.append('|'.join([items[0], items[1], '。'.join(new_law_content_split), items[-1]]))
+                print("Done swap!")
+            newlines.append(line)
+    # print('总共样本数由{0}变为{1}'.format(count, len(newlines)))
+    open('../resource/train-qj-augment.txt', 'w', encoding='utf-8').write('\n'.join(newlines))
+
+# shuffleLaw(shuffle_num_default=2)
+
