@@ -277,10 +277,7 @@ def _setUp_inputs_QJ(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,flag
                 else:
                     fact_input = [[0 for _ in range(param.BaseConfig.word_dimension)]]
                     print("None fact")
-
-            law_units = items[2].split(':')
-            law_name = law_units[0]
-            law_content = items[2][len(law_name) + 1:]
+            law_content = items[2]
             law_input = processTextWithoutDict(law_content, wordEmbedding,wordVocab)
             assert items[3] in ['0', '1'], ValueError("Label is not in [0,1]!")
             label = items[3]
