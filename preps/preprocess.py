@@ -459,7 +459,7 @@ def processLawText(line,wordEmbedding, wordVocab):
 
 def getVector(str_vector):
     if type(str_vector) == list:
-        print("The getvector input is a list! It is "+ ' '.join(str_vector))
+        print("The getvector input is a list! It is "+ ' '.join(map(str,str_vector)))
         return str_vector
     vectors = str_vector.split('\t')
     vectors = list(map(float, map(lambda x:x.strip(),filter(lambda x: x.strip() != '', vectors))))
