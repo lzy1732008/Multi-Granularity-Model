@@ -2,6 +2,7 @@
 数据集扩增:训练样本：总共样本数由10489变为28237
 数据存储记录：
 dataset50-withstp-qj-tagBefore.json：事实法条长度分别为30-50、使用了停用词、只使用法条前件、setUp_inputs_QHJ_lawone的输出
+dataset50-withstp-qj-tagBefore-augdata.json： 事实法条长度分别为30-50、使用了停用词、只使用法条前件、setUp_inputs_QHJ_lawone的输出，存储的是train-qj-augment.txt的数据：times= 2， shuffle_num=2
 
 500篇文书设计法律法条分布统计
 
