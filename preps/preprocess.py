@@ -179,7 +179,7 @@ def _setUp_inputs_QHJ_lawone(sourcePath, wordEmbedding, wordVocab,rfModel,start,
 
 def _setUp_inputs_QHJ(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,flag):
     stp = []
-    # stp = list(map(lambda x: x.strip(), open(param.BaseConfig.stpPath, 'r', encoding='utf-8').read().split('\n')))
+    stp = list(map(lambda x: x.strip(), open(param.BaseConfig.stpPath, 'r', encoding='utf-8').read().split('\n')))
     with open(sourcePath,'r',encoding='utf-8') as fr:
         lines = fr.readlines()
     result = []
@@ -354,7 +354,7 @@ def processTextWithStpDict(line,wordEmbedding, wordVocab,stp):
         contentcut = []
         for w in content:
             word = w.word.strip()
-            if word == "" or word in stp or w.flag in ['nr','ns','p','u']: continue
+            if word == "" or word in stp or w.flag in ['nr','ns','p','u','m']: continue
             contentcut.append(word)
 
         if len(contentcut) == 0: return []
