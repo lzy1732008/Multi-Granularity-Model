@@ -42,31 +42,32 @@ def get_batch_data(a_word,b_word,y,batch_size = 64):
 
 
 def data_load_lawone(trainPath, valPath, testPath,model,rfModel,flag=0):
-    env = pre.setUp_inputs_QJ(trainPath=trainPath, valPath=valPath, testPath=testPath, rfModel=rfModel)
-    train_data = env['train']
-    test_data = env['test']
-    val_data = env['val']
-    train = []
-    test = []
-    val = []
+    # env = pre.setUp_inputs_QJ(trainPath=trainPath, valPath=valPath, testPath=testPath, rfModel=rfModel)
+    # train_data = env['train']
+    # test_data = env['test']
+    # val_data = env['val']
+    # train = []
+    # test = []
+    # val = []
 
 
-    # with open('resource/dataset50-withstp-qj-tagBefore.json', 'r', encoding='utf-8') as fr:
-    #       dataset = json.load(fr)
-    #       train_data_init = dataset['train']
-    #       val_data = dataset['val']
-    #       test_data = dataset['test']
+    with open('resource/dataset50-withstp-qj-tagBefore-augdata.json', 'r', encoding='utf-8') as fr:
+          dataset = json.load(fr)
+          train_data = dataset['train']
+          val_data = dataset['val']
+          test_data = dataset['test']
 
-    with open('resource/dataset50-withstp-qj-tagBefore-augdata.json', 'w', encoding='utf-8') as fw:
-        dataset = {}
-        dataset['train'] = train_data
-        dataset['test'] = test_data
-        dataset['val'] = val_data
-        json.dump(dataset, fw)
+    # with open('resource/dataset50-withstp-qj-tagBefore-augdata.json', 'w', encoding='utf-8') as fw:
+    #     dataset = {}
+    #     dataset['train'] = train_data
+    #     dataset['test'] = test_data
+    #     dataset['val'] = val_data
+    #     json.dump(dataset, fw)
 
 
     if trainPath:
-       train = generic.processInitDataWithoutQHJ(train_data,model)
+        train = []
+       # train = generic.processInitDataWithoutQHJ(train_data,model)
        # align_train = generic.computeAlign(train[0],train[1])
        # train = train[0],train[1],np.array(align_train,dtype=float),train[2]
     if valPath:

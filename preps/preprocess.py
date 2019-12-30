@@ -275,7 +275,7 @@ def _setUp_inputs_QJ(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,flag
                    print("Ignore fact!")
                    continue
                 else:
-                    fact_input = [[0 for _ in range(param.BaseConfig.word_dimension)]]
+                    fact_input = ['\t'.join(['0' for _ in range(param.BaseConfig.word_dimension)])]
                     print("None fact")
             law_content = items[2]
             law_input = processTextWithoutDict(law_content, wordEmbedding,wordVocab)
@@ -458,6 +458,9 @@ def processLawText(line,wordEmbedding, wordVocab):
 
 
 def getVector(str_vector):
+    if type(str_vector) == list:
+        print("The getvector input is a list! It is "+ ' '.join(str_vector))
+        return str_vector
     vectors = str_vector.split('\t')
     vectors = list(map(float, map(lambda x:x.strip(),filter(lambda x: x.strip() != '', vectors))))
     return vectors
