@@ -101,7 +101,7 @@ class MultiGranularityCNNModel:
         with tf.variable_scope("predict-layer"):
             self.output_ = tf.nn.relu(
                 tf.layers.dense(inputs=self.combine, units=self.config.mlp_output, name='fnn1'))
-            self.output_ = tf.layers.dropout(self.output_, rate=self.config.dropout_rate)
+            self.output_ = tf.layers.dropout(self.output_, rate=self.dropout_rate)
             self.logit = tf.layers.dense(inputs=self.output_, units=2, name='fnn2')
 
         with tf.variable_scope("optimize-layer"):

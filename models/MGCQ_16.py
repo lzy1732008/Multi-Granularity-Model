@@ -6,14 +6,14 @@ import math
 
 class MultiGraConfig:
     # v1
-    # X_maxlen = 30
-    # Y_maxlen = 50
-    # dropout_rate = 0.5
-    # first_kernel_size = 2
-    # second_kernel_size = 4
-    # third_kernel_size = 8
-    # filters_num = param.BaseConfig.word_dimension
-    # mlp_output = 64
+    X_maxlen = 30
+    Y_maxlen = 50
+    dropout_rate = 0.5
+    first_kernel_size = 2
+    second_kernel_size = 4
+    third_kernel_size = 8
+    filters_num = param.BaseConfig.word_dimension
+    mlp_output = 64
 
 
     #v2
@@ -27,14 +27,14 @@ class MultiGraConfig:
     # mlp_output = 64
 
     #v3
-    X_maxlen = 30
-    Y_maxlen = 70
-    dropout_rate = 0.5
-    first_kernel_size = 2
-    second_kernel_size = 4
-    third_kernel_size = 8
-    filters_num = param.BaseConfig.word_dimension
-    mlp_output = 64
+    # X_maxlen = 30
+    # Y_maxlen = 70
+    # dropout_rate = 0.5
+    # first_kernel_size = 2
+    # second_kernel_size = 4
+    # third_kernel_size = 8
+    # filters_num = param.BaseConfig.word_dimension
+    # mlp_output = 64
 
 
 
@@ -131,7 +131,7 @@ class MultiGranularityCNNModel:
 
         with tf.variable_scope("predict-layer"):
             self.output_1 = tf.nn.relu(tf.layers.dense(inputs=self.fusion_output,units=self.config.mlp_output,name='fnn1'))
-            self.output_1 = tf.layers.dropout(self.output_1,rate=self.config.dropout_rate)
+            self.output_1 = tf.layers.dropout(self.output_1,rate=self.dropout_rate)
 
             self.logit = tf.layers.dense(inputs=self.output_1,units=2,name='fnn2')
 

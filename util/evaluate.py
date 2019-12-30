@@ -1,7 +1,7 @@
 from preps.data_load_generic import get_batch_data_test
 import models.parameter as param
 
-def evaluate1(model,sess,a_word,b_word,y,feed_data):
+def evaluate_1(model,sess,a_word,b_word,y,feed_data):
     """评估在某一数据上的准确率和损失"""
     data_len = len(a_word)
     batch_eval = get_batch_data_test(a_word, b_word, y, batch_size=param.BaseConfig.batch_size)
@@ -17,7 +17,7 @@ def evaluate1(model,sess,a_word,b_word,y,feed_data):
     return total_loss / data_len, total_acc / data_len
 
 
-def evaluate2(model,sess,a_word,b_word,seq_1, seq_2, y, feed_data):
+def evaluate_2(model,sess,a_word,b_word,seq_1, seq_2, y, feed_data):
     """评估在某一数据上的准确率和损失"""
     data_len = len(a_word)
     batch_eval = get_batch_data_test(a_word, b_word,seq_1, seq_2, y, batch_size=param.BaseConfig.batch_size)
@@ -32,7 +32,7 @@ def evaluate2(model,sess,a_word,b_word,seq_1, seq_2, y, feed_data):
 
     return total_loss / data_len, total_acc / data_len
 
-def evaluate3(model,sess,a_word,b_word,c_word, y, feed_data):
+def evaluate_3(model,sess,a_word,b_word,c_word, y, feed_data):
     """评估在某一数据上的准确率和损失"""
     data_len = len(a_word)
     batch_eval = get_batch_data_test(a_word, b_word,c_word, y, batch_size=param.BaseConfig.batch_size)

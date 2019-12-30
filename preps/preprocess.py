@@ -139,8 +139,7 @@ def setUp_inputs_QHJ_lawone(trainPath = None, valPath = None, testPath = None, r
     return env
 
 def _setUp_inputs_QHJ_lawone(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,flag):
-    # stp = list(map(lambda x: x.strip(), open(param.BaseConfig.stpPath, 'r', encoding='utf-8').read().split('\n')))
-    stp = []
+    stp = list(map(lambda x: x.strip(), open(param.BaseConfig.stpPath, 'r', encoding='utf-8').read().split('\n')))
     with open(sourcePath,'r',encoding='utf-8') as fr:
         lines = fr.readlines()
     result = []

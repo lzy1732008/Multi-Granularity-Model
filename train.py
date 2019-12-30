@@ -11,16 +11,16 @@ import sys
 import pickle
 import numpy as np
 
-from models.MGC_19 import MultiGranularityCNNModel,MultiGraConfig   #修改处
+from models.MGCQ_16 import MultiGranularityCNNModel,MultiGraConfig   #修改处
 from preps.data_load import data_load_lawone,data_load_test_lawone
 from preps.data_load_generic import get_batch_data,get_batch_data_test
-from util.feedDict import feed_data_5 as feed_data_fun  #修改处
-from util.evaluate import evaluate3 as evaluate_fun
+from util.feedDict import feed_data_4 as feed_data_fun  #修改处
+from util.evaluate import evaluate_1 as evaluate_fun
 
 import models.parameter as param
 
-save_dir = 'result/model/MGC_19'  #修改处
-param_des = 'v1-qj'
+save_dir = 'result/model/MGCQ-16'  #修改处
+param_des = 'v1-qj-afterfixdropoutpadding-addstp'
 # param_des = 'initparam-qj'
 save_path = os.path.join(save_dir,param_des+'/checkpoints/best_validation')
 tensorboard_dir = os.path.join(save_dir,param_des+'/tensorboard')
@@ -71,11 +71,11 @@ def train():
     # train_data, test_data, val_data = data_load(param.BaseConfig.trainPath, param.BaseConfig.valPath, None,
     #                                                    model)
 
-    # train_x1_word, train_x2_word,  train_y = train_data
-    # val_x1_word,  val_x2_word,  val_y = val_data
+    train_x1_word, train_x2_word,  train_y = train_data
+    val_x1_word,  val_x2_word,  val_y = val_data
 
-    train_x1_word, train_x2_word, train_align, train_y = train_data
-    val_x1_word,  val_x2_word, val_align, val_y = val_data
+    # train_x1_word, train_x2_word, train_align, train_y = train_data
+    # val_x1_word,  val_x2_word, val_align, val_y = val_data
 
     # train_x1_word, train_x2_word,  train_seq_1, train_seq_2, train_y = train_data
     # val_x1_word,  val_x2_word, val_seq_1, val_seq_2, val_y = val_data
@@ -103,19 +103,19 @@ def train():
     flag = False
     for epoch in range(param.BaseConfig.num_epochs):
         print('Epoch:', epoch + 1)
-        batch_train = get_batch_data(train_x1_word, train_x2_word, train_align, train_y,
-                                     batch_size=param.BaseConfig.batch_size)
-        # batch_train = get_batch_data(train_x1_word, train_x2_word, train_y,
+        # batch_train = get_batch_data(train_x1_word, train_x2_word, train_align, train_y,
         #                              batch_size=param.BaseConfig.batch_size)
+        batch_train = get_batch_data(train_x1_word, train_x2_word, train_y,
+                                     batch_size=param.BaseConfig.batch_size)
         # batch_train = get_batch_data(train_x1_word, train_x2_word,  train_seq_1, train_seq_2, train_y, batch_size=param.BaseConfig.batch_size)
 
 
         # for a_word_batch, b_word_batch, seq_1_batch, seq_2_batch, y_batch in batch_train:
-        # for a_word_batch, b_word_batch, y_batch in batch_train:
-        for a_word_batch, b_word_batch, c_batch, y_batch in batch_train:
+        for a_word_batch, b_word_batch, y_batch in batch_train:
+        # for a_word_batch, b_word_batch, c_batch, y_batch in batch_train:
             # feed_dict = feed_data(model,a_word_batch,b_word_batch,seq_1_batch,seq_2_batch,y_batch,model.config.dropout_rate)
-            # feed_dict = feed_data(model, a_word_batch, b_word_batch, y_batch,model.config.dropout_rate)
-            feed_dict = feed_data_fun(model, a_word_batch, b_word_batch, c_batch, y_batch, model.config.dropout_rate)
+            feed_dict = feed_data_fun(model, a_word_batch, b_word_batch, y_batch,model.config.dropout_rate)
+            # feed_dict = feed_data_fun(model, a_word_batch, b_word_batch, c_batch, y_batch, model.config.dropout_rate)
             if total_batch % param.BaseConfig.save_per_batch == 0:
                 # 每多少轮次将训练结果写入tensorboard scalar
                 s = session.run(merged_summary, feed_dict=feed_dict)
@@ -127,7 +127,9 @@ def train():
                 feed_dict[model.dropout_rate] = 1.0
                 loss_train, acc_train,pre_y, logit, true_y, = session.run([model.loss, model.acc,model.pred_y,model.logit,model.y], feed_dict=feed_dict)
                 # loss_val, acc_val = evaluate(session, val_x1_word,  val_x2_word, val_seq_1, val_seq_2, val_y )  # 验证当前会话中的模型的loss和acc
-                loss_val, acc_val = evaluate_fun(model,session, val_x1_word, val_x2_word, val_align, val_y,feed_data_fun)
+                # loss_val, acc_val = evaluate_fun(model,session, val_x1_word, val_x2_word, val_align, val_y,feed_data_fun)
+                loss_val, acc_val = evaluate_fun(model, session, val_x1_word, val_x2_word, val_y,feed_data_fun)
+
 
                 if acc_val > best_acc_val:
                     # 保存最好结果
@@ -159,9 +161,9 @@ def test():
     start_time = time.time()
     test_data = data_load_test_lawone(model,rf,flag=qhj_label)
     # test_data = data_load_test(model)
-    # test_x1_word,  test_x2_word,  test_y = test_data
+    test_x1_word,  test_x2_word,  test_y = test_data
     # test_x1_word, test_x2_word, test_seq_1, test_seq_2, test_y = test_data
-    test_x1_word, test_x2_word, test_align, test_y = test_data
+    # test_x1_word, test_x2_word, test_align, test_y = test_data
 
 
     session = tf.Session()
@@ -172,7 +174,8 @@ def test():
     print('Testing...')
     # loss_test, acc_test = evaluate(session, test_x1_word, test_x2_word, test_seq_1, test_seq_2, test_y)
     # loss_test, acc_test = evaluate_fun(model,session, test_x1_word, test_x2_word, test_y, feed_data_fun)
-    loss_test, acc_test = evaluate_fun(model, session, test_x1_word, test_x2_word, test_align, test_y, feed_data_fun)
+    # loss_test, acc_test = evaluate_fun(model, session, test_x1_word, test_x2_word, test_align, test_y, feed_data_fun)
+    loss_test, acc_test = evaluate_fun(model, session, test_x1_word, test_x2_word,test_y, feed_data_fun)
     msg = 'Test Loss: {0:>6.2}, Test Acc: {1:>7.2%}'
     print(msg.format(loss_test, acc_test))
 
@@ -190,15 +193,11 @@ def test():
         end_id = min((i + 1) * batch_size, data_len)
         # feed_dict = feed_data(model, test_x1_word[start_id:end_id], test_x2_word[start_id:end_id],
         #                       test_seq_1[start_id:end_id], test_seq_2[start_id:end_id],test_y, 1.0)
-        feed_dict = feed_data_fun(model, test_x1_word[start_id:end_id], test_x2_word[start_id:end_id],
-                           test_align[start_id:end_id],test_y, 1.0)
+        # feed_dict = feed_data_fun(model, test_x1_word[start_id:end_id], test_x2_word[start_id:end_id],
+        #                    test_align[start_id:end_id],test_y, 1.0)
 
-        # feed_dict = {
-        #     model.input_X1: test_x1_word[start_id:end_id],
-        #     model.input_X2: test_x2_word[start_id:end_id],
-        #     model.y: test_y,
-        #     model.dropout_rate: 1.0   #这个表示测试时不使用dropout对神经元过滤
-        # }
+        feed_dict = feed_data_fun(model, test_x1_word[start_id:end_id], test_x2_word[start_id:end_id],test_y, 1.0)
+
         y_pred_cls[start_id:end_id] = session.run(model.pred_y, feed_dict=feed_dict)   #将所有批次的预测结果都存放在y_pred_cls中
         # inter_3,logit = session.run([model.fusion_output_max_3,model.logit],
         #                                                                 feed_dict=feed_dict)
@@ -265,7 +264,7 @@ def checkPrediction(pred_cls, target_y,probs):
     with open('resource/预测结果分析/MGCQ_16_predictAna-hj.json','w',encoding='utf-8') as fw:
         json.dump(law_result,fw)
 
-# train()
+train()
 y_test_cls,y_pred_cls = test()
 
 # data_load_lawone(param.BaseConfig.trainPath,param.BaseConfig.valPath,param.BaseConfig.testPath,model,rfModel=rf,flag=qhj_label)
