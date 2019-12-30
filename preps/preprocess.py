@@ -281,7 +281,7 @@ def _setUp_inputs_QJ(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,flag
             law_units = items[2].split(':')
             law_name = law_units[0]
             law_content = items[2][len(law_name) + 1:]
-            law_input = processLawText(law_content, wordEmbedding,wordVocab)
+            law_input = processTextWithoutDict(law_content, wordEmbedding,wordVocab)
             assert items[3] in ['0', '1'], ValueError("Label is not in [0,1]!")
             label = items[3]
             result.append([fact_input, law_input, label])
@@ -453,7 +453,7 @@ def processLawText(line,wordEmbedding, wordVocab):
             wordEmb = processWord(word, wordEmbedding, wordVocab)
             #判断是否是NoneType
             if wordEmb is None: continue
-            wordEmb = getVector(wordEmb)
+            # wordEmb = getVector(wordEmb)
             if wordEmb is None: continue
             wordEmbs.append(wordEmb)
         return wordEmbs
