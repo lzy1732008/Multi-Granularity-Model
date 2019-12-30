@@ -31,7 +31,7 @@ def rmLabel1InLaw():
 def buildCorpusWithQJ():
     with open('../result/model/RandomForest/rf_rm2json-dict30bool-rules-v2.pkl', 'rb') as fr:
         rfModel = pickle.load(fr)
-    lines = open('../resource/test-init.txt','r',encoding='utf-8').read().split('\n')
+    lines = open('../resource/val-init.txt','r',encoding='utf-8').read().split('\n')
     newlines = []
     for line in lines:
         line = line.strip()
@@ -50,6 +50,6 @@ def buildCorpusWithQJ():
                 if label == 0:
                     law_qj.append(law_split)
             newlines.append('|'.join([items[0],items[1],'。'.join(law_qj),items[-1]]))
-    open('../resource/test-qj.txt','w',encoding='utf-8').write('\n'.join(newlines))
+    open('../resource/val-qj.txt','w',encoding='utf-8').write('\n'.join(newlines))
 
-buildCorpusWithQJ()
+# buildCorpusWithQJ()

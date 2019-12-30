@@ -4,9 +4,9 @@ class BaseConfig:
     testPath = 'resource/test-init.txt'
     w2vModel = 'resource/word_embedding.json'
     w2vModel_ex = 'resource/word_embedding_extend.json'  #这个是加入标点符号的embedding
-    rf_model_path = '../result/model/RandomForest/rf_rm2json-dict30bool-rules-v2.pkl'
-    rf_dict_path = '../resource/lawdict.txt'
-    stpPath = '../resource/stopwords.txt'
+    rf_model_path = 'result/model/RandomForest/rf_rm2json-dict30bool-rules-v2.pkl'
+    rf_dict_path = 'resource/lawdict.txt'
+    stpPath = 'resource/stopwords.txt'
     lawKsPath = 'resource/ft_ks.json'
 
     char_vocab_size = 4594  # *
