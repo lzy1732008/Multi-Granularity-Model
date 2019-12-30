@@ -20,7 +20,7 @@ from util.evaluate import evaluate_1 as evaluate_fun
 import models.parameter as param
 
 save_dir = 'result/model/MGCQ-16'  #修改处
-param_des = 'v4-qj-afterfixdropoutpadding-addstp-dataaug'
+param_des = 'v1-qj-afterfixdropoutpadding-addstp-dataaug'
 # param_des = 'initparam-qj'
 save_path = os.path.join(save_dir,param_des+'/checkpoints/best_validation')
 tensorboard_dir = os.path.join(save_dir,param_des+'/tensorboard')
