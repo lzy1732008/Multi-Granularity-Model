@@ -143,7 +143,7 @@ def test(test_data, Path):
     print("Loading test data...")
     start_time = time.time()
 
-    test_x1_word,  test_x2_word, test_ks, test_x2_label, test_y = test_data
+    test_x1_word,  test_x2_word, test_ks, test_y = test_data
 
 
     session = tf.Session()
@@ -236,15 +236,12 @@ def run_mutli():
     # train_data, val_data, test_data = data_load(None, None,
     #                                             param.BaseConfig.testPath, model, rf)
     print('train data shape:{0}\n val data shape:{1}\n test data shape:{2}'.format(len(train_data), len(val_data), len(test_data)))
-    for i in range(1):
+    for i in range(3):
         Path = basicPath(i)
         train(train_data,val_data,Path)
-
-
-    for j in range(1):
-        print("the {0}nd testing......".format(str(j)))
-        Path = basicPath(j)
         test(test_data, Path)
+
+
 
 
 

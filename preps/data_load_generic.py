@@ -156,7 +156,7 @@ def processInitDataWithoutQHJ_Generic(data,len_list):
             output_data[-1].append([1,0])
 
     for i in range(len(data[0]) - 1):
-        output_data[i] = kr.preprocessing.sequence.pad_sequences(np.array(output_data[i],dtype=float), len_list[i],dtype=float)
+        output_data[i] = kr.preprocessing.sequence.pad_sequences(output_data[i], len_list[i],dtype=float)
     output_data[-1] = np.array(output_data[-1])
     return output_data
 
