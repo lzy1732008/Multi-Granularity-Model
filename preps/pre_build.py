@@ -79,6 +79,8 @@ def shuffleLaw(times_default, shuffle_num_default):
     newlines = []
     count = 0
 
+    #对每个法条都增加几个乱序，存储在字典里面
+
     for line in lines:
         line = line.strip()
         if line != "":
@@ -99,9 +101,9 @@ def shuffleLaw(times_default, shuffle_num_default):
                     new_law_content_split[num - 1], new_law_content_split[num] = new_law_content_split[num], \
                                                                                  new_law_content_split[num - 1]
                 newlines.append('|'.join([items[0], items[1], '。'.join(new_law_content_split), items[-1]]))
-            newlines.append(line)
+            # newlines.append(line)
     print('总共样本数由{0}变为{1}'.format(count, len(newlines)))
-    # open('../resource/train-qj-augment.txt', 'w', encoding='utf-8').write('\n'.join(newlines))
+    open('../resource/train-qj-augment-rminit.txt', 'w', encoding='utf-8').write('\n'.join(newlines))
 
 # shuffleLaw(times_default=2,shuffle_num_default=2)
 
