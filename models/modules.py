@@ -177,7 +177,7 @@ class Interaction:
         assert ks_len == x2_len, ValueError("ks:{0}, law:{1}".format(ks_len, x2_len))
         beta = tf.Variable(tf.random_normal(shape=[dim, 2], stddev=0, seed=1, dtype=tf.float32), trainable=True,
                                  name='beta')
-        weigt = tf.einsum('abc,cd->abd',self.data[1],beta) #[B,l2,3]
+        weigt = tf.einsum('abc,cd->abd',self.data[1],beta) #[B,l2,2]
         ks = tf.reduce_sum(weigt * self.data[2],axis=-1) #[B,l2]
         ks_rep = tf.reshape(tf.keras.backend.repeat_elements(ks, rep=x1_len, axis=1), shape=[-1, x1_len, x2_len])
         dot_matrix = tf.matmul(self.data[0],self.data[1],transpose_b=True) + ks_rep
