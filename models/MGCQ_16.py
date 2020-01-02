@@ -6,14 +6,14 @@ import math
 
 class MultiGraConfig:
     # v1
-    X_maxlen = 30
-    Y_maxlen = 50
-    dropout_rate = 0.5
-    first_kernel_size = 2
-    second_kernel_size = 4
-    third_kernel_size = 8
-    filters_num = param.BaseConfig.word_dimension
-    mlp_output = 64
+    # X_maxlen = 30
+    # Y_maxlen = 50
+    # dropout_rate = 0.5
+    # first_kernel_size = 2
+    # second_kernel_size = 4
+    # third_kernel_size = 8
+    # filters_num = param.BaseConfig.word_dimension
+    # mlp_output = 64
 
 
     #v2
@@ -27,14 +27,14 @@ class MultiGraConfig:
     # mlp_output = 64
 
     #v3
-    # X_maxlen = 30
-    # Y_maxlen = 70
-    # dropout_rate = 0.5
-    # first_kernel_size = 2
-    # second_kernel_size = 4
-    # third_kernel_size = 8
-    # filters_num = param.BaseConfig.word_dimension
-    # mlp_output = 64
+    X_maxlen = 30
+    Y_maxlen = 70
+    dropout_rate = 0.5
+    first_kernel_size = 2
+    second_kernel_size = 4
+    third_kernel_size = 8
+    filters_num = param.BaseConfig.word_dimension
+    mlp_output = 64
 
     #v4
     # X_maxlen = 30

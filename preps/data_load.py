@@ -46,9 +46,9 @@ def data_load_lawone(trainPath, valPath, testPath,model,rfModel,flag=0):
     # train_data = env['train']
     # test_data = env['test']
     # val_data = env['val']
-    # train = []
-    # test = []
-    # val = []
+    train = []
+    test = []
+    val = []
 
 
     with open('resource/dataset50-withstp-qj-tagBefore-augdata.json', 'r', encoding='utf-8') as fr:
