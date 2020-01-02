@@ -166,7 +166,7 @@ def test(test_data, Path):
     for i in range(num_batch):  # 逐批次处理
         start_id = i * batch_size
         end_id = min((i + 1) * batch_size, data_len)
-        feed_dict = feed_data_fun(model,test_x1_word[start_id:end_id],test_x2_word[start_id:end_id],test_y[start_id:end_id],1.0)
+        feed_dict = feed_data_fun(model,test_x1_word[start_id:end_id],test_x2_word[start_id:end_id],test_ks[start_id:end_id], test_y[start_id:end_id],1.0)
         y_pred_cls[start_id:end_id] = session.run(model.pred_y,feed_dict=feed_dict)   #将所有批次的预测结果都存放在y_pred_cls中
         # pool_1,pool_2,pool_3 = session.run([model.fusion_output_max_1,model.fusion_output_max_2,model.fusion_output_max_3],
         #                                                             feed_dict=feed_dict)
