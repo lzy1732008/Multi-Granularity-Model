@@ -113,7 +113,7 @@ def train(train_data, val_data,Path):
     total_batch = 0  # 总批次
     best_acc_val = 0.0  # 最佳验证集准确率
     last_improved = 0  # 记录上一次提升批次
-    require_improvement = 2000  # 如果超过2000轮未提升，提前结束训练
+    require_improvement = 1000  # 如果超过2000轮未提升，提前结束训练
 
     flag = False
     for epoch in range(param.BaseConfig.num_epochs):

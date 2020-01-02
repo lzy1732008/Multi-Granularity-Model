@@ -20,7 +20,7 @@ from util.evaluate import evaluate_1 as evaluate_fun
 import models.parameter as param
 
 save_dir = 'result/model/MGCQ-16'  #修改处
-param_des = 'v4-qj-afterfixdropoutpadding-addstp'
+param_des = 'v4-add6dropout'
 # param_des = 'initparam-qj'
 save_path = os.path.join(save_dir,param_des+'/checkpoints/best_validation')
 tensorboard_dir = os.path.join(save_dir,param_des+'/tensorboard')
@@ -264,8 +264,8 @@ def checkPrediction(pred_cls, target_y,probs):
     with open('resource/预测结果分析/MGCQ_16_predictAna-qj-v4.json','w',encoding='utf-8') as fw:
         json.dump(law_result,fw)
 
-# train()
-# y_test_cls,y_pred_cls = test()
+train()
+y_test_cls,y_pred_cls = test()
 
 # data_load_lawone(param.BaseConfig.trainPath,param.BaseConfig.valPath,param.BaseConfig.testPath,model,rfModel=rf,flag=qhj_label)
 # data_load_lawone(param.BaseConfig.trainPath,param.BaseConfig.valPath,param.BaseConfig.testPath,model,rfModel=rf,flag=qhj_label)
