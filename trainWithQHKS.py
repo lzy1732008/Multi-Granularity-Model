@@ -166,7 +166,7 @@ def test(test_data, Path):
     for i in range(num_batch):  # 逐批次处理
         start_id = i * batch_size
         end_id = min((i + 1) * batch_size, data_len)
-        feed_dict = feed_data_fun(model,test_x1_word[start_id:end_id],test_x2_word[start_id:end_id],test_y,1.0)
+        feed_dict = feed_data_fun(model,test_x1_word[start_id:end_id],test_x2_word[start_id:end_id],test_y[start_id:end_id],1.0)
         y_pred_cls[start_id:end_id] = session.run(model.pred_y,feed_dict=feed_dict)   #将所有批次的预测结果都存放在y_pred_cls中
         # pool_1,pool_2,pool_3 = session.run([model.fusion_output_max_1,model.fusion_output_max_2,model.fusion_output_max_3],
         #                                                             feed_dict=feed_dict)
@@ -232,13 +232,13 @@ def run_mutli():
     # 载入随机森林模型
     with open(param.BaseConfig.rf_model_path, 'rb') as fr:
         rf = pickle.load(fr)
-    train_data, val_data, test_data = data_load(param.BaseConfig.trainPath, param.BaseConfig.valPath, param.BaseConfig.testPath, model, rf)
-    # train_data, val_data, test_data = data_load(None, None,
-    #                                             param.BaseConfig.testPath, model, rf)
+    # train_data, val_data, test_data = data_load(param.BaseConfig.trainPath, param.BaseConfig.valPath, param.BaseConfig.testPath, model, rf)
+    train_data, val_data, test_data = data_load(None, None,
+                                                param.BaseConfig.testPath, model, rf)
     print('train data shape:{0}\n val data shape:{1}\n test data shape:{2}'.format(len(train_data), len(val_data), len(test_data)))
-    for i in range(3):
+    for i in range(1):
         Path = basicPath(i)
-        train(train_data,val_data,Path)
+        # train(train_data,val_data,Path)
         test(test_data, Path)
 
 
