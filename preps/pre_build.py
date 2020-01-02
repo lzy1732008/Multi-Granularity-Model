@@ -106,4 +106,37 @@ def shuffleLaw(times_default, shuffle_num_default):
     open('../resource/train-qj-augment-rminit.txt', 'w', encoding='utf-8').write('\n'.join(newlines))
 
 # shuffleLaw(times_default=2,shuffle_num_default=2)
+import json
+#建立一个词典，里面存放每个法条的前后件信息
+def buildDictQHJ():
+    with open('../result/model/RandomForest/rf_rm2json-dict30bool-rules-v2.pkl', 'rb') as fr:
+        rfModel = pickle.load(fr)
+    lines = open('../resource/train-init.txt','r',encoding='utf-8').read().split('\n')
+    lines += open('../resource/test-init.txt','r',encoding='utf-8').read().split('\n')
+    lines += open('../resource/val-init.txt', 'r', encoding='utf-8').read().split('\n')
+    law_dict = {}
+    for line in lines:
+        line = line.strip()
+        if line != "":
+            items = line.split('|')
+            law_units = items[2].split(':')
+            law_name = law_units[0]
+            if law_name in law_dict.keys(): continue
 
+            law_content = items[2][len(law_name) + 1:]
+            law_content, law_input_vector = psLaw.processLawForRf(law_content)
+            # 接下来预测每句话的label,并将其映射到每个词上
+            law_labels = rfModel.predict(law_input_vector)
+            content_split = re.split(r"[，；。：]", law_content)
+            content_split = list(filter(lambda x: x != "", list(map(lambda x: x.strip(), content_split))))
+            law_qj = []
+            law_hj = []
+            for label, law_split in zip(law_labels, content_split):
+                if label == 0:
+                    law_qj.append(law_split)
+                else:
+                    law_hj.append(law_split)
+            law_dict[law_name]={'qj':'。'.join(law_qj),'hj':'。'.join(law_hj),'whole':items[2][len(law_name) + 1:]}
+    with open('../resource/law_qhj_dict.json','w',encoding='utf-8') as fw:
+        json.dump(law_dict, fw)
+# buildDictQHJ()

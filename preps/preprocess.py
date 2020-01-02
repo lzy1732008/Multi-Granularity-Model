@@ -81,7 +81,7 @@ def setUp_inputs_QHJ(trainPath = None, valPath = None, testPath = None, rfModel=
         # while not q1.empty():
         #     train += list(q1.get())
 
-        train = _setUp_inputs_QHJ(trainPath, wordEmbedding, wordVocab, rfModel, 0, 15000,1)
+        train = _setUp_inputs_QHJ_KS(trainPath, wordEmbedding, wordVocab, rfModel, 0, 15000)
 
     if valPath:
         # args = []
@@ -94,7 +94,7 @@ def setUp_inputs_QHJ(trainPath = None, valPath = None, testPath = None, rfModel=
         # while not q3.empty():
         #     val += list(q3.get())
 
-        val = _setUp_inputs_QHJ(valPath, wordEmbedding, wordVocab, rfModel, 0, 1000, 3)
+        val = _setUp_inputs_QHJ_KS(valPath, wordEmbedding, wordVocab, rfModel, 0, 1000)
 
     if testPath:
         # args = []
@@ -107,7 +107,7 @@ def setUp_inputs_QHJ(trainPath = None, valPath = None, testPath = None, rfModel=
         # while not q2.empty():
         #     test += list(q2.get())
 
-        test = _setUp_inputs_QHJ(testPath, wordEmbedding, wordVocab, rfModel, 0, 1000, 2)
+        test = _setUp_inputs_QHJ_KS(testPath, wordEmbedding, wordVocab, rfModel, 0, 1000)
 
     env = {'train': train, 'test': test, 'val': val}
     return env
@@ -473,9 +473,11 @@ def processWord(word, word_embedding, vocabs):
 
 #下面是处理具有先验知识===============================
 import numpy as np
-def _setUp_inputs_QHJ_KS(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,flag):
+def _setUp_inputs_QHJ_KS(sourcePath, wordEmbedding, wordVocab,rfModel,start,end):
     stp = open(param.BaseConfig.stpPath,'r',encoding='utf-8').read().split('\n')
     fr_lawks = open(param.BaseConfig.lawKsPath,'r',encoding='utf-8')
+    ft_qhj_json = open(param.BaseConfig.lawQHJPath,'r',encoding='utf-8')
+    ft_qhj = json.load(ft_qhj_json)
     lawks_dict = json.load(fr_lawks)
 
     with open(sourcePath,'r',encoding='utf-8') as fr:
@@ -495,20 +497,32 @@ def _setUp_inputs_QHJ_KS(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,
             if len(fact_input) == 0: continue
             law_units = items[2].split(':')
             law_name = law_units[0]
-            law_content = items[2][len(law_name) + 1:]
-            law_content, law_input_vector = psLaw.processLawForRf(law_content)
-            #接下来预测每句话的label,并将其映射到每个词上
-            law_labels = rfModel.predict(law_input_vector)
-            content_split = re.split(r"[，；。：]",law_content)
-            content_split = list(filter(lambda x: x != "", list(map(lambda x: x.strip(), content_split))))
+
+
+            law_qhj = ft_qhj[law_name]['qj']
+            law_qhj = law_qhj.split('。')
             law_input = []
-            law_label_input = []
-            assert len(content_split) == len(law_labels), ValueError("content_split:{0}, law_label:{1}, line:{3}".format(len(content_split), len(law_labels), line))
-            for law_label,content in zip(law_labels,content_split):
-                content_vector = processTextWithoutDict(content, wordEmbedding,wordVocab)
-                law_input.extend(content_vector)
-                law_label_input+= [law_label for _ in range(len(content_vector))]
-            assert len(law_input) == len(law_label_input), ValueError("law:{0},label:{1}".format(len(law_input),len(law_label_input)))
+            for content in law_qhj:
+                content = content.strip()
+                if content != '':
+                   content_vector = processTextWithoutDict(content, wordEmbedding, wordVocab)
+                   law_input.extend(content_vector)
+
+            # law_content = items[2][len(law_name) + 1:]
+            # law_content, law_input_vector = psLaw.processLawForRf(law_content)
+            #接下来预测每句话的label,并将其映射到每个词上
+            # law_labels = rfModel.predict(law_input_vector)
+            # content_split = re.split(r"[，；。：]",law_content)
+            # content_split = list(filter(lambda x: x != "", list(map(lambda x: x.strip(), content_split))))
+            # law_input = []
+            # law_label_input = []
+            # assert len(content_split) == len(law_labels), ValueError("content_split:{0}, law_label:{1}, line:{3}".format(len(content_split), len(law_labels), line))
+            # for law_label,content in zip(law_labels,content_split):
+            #     content_vector = processTextWithoutDict(content, wordEmbedding,wordVocab)
+            #     law_input.extend(content_vector)
+            #     law_label_input+= [law_label for _ in range(len(content_vector))]
+            # assert len(law_input) == len(law_label_input), ValueError("law:{0},label:{1}".format(len(law_input),len(law_label_input)))
+
             assert items[3] in ['0', '1'], ValueError("Label is not in [0,1]!")
             label = items[3]
 
@@ -525,7 +539,7 @@ def _setUp_inputs_QHJ_KS(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,
                        vectors.append(getVector(v))
                     ks_vector = np.mean(np.array(vectors), axis=0)
                 law_ks_vector.append('\t'.join(list(map(str,ks_vector))))
-            result.append([fact_input, law_input, law_ks_vector, law_label_input, label])
+            result.append([fact_input, law_input, law_ks_vector, label])
             count += 1
             print("precessing {0}/{1} samples".format(count,len(lines)))
     return result
