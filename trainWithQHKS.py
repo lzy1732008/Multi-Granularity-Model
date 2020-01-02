@@ -187,7 +187,7 @@ def test(test_data, Path):
 
     # print("beta value", beta1,beta2,beta3)
     #check error prediction
-    print(y_pred_cls)
+    # print(y_pred_cls)
 
     # print('check.......')
     # print('maxpooling.....')
