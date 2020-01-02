@@ -278,7 +278,7 @@ def run_mutli():
     # train_data, val_data, test_data = data_load(None, None,
     #                                             param.BaseConfig.testPath, model, rf)
     print('train data shape:{0}\n val data shape:{1}\n test data shape:{2}'.format(len(train_data), len(val_data), len(test_data)))
-    for i in range(3):
+    for i in range(3,6):
         Path = basicPath(i)
         train(train_data,val_data,Path)
         test(test_data, Path)

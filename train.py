@@ -265,7 +265,7 @@ def checkPrediction(pred_cls, target_y,probs):
         json.dump(law_result,fw)
 
 # train()
-y_test_cls,y_pred_cls = test()
+# y_test_cls,y_pred_cls = test()
 
 # data_load_lawone(param.BaseConfig.trainPath,param.BaseConfig.valPath,param.BaseConfig.testPath,model,rfModel=rf,flag=qhj_label)
 # data_load_lawone(param.BaseConfig.trainPath,param.BaseConfig.valPath,param.BaseConfig.testPath,model,rfModel=rf,flag=qhj_label)

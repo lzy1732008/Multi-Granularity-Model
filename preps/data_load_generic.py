@@ -33,7 +33,7 @@ def get_batch_data(*data, batch_size = 64):
 import json
 
 def data_load(trainPath, valPath, testPath,model,rfModel):
-    env = pre.setUp_inputs_QHJ(trainPath=trainPath,valPath=valPath,testPath=testPath,rfModel=rfModel)
+    # env = pre.setUp_inputs_QHJ(trainPath=trainPath,valPath=valPath,testPath=testPath,rfModel=rfModel)
     # train_data = env['train']
     # test_data = env['test']
     # val_data = env['val']
