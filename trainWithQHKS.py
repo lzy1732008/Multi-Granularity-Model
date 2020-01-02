@@ -97,7 +97,7 @@ def train(train_data, val_data,Path):
         print('Epoch:', epoch + 1)
         batch_train = get_batch_data(train_x1_word, train_x2_word, train_ks, train_y, batch_size=param.BaseConfig.batch_size)
         for a_word_batch, b_word_batch, c_word_batch, y_batch in batch_train:
-            feed_dict = feed_data_fun(a_word_batch, b_word_batch, c_word_batch,y_batch, model.config.dropout_rate)
+            feed_dict = feed_data_fun(model, a_word_batch, b_word_batch, c_word_batch,y_batch, model.config.dropout_rate)
 
             if total_batch % param.BaseConfig.save_per_batch == 0:
                 # 每多少轮次将训练结果写入tensorboard scalar
@@ -166,7 +166,7 @@ def test(test_data, Path):
     for i in range(num_batch):  # 逐批次处理
         start_id = i * batch_size
         end_id = min((i + 1) * batch_size, data_len)
-        feed_dict = feed_data_fun(test_x1_word[start_id:end_id],test_x2_word[start_id:end_id],test_x2_label[start_id:end_id],test_y,1.0)
+        feed_dict = feed_data_fun(model,test_x1_word[start_id:end_id],test_x2_word[start_id:end_id],test_y,1.0)
         y_pred_cls[start_id:end_id] = session.run(model.pred_y,feed_dict=feed_dict)   #将所有批次的预测结果都存放在y_pred_cls中
         # pool_1,pool_2,pool_3 = session.run([model.fusion_output_max_1,model.fusion_output_max_2,model.fusion_output_max_3],
         #                                                             feed_dict=feed_dict)
