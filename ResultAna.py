@@ -8,8 +8,8 @@ import math
 #     exp_sum = sum(exp_input)
 #     return [float(x)/exp_sum for x in exp_input]
 
-fr1 = open('resource/预测结果分析/MGC_15predictAna-使用修改后的dropout.json','r',encoding='utf-8')
-fr2 = open('resource/预测结果分析/MGCQ_16_predictAna-hj.json','r',encoding='utf-8')
+fr1 = open('resource/预测结果分析/MGCQ_16_predictAna-qj-v4.json','r',encoding='utf-8')
+fr2 = open('resource/预测结果分析/MGCQ_16_predictAna-qj-v4.json','r',encoding='utf-8')
 model1_result = json.load(fr1)
 model2_result = json.load(fr2)
 

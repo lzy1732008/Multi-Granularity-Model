@@ -20,7 +20,7 @@ from util.evaluate import evaluate_1 as evaluate_fun
 import models.parameter as param
 
 save_dir = 'result/model/MGCQ-16'  #修改处
-param_des = 'v3-qj-afterfixdropoutpadding-addstp-dataaug'
+param_des = 'v4-qj-afterfixdropoutpadding-addstp'
 # param_des = 'initparam-qj'
 save_path = os.path.join(save_dir,param_des+'/checkpoints/best_validation')
 tensorboard_dir = os.path.join(save_dir,param_des+'/tensorboard')
@@ -186,7 +186,7 @@ def test():
 
     y_test_cls = np.argmax(test_y, 1)
     y_pred_cls = np.zeros(shape=data_len, dtype=np.int32)  # 保存预测结果
-    # probs = np.zeros(shape=[data_len,2], dtype=np.float32)
+    probs = np.zeros(shape=[data_len,2], dtype=np.float32)
     inter_1,inter_2,inter_3 = [],[],[]
     for i in range(num_batch):  # 逐批次处理
         start_id = i * batch_size
@@ -198,7 +198,7 @@ def test():
 
         feed_dict = feed_data_fun(model, test_x1_word[start_id:end_id], test_x2_word[start_id:end_id],test_y, 1.0)
 
-        y_pred_cls[start_id:end_id] = session.run(model.pred_y, feed_dict=feed_dict)   #将所有批次的预测结果都存放在y_pred_cls中
+        y_pred_cls[start_id:end_id],probs[start_id:end_id] = session.run([model.pred_y,model.logit], feed_dict=feed_dict)   #将所有批次的预测结果都存放在y_pred_cls中
         # inter_3,logit = session.run([model.fusion_output_max_3,model.logit],
         #                                                                 feed_dict=feed_dict)
         # print('inter.......')
@@ -236,7 +236,7 @@ def test():
     return y_test_cls,y_pred_cls
 import json
 def checkPrediction(pred_cls, target_y,probs):
-    test_content = open('resource/test-init.txt','r',encoding='utf-8').read()
+    test_content = open('resource/test-qj.txt','r',encoding='utf-8').read()
     lines = test_content.split('\n')
     index = 0
     right = []
@@ -261,10 +261,10 @@ def checkPrediction(pred_cls, target_y,probs):
             # else:wrong.append(s)
             index += 1
 
-    with open('resource/预测结果分析/MGCQ_16_predictAna-hj.json','w',encoding='utf-8') as fw:
+    with open('resource/预测结果分析/MGCQ_16_predictAna-qj-v4.json','w',encoding='utf-8') as fw:
         json.dump(law_result,fw)
 
-train()
+# train()
 y_test_cls,y_pred_cls = test()
 
 # data_load_lawone(param.BaseConfig.trainPath,param.BaseConfig.valPath,param.BaseConfig.testPath,model,rfModel=rf,flag=qhj_label)
