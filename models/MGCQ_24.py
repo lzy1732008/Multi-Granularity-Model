@@ -45,15 +45,15 @@ class MultiGranularityCNNModel:
         with tf.variable_scope("related-score-layer"):
             beta = tf.Variable(tf.random_normal(shape=[param.BaseConfig.word_dimension, 2], stddev=0, seed=1, dtype=tf.float32), trainable=True,
                                name='beta')
-            weigt = tf.einsum('abc,cd->abd', self.input_X2, beta)  # [B,l2,2]
-            ks = tf.reduce_sum(weigt * self.x2_label, axis=-1)  # [B,l2]
-            self.ks_rep = tf.reshape(tf.keras.backend.repeat_elements(ks, rep=self.config.X_maxlen, axis=1),
-                                     shape=[-1, self.config.X_maxlen, self.config.Y_maxlen])
-
-            # weigt = tf.sigmoid(tf.einsum('abc,cd->abd', self.input_X2, beta))  # [B,l2,2]
-            # self.weight = tf.reduce_sum(weigt * self.x2_label, axis=-1)  # [B,l2]
-            # self.ks_rep = tf.reshape(tf.keras.backend.repeat_elements(self.weight, rep=self.config.X_maxlen, axis=1),
+            # weigt = tf.einsum('abc,cd->abd', self.input_X2, beta)  # [B,l2,2]
+            # ks = tf.reduce_sum(weigt * self.x2_label, axis=-1)  # [B,l2]
+            # self.ks_rep = tf.reshape(tf.keras.backend.repeat_elements(ks, rep=self.config.X_maxlen, axis=1),
             #                          shape=[-1, self.config.X_maxlen, self.config.Y_maxlen])
+
+            weigt = tf.sigmoid(tf.einsum('abc,cd->abd', self.input_X2, beta))  # [B,l2,2]
+            self.weight = tf.reduce_sum(weigt * self.x2_label, axis=-1)  # [B,l2]
+            self.ks_rep = tf.reshape(tf.keras.backend.repeat_elements(self.weight, rep=self.config.X_maxlen, axis=1),
+                                     shape=[-1, self.config.X_maxlen, self.config.Y_maxlen])
 
 
         with tf.variable_scope("first-CNN-layer"):
@@ -61,7 +61,7 @@ class MultiGranularityCNNModel:
             self.output_x2_1 = tf.layers.conv1d(self.input_X2,filters=self.config.filters_num,kernel_size=self.config.first_kernel_size,padding='same',name='first-cnn2')
 
         with tf.variable_scope("first-interaction"):
-            interaction = Interaction(12, self.output_x1_1, self.output_x2_1, self.ks_rep)
+            interaction = Interaction(14, self.output_x1_1, self.output_x2_1, self.ks_rep)
             self.inter_1 = interaction.exeInteraction()
 
             #=======================
@@ -135,7 +135,7 @@ class MultiGranularityCNNModel:
 
         with tf.variable_scope("predict-layer"):
             self.output_1 = tf.nn.relu(tf.layers.dense(inputs=self.fusion_output,units=self.config.mlp_output,name='fnn1'))
-            self.output_1 = tf.layers.dropout(self.output_1,rate=self.config.dropout_rate)
+            self.output_1 = tf.layers.dropout(self.output_1,rate=self.dropout_rate)
 
             self.logit = tf.layers.dense(inputs=self.output_1,units=2,name='fnn2')
 
