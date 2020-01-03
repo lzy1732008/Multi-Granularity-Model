@@ -174,7 +174,7 @@ def test(test_data, Path):
     saver = tf.train.Saver()
     saver.restore(sess=session, save_path=Path.save_path)  # 读取保存的模型
 
-    print("The number of parameter。。。")
+    print("The number of parameter")
     print(np.sum([np.prod(v.get_shape().as_list()) for v in tf.trainable_variables()]))
 
     print('Testing...')
