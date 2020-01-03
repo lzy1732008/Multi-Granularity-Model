@@ -5,24 +5,24 @@ from models.modules import Interaction
 
 class MultiGraConfig:
     # v1
-    # X_maxlen = 30
-    # Y_maxlen = 50
-    # dropout_rate = 0.5
-    # first_kernel_size = 2
-    # second_kernel_size = 4
-    # third_kernel_size = 8
-    # filters_num = 128
-    # mlp_output = 64
-
-    #v2
     X_maxlen = 30
     Y_maxlen = 50
     dropout_rate = 0.5
     first_kernel_size = 2
     second_kernel_size = 4
     third_kernel_size = 8
-    filters_num = 64
+    filters_num = 128
     mlp_output = 64
+
+    #v2
+    # X_maxlen = 30
+    # Y_maxlen = 50
+    # dropout_rate = 0.5
+    # first_kernel_size = 2
+    # second_kernel_size = 4
+    # third_kernel_size = 8
+    # filters_num = 64
+    # mlp_output = 64
 
 
 
