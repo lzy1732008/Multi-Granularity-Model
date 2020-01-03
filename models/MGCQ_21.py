@@ -21,7 +21,7 @@ class MultiGraConfig:
     first_kernel_size = 2
     second_kernel_size = 4
     third_kernel_size = 8
-    filters_num = 64
+    filters_num = 128
     mlp_output = 64
 
 
