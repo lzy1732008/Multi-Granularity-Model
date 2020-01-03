@@ -54,7 +54,7 @@ class MultiGranularityCNNModel:
             self.output_x2_1 = tf.layers.conv1d(self.input_X2,filters=self.config.filters_num,kernel_size=self.config.first_kernel_size,padding='same',name='first-cnn2')
 
         with tf.variable_scope("first-interaction"):
-            interaction = Interaction(12, self.output_x1_1, self.output_x2_1, self.ks_rep)
+            interaction = Interaction(13, self.output_x1_1, self.output_x2_1, self.ks_rep)
             self.inter_1 = interaction.exeInteraction()
 
             #=======================
