@@ -70,10 +70,10 @@ class MultiGranularityCNNModel:
             self.output_x2_2 = tf.layers.conv1d(self.output_x2_1,filters=self.config.filters_num,kernel_size=self.config.second_kernel_size,padding='same',name='second-cnn2')
 
         with tf.variable_scope("second-interaction"):
-            # interaction = Interaction(8, self.output_x1_2, self.output_x2_2, self.x2_label)
-            # self.inter_2 = interaction.exeInteraction()
+            interaction = Interaction(12, self.output_x1_2, self.output_x2_2, self.ks_rep)
+            self.inter_2 = interaction.exeInteraction()
 
-            self.inter_2 = self.interaction(self.output_x1_2,self.output_x2_2)
+            # self.inter_2 = self.interaction(self.output_x1_2,self.output_x2_2)
             self.inter_rep_2 = tf.reshape(tf.keras.backend.repeat_elements(self.inter_2, rep=param.BaseConfig.word_dimension, axis=1),shape=[-1,self.config.Y_maxlen,param.BaseConfig.word_dimension])
 
         with tf.variable_scope("fusion-layer-2"):
