@@ -9,7 +9,7 @@ import math
 #     return [float(x)/exp_sum for x in exp_input]
 
 fr1 = open('resource/预测结果分析/MGCQ_16_predictAna-qj-v4.json','r',encoding='utf-8')
-fr2 = open('resource/预测结果分析/MGCQ_16_predictAna-qj-v4.json','r',encoding='utf-8')
+fr2 = open('resource/预测结果分析/MGCQ_23-qj.json','r',encoding='utf-8')
 model1_result = json.load(fr1)
 model2_result = json.load(fr2)
 
@@ -25,7 +25,7 @@ right_to_wrong = []
 predict_wrong = []
 count_right = 0
 count = 0
-for k,v in model2_result.items():
+for k,v in model1_result.items():
     true_y = []
     pred_y = []
     for k_1, v_1 in v.items():

@@ -261,7 +261,7 @@ def checkPrediction(pred_cls, target_y,probs):
             # else:wrong.append(s)
             index += 1
 
-    with open('resource/预测结果分析/MGCQ_16_predictAna-qj-v4.json','w',encoding='utf-8') as fw:
+    with open('resource/预测结果分析/MGCQ_23-qj.json','w',encoding='utf-8') as fw:
         json.dump(law_result,fw)
 
 train()

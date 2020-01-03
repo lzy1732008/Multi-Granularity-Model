@@ -1,5 +1,5 @@
 class BaseConfig:
-    trainPath = 'resource/train-qj.txt'
+    trainPath = 'resource/train-qj-augment.txt'
     valPath = 'resource/val-qj.txt'
     testPath = 'resource/test-qj.txt'
     w2vModel = 'resource/word_embedding.json'
