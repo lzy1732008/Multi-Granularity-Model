@@ -281,9 +281,9 @@ class Interaction:
 
     def playInteraction13(self):
         x2_len,dim = self.data[1].get_shape().as_list()[1:]
-        alpha = tf.Variable(tf.random_normal(shape=[None], stddev=0, seed=1, dtype=tf.float32), trainable=True,
+        alpha = tf.Variable(tf.random_normal(shape=[1], stddev=0, seed=1, dtype=tf.float32), trainable=True,
                            name='alpha')
-        dot_matrix = tf.matmul(self.data[0],self.data[1],transpose_b=True) + alpha * self.data[2]
+        dot_matrix = tf.matmul(self.data[0],self.data[1],transpose_b=True) + alpha[0] * self.data[2]
         x_2_y = tf.nn.softmax(dot_matrix, axis=2)  # x对y每个词的关注度
         y_2_x = tf.nn.softmax(dot_matrix, axis=1)  # y对x每个词的关注度
 
