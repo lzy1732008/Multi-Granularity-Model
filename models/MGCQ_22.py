@@ -102,7 +102,7 @@ class MultiGranularityCNNModel:
             self.fusion_output_x2 = tf.nn.relu(
                 tf.layers.dense(inputs=self.fusion_output_x2, units=self.config.mlp_output, name='fnn1'))
 
-            self.fusion_output_x1 =  tf.nn.relu(
+            self.fusion_output_x1 = tf.nn.relu(
                 tf.layers.dense(inputs=self.new_x1_, units=self.config.mlp_output, name='fnn2'))
 
             self.fusion_output = tf.concat([self.fusion_output_x1,self.fusion_output_x2],axis=-1)

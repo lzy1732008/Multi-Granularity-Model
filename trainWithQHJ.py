@@ -10,15 +10,15 @@ import os
 import sys
 import pickle
 
-from models.MGCQ_21 import *
+from models.MGC_15 import *
 from preps.data_load_generic import *
 import models.parameter as param
 from util.feedDict import feed_data_1 as feed_data
 
 class basicPath:
     def __init__(self,time):
-        self.save_dir = 'result/model/MGCQ_21'  # 修改处
-        self.param_des = 'v1-' + str(time) +'times'
+        self.save_dir = 'result/model/MGC_15'  # 修改处
+        self.param_des = 'v5-axis1-' + str(time) +'times'
         self.save_path = os.path.join(self.save_dir, self.param_des + '/checkpoints/best_validation')
         self.tensorboard_dir = os.path.join(self.save_dir, self.param_des + '/tensorboard')
 
