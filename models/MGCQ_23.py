@@ -59,7 +59,7 @@ class MultiGranularityCNNModel:
         with tf.variable_scope("second-interaction"):
 
             self.inter_2 = self.interaction(self.output_x2_2,self.output_x1_2)
-            self.inter_rep_2 = tf.reshape(tf.keras.backend.repeat_elements(self.inter_2, rep=param.BaseConfig.word_dimension, axis=1),shape=[-1,self.config.Y_maxlen,param.BaseConfig.word_dimension])
+            self.inter_rep_2 = tf.reshape(tf.keras.backend.repeat_elements(self.inter_2, rep=param.BaseConfig.word_dimension, axis=1),shape=[-1,self.config.X_maxlen,param.BaseConfig.word_dimension])
 
         with tf.variable_scope("fusion-layer-2"):
             self.x1_inter_2 = self.inter_rep_2 * self.input_X1
@@ -84,7 +84,7 @@ class MultiGranularityCNNModel:
             # self.inter_3 = interaction.exeInteraction()
 
             self.inter_3 = self.interaction(self.output_x2_3,self.output_x1_3)
-            self.inter_rep_3 = tf.reshape(tf.keras.backend.repeat_elements(self.inter_3, rep=param.BaseConfig.word_dimension, axis=1),shape=[-1,self.config.Y_maxlen,param.BaseConfig.word_dimension])
+            self.inter_rep_3 = tf.reshape(tf.keras.backend.repeat_elements(self.inter_3, rep=param.BaseConfig.word_dimension, axis=1),shape=[-1,self.config.X_maxlen,param.BaseConfig.word_dimension])
 
         with tf.variable_scope("fusion-layer-3"):
             self.x1_inter_3 = self.inter_rep_3 * self.input_X1
