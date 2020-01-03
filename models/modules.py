@@ -34,6 +34,8 @@ class Interaction:
                 return self.playInteraction12()
             elif self.method == 13:
                 return self.playInteraction13()
+            elif self.method == 14:
+                return self.playInteraction14()
 
 
     def playInteraction1(self):
@@ -284,6 +286,21 @@ class Interaction:
         alpha = tf.Variable(tf.random_normal(shape=[1], stddev=0, seed=1, dtype=tf.float32), trainable=True,
                            name='alpha')
         dot_matrix = tf.matmul(self.data[0],self.data[1],transpose_b=True) + alpha[0] * self.data[2]
+        x_2_y = tf.nn.softmax(dot_matrix, axis=2)  # x对y每个词的关注度
+        y_2_x = tf.nn.softmax(dot_matrix, axis=1)  # y对x每个词的关注度
+
+        # 计算x1每个词获取的总weight
+        x1_weight = tf.reduce_mean(y_2_x, axis=2)  # [Batch, len1]
+
+        # 计算x2最后获取的每个词的总的weight
+        x1_weight_ = tf.expand_dims(x1_weight, axis=1)  # [Batch, 1, len1]
+        x2_weight = tf.matmul(x1_weight_, x_2_y)  # [Batch, 1, len2]
+        x2_weight = tf.reshape(x2_weight, shape=[-1, x2_len])
+        return x2_weight
+
+    def playInteraction14(self):
+        x2_len, dim = self.data[1].get_shape().as_list()[1:]
+        dot_matrix = tf.matmul(self.data[0], self.data[1], transpose_b=True) * self.data[2]
         x_2_y = tf.nn.softmax(dot_matrix, axis=2)  # x对y每个词的关注度
         y_2_x = tf.nn.softmax(dot_matrix, axis=1)  # y对x每个词的关注度
 

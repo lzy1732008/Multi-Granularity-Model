@@ -47,7 +47,14 @@ class MultiGranularityCNNModel:
                                name='beta')
             weigt = tf.einsum('abc,cd->abd', self.input_X2, beta)  # [B,l2,2]
             ks = tf.reduce_sum(weigt * self.x2_label, axis=-1)  # [B,l2]
-            self.ks_rep = tf.reshape(tf.keras.backend.repeat_elements(ks, rep=self.config.X_maxlen, axis=1), shape=[-1, self.config.X_maxlen, self.config.Y_maxlen])
+            self.ks_rep = tf.reshape(tf.keras.backend.repeat_elements(ks, rep=self.config.X_maxlen, axis=1),
+                                     shape=[-1, self.config.X_maxlen, self.config.Y_maxlen])
+
+            # weigt = tf.sigmoid(tf.einsum('abc,cd->abd', self.input_X2, beta))  # [B,l2,2]
+            # self.weight = tf.reduce_sum(weigt * self.x2_label, axis=-1)  # [B,l2]
+            # self.ks_rep = tf.reshape(tf.keras.backend.repeat_elements(self.weight, rep=self.config.X_maxlen, axis=1),
+            #                          shape=[-1, self.config.X_maxlen, self.config.Y_maxlen])
+
 
         with tf.variable_scope("first-CNN-layer"):
             self.output_x1_1 = tf.layers.conv1d(self.input_X1,filters=self.config.filters_num,kernel_size=self.config.first_kernel_size,padding='same',name='first-cnn1')
