@@ -5,14 +5,14 @@ from models.modules import Interaction
 
 class MultiGraConfig:
     # v1
-    X_maxlen = 30
-    Y_maxlen = 50
-    dropout_rate = 0.5
-    first_kernel_size = 2
-    second_kernel_size = 4
-    third_kernel_size = 8
-    filters_num = 128
-    mlp_output = 64
+    # X_maxlen = 30
+    # Y_maxlen = 50
+    # dropout_rate = 0.5
+    # first_kernel_size = 2
+    # second_kernel_size = 4
+    # third_kernel_size = 8
+    # filters_num = 128
+    # mlp_output = 64
 
     #v2
     # X_maxlen = 30
@@ -25,14 +25,14 @@ class MultiGraConfig:
     # mlp_output = 64
 
     #v3
-    # X_maxlen = 30
-    # Y_maxlen = 50
-    # dropout_rate = 0.5
-    # first_kernel_size = 2
-    # second_kernel_size = 4
-    # third_kernel_size = 8
-    # filters_num = 100
-    # mlp_output = 64
+    X_maxlen = 30
+    Y_maxlen = 50
+    dropout_rate = 0.5
+    first_kernel_size = 2
+    second_kernel_size = 4
+    third_kernel_size = 8
+    filters_num = 100
+    mlp_output = 64
 
 
 
@@ -52,10 +52,12 @@ class MultiGranularityCNNModel:
         self.build_model()
 
     def build_model(self):
-        # with tf.variable_scope("related-score-layer"):
-        #     beta = tf.Variable(tf.random_normal(shape=[param.BaseConfig.word_dimension, 2], stddev=0, seed=1, dtype=tf.float32), trainable=True,
-        #                        name='beta')
-        #     self.weigt = tf.sigmoid(tf.einsum('abc,cd->abd', self.input_X2, beta))  # [B,l2,2]
+        with tf.variable_scope("related-score-layer"):
+            beta = tf.Variable(tf.random_normal(shape=[param.BaseConfig.word_dimension, 2], stddev=0, seed=1, dtype=tf.float32), trainable=True,
+                               name='beta')
+            self.weigt = tf.nn.sigmoid(tf.einsum('abc,cd->abd', self.input_X2, beta),axis=-1)  # [B,l2,2]
+            self.weigt = self.weigt * self.x2_label # [B,l2,2]
+
             # ks = tf.reduce_sum(weigt * self.x2_label, axis=-1)  # [B,l2]
             # self.ks_rep = tf.reshape(tf.keras.backend.repeat_elements(ks, rep=self.config.X_maxlen, axis=1),
             #                      shape=[-1, self.config.X_maxlen, self.config.Y_maxlen])
@@ -74,7 +76,7 @@ class MultiGranularityCNNModel:
             self.x2_inter_0 = self.inter_rep_0 * self.input_X2
             self.fusion_output_0 = tf.concat(
                 [self.input_X2, self.x2_inter_0, self.input_X2 - self.x2_inter_0, self.input_X2 * self.x2_inter_0,
-                 self.x2_label],
+                 self.weigt],
                 axis=-1)  # [Batch, len, 4 * dimension]
             self.fusion_output_0 = tf.layers.dense(inputs=self.fusion_output_0, units=self.config.mlp_output,
                                                    name='fusion-fnn')
