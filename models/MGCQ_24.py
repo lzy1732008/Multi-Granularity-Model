@@ -71,7 +71,7 @@ class MultiGranularityCNNModel:
                                  shape=[-1, self.config.X_maxlen, self.config.Y_maxlen])
 
         with tf.variable_scope("zero-interaction-layer"):
-            interaction = Interaction(12, self.input_X1, self.input_X2, self.ks_rep)
+            interaction = Interaction(14, self.input_X1, self.input_X2, self.ks_rep)
             self.inter_0 = interaction.exeInteraction()
 
             # self.inter_0 = self.interaction(self.input_X1,self.input_X2)
