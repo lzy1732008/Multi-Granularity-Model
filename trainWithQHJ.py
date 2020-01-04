@@ -18,7 +18,7 @@ from util.feedDict import feed_data_1 as feed_data
 class basicPath:
     def __init__(self,time):
         self.save_dir = 'result/model/MGCQ_24'  # 修改处
-        self.param_des = 'v3-addinter0-' + str(time) +'times'
+        self.param_des = 'v1-addinter0-' + str(time) +'times'
         self.save_path = os.path.join(self.save_dir, self.param_des + '/checkpoints/best_validation')
         self.tensorboard_dir = os.path.join(self.save_dir, self.param_des + '/tensorboard')
 
@@ -268,7 +268,7 @@ def checkPrediction(pred_cls, target_y,probs):
         json.dump(law_result,fw)
 
     # print('predction is right.......')
-    # print('\n'.join(right))
+    # print('\n'.join(right))8933
     # print('prediction is wrong')
     # print('\n'.join(wrong))
 
