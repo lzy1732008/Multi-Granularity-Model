@@ -58,7 +58,7 @@ class MultiGranularityCNNModel:
             self.weigt = tf.einsum('abc,cd->abd', self.input_X2, beta)  # [B,l2,2]
             max_num = tf.keras.backend.repeat_elements(tf.reduce_max(self.weigt,axis=-1,keep_dims=True),rep=2,axis=-1)# [B,l2,2]
             min_num = tf.keras.backend.repeat_elements(tf.reduce_min(self.weigt,axis=-1,keep_dims=True),rep=2,axis=-1)# [B,l2,2]
-            self.weigt = (self.weigt - min_num + 1)/(max_num - min_num + 2)# [B,l2,2]
+            self.weigt = (self.weigt - min_num + 0.1)/(max_num - min_num + 0.2)# [B,l2,2]
             self.weigt = self.weigt * self.x2_label # [B,l2,2]
 
             # ks = tf.reduce_sum(weigt * self.x2_label, axis=-1)  # [B,l2]
