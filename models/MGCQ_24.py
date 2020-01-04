@@ -71,7 +71,10 @@ class MultiGranularityCNNModel:
             #                      shape=[-1, self.config.X_maxlen, self.config.Y_maxlen])
 
         with tf.variable_scope("zero-interaction-layer"):
-            self.inter_0 = self.interaction(self.input_X1,self.input_X2)
+            interaction = Interaction(12, self.output_x1_1, self.output_x2_1, self.weigt)
+            self.inter_0 = interaction.exeInteraction()
+
+            # self.inter_0 = self.interaction(self.input_X1,self.input_X2)
             self.inter_rep_0 = tf.reshape(
                 tf.keras.backend.repeat_elements(self.inter_0, rep=param.BaseConfig.word_dimension, axis=1),
                 shape=[-1, self.config.Y_maxlen, param.BaseConfig.word_dimension])
@@ -79,7 +82,7 @@ class MultiGranularityCNNModel:
             self.x2_inter_0 = self.inter_rep_0 * self.input_X2
             self.fusion_output_0 = tf.concat(
                 [self.input_X2, self.x2_inter_0, self.input_X2 - self.x2_inter_0, self.input_X2 * self.x2_inter_0,
-                 self.weigt],
+                 self.x2_label],
                 axis=-1)  # [Batch, len, 4 * dimension]
             self.fusion_output_0 = tf.layers.dense(inputs=self.fusion_output_0, units=self.config.mlp_output,
                                                    name='fusion-fnn')
