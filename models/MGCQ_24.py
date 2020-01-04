@@ -56,25 +56,25 @@ class MultiGranularityCNNModel:
             beta = tf.Variable(tf.random_normal(shape=[param.BaseConfig.word_dimension, 2], stddev=0, seed=1, dtype=tf.float32), trainable=True,
                                name='beta')
             self.weigt = tf.einsum('abc,cd->abd', self.input_X2, beta)  # [B,l2,2]
-            max_num = tf.keras.backend.repeat_elements(tf.reduce_max(self.weigt,axis=-1,keep_dims=True),rep=2,axis=-1)# [B,l2,2]
-            min_num = tf.keras.backend.repeat_elements(tf.reduce_min(self.weigt,axis=-1,keep_dims=True),rep=2,axis=-1)# [B,l2,2]
-            self.weigt = (self.weigt - min_num + 0.1)/(max_num - min_num + 0.2)# [B,l2,2]
-            self.weigt = tf.reduce_sum(self.weigt * self.x2_label,axis=-1) # [B,l2]
+            # max_num = tf.keras.backend.repeat_elements(tf.reduce_max(self.weigt,axis=-1,keep_dims=True),rep=2,axis=-1)# [B,l2,2]
+            # min_num = tf.keras.backend.repeat_elements(tf.reduce_min(self.weigt,axis=-1,keep_dims=True),rep=2,axis=-1)# [B,l2,2]
+            # self.weigt = (self.weigt - min_num + 0.1)/(max_num - min_num + 0.2)# [B,l2,2]
+            # self.weigt = tf.reduce_sum(self.weigt * self.x2_label,axis=-1) # [B,l2]
 
-            # ks = tf.reduce_sum(weigt * self.x2_label, axis=-1)  # [B,l2]
-            # self.ks_rep = tf.reshape(tf.keras.backend.repeat_elements(ks, rep=self.config.X_maxlen, axis=1),
-            #                      shape=[-1, self.config.X_maxlen, self.config.Y_maxlen])
+            ks = tf.reduce_sum(self.weigt * self.x2_label, axis=-1)  # [B,l2]
+            self.ks_rep = tf.reshape(tf.keras.backend.repeat_elements(ks, rep=self.config.X_maxlen, axis=1),
+                                 shape=[-1, self.config.X_maxlen, self.config.Y_maxlen])
 
             # self.weigt = tf.sigmoid(tf.einsum('abc,cd->abd', self.input_X2, beta))  # [B,l2,2]
             # self.weight = tf.reduce_sum(weigt * self.x2_label, axis=-1)  # [B,l2]
-            self.ks_rep = tf.reshape(tf.keras.backend.repeat_elements(self.weigt, rep=self.config.X_maxlen, axis=1),
-                                 shape=[-1, self.config.X_maxlen, self.config.Y_maxlen])
+            # self.ks_rep = tf.reshape(tf.keras.backend.repeat_elements(self.weigt, rep=self.config.X_maxlen, axis=1),
+            #                      shape=[-1, self.config.X_maxlen, self.config.Y_maxlen])
 
         with tf.variable_scope("zero-interaction-layer"):
-            interaction = Interaction(14, self.input_X1, self.input_X2, self.ks_rep)
-            self.inter_0 = interaction.exeInteraction()
+            # interaction = Interaction(14, self.input_X1, self.input_X2, self.ks_rep)
+            # self.inter_0 = interaction.exeInteraction()
 
-            # self.inter_0 = self.interaction(self.input_X1,self.input_X2)
+            self.inter_0 = self.interaction(self.input_X1,self.input_X2)
             self.inter_rep_0 = tf.reshape(
                 tf.keras.backend.repeat_elements(self.inter_0, rep=param.BaseConfig.word_dimension, axis=1),
                 shape=[-1, self.config.Y_maxlen, param.BaseConfig.word_dimension])
@@ -94,11 +94,11 @@ class MultiGranularityCNNModel:
             self.output_x2_1 = tf.layers.conv1d(self.input_X2,filters=self.config.filters_num,kernel_size=self.config.first_kernel_size,padding='same',name='first-cnn2')
 
         with tf.variable_scope("first-interaction"):
-            # interaction = Interaction(12, self.output_x1_1, self.output_x2_1, self.ks_rep)
-            # self.inter_1 = interaction.exeInteraction()
+            interaction = Interaction(12, self.output_x1_1, self.output_x2_1, self.ks_rep)
+            self.inter_1 = interaction.exeInteraction()
 
             #=======================
-            self.inter_1 = self.interaction(self.output_x1_1, self.output_x2_1)
+            # self.inter_1 = self.interaction(self.output_x1_1, self.output_x2_1)
 
             self.inter_rep_1 = tf.reshape(
                 tf.keras.backend.repeat_elements(self.inter_1, rep=param.BaseConfig.word_dimension, axis=1),
