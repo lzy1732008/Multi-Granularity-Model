@@ -41,7 +41,7 @@ def data_load(trainPath, valPath, testPath,model,rfModel):
     test = []
     val = []
     # # # #
-    len_lst = [model.config.X_maxlen,model.config.Y_maxlen,3]
+    # len_lst = [model.config.X_maxlen,model.config.Y_maxlen,3]
     if trainPath:
        # train = processInitDataWithoutQHJ_Generic(train_data,len_lst)
        train = processInitData2(train_data,model)
@@ -52,12 +52,12 @@ def data_load(trainPath, valPath, testPath,model,rfModel):
        # test = processInitDataWithoutQHJ_Generic(test_data,len_lst)
        test = processInitData2(test_data,model)
     # # #
-    # with open('resource/dataset50-addstp-fixpadding.json','w',encoding='utf-8') as fw:
-    #     dataset = {}
-    #     dataset['train'] = [train[0].tolist(), train[1].tolist(), train[2].tolist(), train[3].tolist()]
-    #     dataset['val'] = [val[0].tolist(), val[1].tolist(), val[2].tolist(), val[3].tolist()]
-    #     dataset['test'] = [test[0].tolist(), test[1].tolist(), test[2].tolist(), test[3].tolist()]
-    #     json.dump(dataset, fw)
+    with open('resource/dataset50-addstp-fixpadding-addcx.json','w',encoding='utf-8') as fw:
+        dataset = {}
+        dataset['train'] = [train[0].tolist(), train[1].tolist(), train[2].tolist(), train[3].tolist()]
+        dataset['val'] = [val[0].tolist(), val[1].tolist(), val[2].tolist(), val[3].tolist()]
+        dataset['test'] = [test[0].tolist(), test[1].tolist(), test[2].tolist(), test[3].tolist()]
+        json.dump(dataset, fw)
 
     #================================================================================
 

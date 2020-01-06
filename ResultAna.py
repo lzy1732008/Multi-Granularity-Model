@@ -8,7 +8,7 @@ import math
 #     exp_sum = sum(exp_input)
 #     return [float(x)/exp_sum for x in exp_input]
 
-fr1 = open('resource/预测结果分析/MGCQ_16_predictAna-qj-v4.json','r',encoding='utf-8')
+fr1 = open('resource/预测结果分析/MGCQ_24predictAna.json','r',encoding='utf-8')
 fr2 = open('resource/预测结果分析/MGCQ_23-qj.json','r',encoding='utf-8')
 model1_result = json.load(fr1)
 model2_result = json.load(fr2)
@@ -25,26 +25,28 @@ right_to_wrong = []
 predict_wrong = []
 count_right = 0
 count = 0
-for k,v in model2_result.items():
+for k,v in model1_result.items():
     true_y = []
     pred_y = []
+    print('法条:'+k)
     for k_1, v_1 in v.items():
         if v_1[1] != v_1[0]:
-            print(k,k_1,v_1)
+            print(k_1,v_1)
 
         # if v_1[1] == v_1[0] == 1:
         #     print(k)
-    #==============计算每个法条的1的准确率和召回率=======
-        # true_y.append(v_1[1])
-        # pred_y.append(v_1[0])
+    # ==============计算每个法条的1的准确率和召回率=======
+        true_y.append(v_1[1])
+        pred_y.append(v_1[0])
     # print('法条:'+k+'......')
-    # print("Precision, Recall and F1-Score...")
-    # print(metrics.classification_report(np.array(true_y), np.array(pred_y), digits=4))  # 直接计算准确率，召回率和f值
-    #
-    # # 混淆矩阵
-    # print("Confusion Matrix...")
-    # cm = metrics.confusion_matrix(np.array(true_y), np.array(pred_y))
-    # print(cm)
+    print("Precision, Recall and F1-Score...")
+    print(metrics.classification_report(np.array(true_y), np.array(pred_y), digits=4))  # 直接计算准确率，召回率和f值
+
+    # 混淆矩阵
+    print("Confusion Matrix...")
+    cm = metrics.confusion_matrix(np.array(true_y), np.array(pred_y))
+    print(cm)
+    print('================================================')
     #
     # true_y = []
     # pred_y = []

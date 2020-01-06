@@ -18,7 +18,7 @@ from util.feedDict import feed_data_1 as feed_data
 class basicPath:
     def __init__(self,time):
         self.save_dir = 'result/model/MGCQ_24'  # 修改处
-        self.param_des = 'v3-addinter0-' + str(time) +'times'
+        self.param_des = 'v3-addinter0-addstopcx-' + str(time) +'times'
         self.save_path = os.path.join(self.save_dir, self.param_des + '/checkpoints/best_validation')
         self.tensorboard_dir = os.path.join(self.save_dir, self.param_des + '/tensorboard')
 
@@ -239,7 +239,7 @@ def test(test_data, Path):
 
 import json
 def checkPrediction(pred_cls, target_y,probs):
-    test_content = open('resource/test-init.txt','r',encoding='utf-8').read()
+    test_content = open('resource/test-init-alter-2.txt','r',encoding='utf-8').read()
     lines = test_content.split('\n')
     index = 0
     right = []
@@ -264,7 +264,7 @@ def checkPrediction(pred_cls, target_y,probs):
             if target_y[index] == 0 and pred_cls[index] == 1: wrong.append(s)
             index += 1
 
-    with open('resource/预测结果分析/MGC_15predictAna-使用修改后的dropout.json','w',encoding='utf-8') as fw:
+    with open('resource/预测结果分析/MG4predictAna-testalter2.json','w',encoding='utf-8') as fw:
         json.dump(law_result,fw)
 
     # print('predction is right.......')
@@ -277,23 +277,23 @@ def run_mutli():
     # 载入随机森林模型
     with open(param.BaseConfig.rf_model_path, 'rb') as fr:
         rf = pickle.load(fr)
-    # train_data, val_data, test_data = data_load(param.BaseConfig.trainPath, param.BaseConfig.valPath, param.BaseConfig.testPath, model, rf)
-    train_data, val_data, test_data = data_load(None, None,
-                                                param.BaseConfig.testPath, model, rf)
+    train_data, val_data, test_data = data_load(param.BaseConfig.trainPath, param.BaseConfig.valPath, param.BaseConfig.testPath, model, rf)
+    # train_data, val_data, test_data = data_load(None, None,
+    #                                             param.BaseConfig.testPath, model, rf)
     print('train data shape:{0}\n val data shape:{1}\n test data shape:{2}'.format(len(train_data), len(val_data), len(test_data)))
-    # for i in range(5):
-    #     Path = basicPath(i)
-    #     train(train_data,val_data,Path)
+    for i in range(5):
+        Path = basicPath(i)
+        train(train_data,val_data,Path)
 
 
 
-    for j in range(2,3):
+    for j in range(5):
         print("the {0}nd testing......".format(str(j)))
         Path = basicPath(j)
         test(test_data, Path)
 
 
-
+#
 run_mutli()
 # wsnamels = getwslist(model=model)
 # wsevaluate(y_test_cls, y_pred_cls,wsnamels)

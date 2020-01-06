@@ -1,7 +1,7 @@
 class BaseConfig:
     trainPath = 'resource/train-init.txt'
     valPath = 'resource/val-init.txt'
-    testPath = 'resource/test-init-ori.txt'
+    testPath = 'resource/test-init-alter-2.txt'
     w2vModel = 'resource/word_embedding.json'
     w2vModel_ex = 'resource/word_embedding_extend.json'  #这个是加入标点符号的embedding
     rf_model_path = 'result/model/RandomForest/rf_rm2json-dict30bool-rules-v2.pkl'
