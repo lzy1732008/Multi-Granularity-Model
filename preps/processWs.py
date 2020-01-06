@@ -44,21 +44,25 @@ def CoOccur(wsDir):
 
         # corpus += [' '.join(jieba.lcut(x)) for x in content]
 
-    # vectorizer = CountVectorizer()  # 该类会将文本中的词语转换为词频矩阵，矩阵元素a[i][j] 表示j词在i类文本下的词频
-    # transformer = TfidfTransformer()  # 该类会统计每个词语的tf-idf权值
-    # tfidf = transformer.fit_transform(vectorizer.fit_transform(corpus))
-    # words = vectorizer.get_feature_names()  # 获取词袋模型中的所有词语
-    # weight = tfidf.toarray()  # 将tf-idf矩阵抽取出来，元素a[i][j]表示j词在i类文本中的tf-idf权重
-    # line_keywords = []
-    # for i in range(len(weight)):  # 打印每类文本的tf-idf词语权重，第一个for遍历所有文本，第二个for便利某一类文本下的词语权重
-    #     word_dic = {}
-    #     for j in range(len(words)):
-    #         if words[j] in corpus[i]:
-    #             word_dic[words[j]] = weight[i][j]
-    #
-    #     if len(word_dic) >5 : word_dic = sorted(word_dic,key=lambda x:x[1],reverse=True)[:5]
-    #     line_keywords.append(word_dic)
-    #     print('{0}:{1}'.format(corpus[i], '/'.join(word_dic)))
+    vectorizer = CountVectorizer()  # 该类会将文本中的词语转换为词频矩阵，矩阵元素a[i][j] 表示j词在i类文本下的词频
+    transformer = TfidfTransformer()  # 该类会统计每个词语的tf-idf权值
+    tfidf = transformer.fit_transform(vectorizer.fit_transform(corpus))
+    words = vectorizer.get_feature_names()  # 获取词袋模型中的所有词语
+    weight = tfidf.toarray()  # 将tf-idf矩阵抽取出来，元素a[i][j]表示j词在i类文本中的tf-idf权重
+    line_keywords = []
+    for i in range(len(weight)):  # 打印每类文本的tf-idf词语权重，第一个for遍历所有文本，第二个for便利某一类文本下的词语权重
+        word_dic = {}
+        for j in range(len(words)):
+            if words[j] in corpus[i]:
+                word_dic[words[j]] = weight[i][j]
+
+        if len(word_dic) >5 : word_dic = sorted(word_dic,key=lambda x:x[1],reverse=True)[:5]
+        line_keywords.append(word_dic)
+        print('{0}:{1}'.format(corpus[i], '/'.join(word_dic)))
+
+
+def getTFIDF(sourcepath):
+    lines =  open(sourcepath,'')
 
 
 
@@ -66,8 +70,6 @@ def CoOccur(wsDir):
 
 
 
-
-#
 # wsDir = '/Users/wenny/nju/task/LawDocumentAna/2014filled/2014'
 # CoOccur(wsDir)
 #

@@ -414,7 +414,7 @@ def processTextWithStpDict(line,wordEmbedding, wordVocab,stp):
         contentcut = []
         for w in content:
             word = w.word.strip()
-            if word == "" or word in stp or w.flag in ['nr','ns','p','u','m','x','eng']: continue
+            if word == "" or word in stp or w.flag in ['nr','ns','p','u','m']: continue
             contentcut.append(word)
 
         if len(contentcut) == 0: return []
