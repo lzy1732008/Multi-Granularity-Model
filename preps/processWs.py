@@ -2,6 +2,7 @@ import os
 from util.ws_fun import getQWChildContent
 import jieba.analyse as ana
 import jieba
+import jieba.posseg as pos
 import re
 from sklearn import feature_extraction
 from sklearn.feature_extraction.text import TfidfTransformer
@@ -62,7 +63,31 @@ def CoOccur(wsDir):
 
 
 def getTFIDF(sourcepath):
-    lines =  open(sourcepath,'')
+    lines = open(sourcepath,'r',encoding='utf-8').read().split('\n')
+    lines = list(filter(lambda x:not str(x).startswith("法条:") and x.strip() != "", lines))
+    corpus = list(map(lambda x: ' '.join(list(filter(lambda y:y.strip()!= "", jieba.lcut(x)))),lines))
+    for line in lines:
+        cut_list = pos.cut(line)
+        for w in cut_list:
+            print(w.word,w.flag)
+
+    # vectorizer = CountVectorizer()  # 该类会将文本中的词语转换为词频矩阵，矩阵元素a[i][j] 表示j词在i类文本下的词频
+    # transformer = TfidfTransformer()  # 该类会统计每个词语的tf-idf权值
+    # tfidf = transformer.fit_transform(vectorizer.fit_transform(corpus))
+    # words = vectorizer.get_feature_names()  # 获取词袋模型中的所有词语
+    # weight = tfidf.toarray()  # 将tf-idf矩阵抽取出来，元素a[i][j]表示j词在i类文本中的tf-idf权重
+    # line_keywords = []
+    # for i in range(len(weight)):  # 打印每类文本的tf-idf词语权重，第一个for遍历所有文本，第二个for便利某一类文本下的词语权重
+    #     word_dict = {}
+    #     for j in range(len(words)):
+    #         if words[j] in corpus[i]:
+    #             word_dict[words[j]] = weight[i][j]
+    #     print('{0}:{1}'.format(corpus[i], word_dict))
+sourcePath = '../resource/ftSplitCheck.txt'
+getTFIDF(sourcePath)
+
+
+
 
 
 

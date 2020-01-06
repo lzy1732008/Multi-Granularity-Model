@@ -75,16 +75,20 @@ class MultiGranularityCNNModel:
             # interaction = Interaction(14, self.input_X1, self.input_X2, self.ks_rep)
             # self.inter_0 = interaction.exeInteraction()
 
-            self.inter_0 = self.interaction2(self.input_X1,self.input_X2)
+            self.inter_0 = self.interaction(self.input_X1,self.input_X2)
             self.inter_rep_0 = tf.reshape(
                 tf.keras.backend.repeat_elements(self.inter_0, rep=param.BaseConfig.word_dimension, axis=1),
                 shape=[-1, self.config.Y_maxlen, param.BaseConfig.word_dimension])
         with tf.variable_scope("fusion-layer-0"):
             self.x2_inter_0 = self.inter_rep_0 * self.input_X2
             self.fusion_output_0 = tf.concat(
-                [self.input_X2, self.x2_inter_0, self.input_X2 - self.x2_inter_0, self.input_X2 * self.x2_inter_0,
+                [self.input_X2, self.x2_inter_0,
                  self.x2_label],
                 axis=-1)  # [Batch, len, 4 * dimension]
+            # self.fusion_output_0 = tf.concat(
+            #     [self.input_X2, self.x2_inter_0, self.input_X2 - self.x2_inter_0, self.input_X2 * self.x2_inter_0,
+            #      self.x2_label],
+            #     axis=-1)  # [Batch, len, 4 * dimension]
             self.fusion_output_0 = tf.layers.dense(inputs=self.fusion_output_0, units=self.config.mlp_output,
                                                    name='fusion-fnn')
             # self.fusion_output_1 = tf.layers.dropout(self.fusion_output_1,rate=self.dropout_rate)
@@ -99,7 +103,7 @@ class MultiGranularityCNNModel:
             # self.inter_1 = interaction.exeInteraction()
 
             #=======================
-            self.inter_1 = self.interaction2(self.output_x1_1, self.output_x2_1)
+            self.inter_1 = self.interaction(self.output_x1_1, self.output_x2_1)
 
             self.inter_rep_1 = tf.reshape(
                 tf.keras.backend.repeat_elements(self.inter_1, rep=param.BaseConfig.word_dimension, axis=1),
@@ -108,9 +112,13 @@ class MultiGranularityCNNModel:
         with tf.variable_scope("fusion-layer-1"):
             self.x2_inter_1 = self.inter_rep_1 * self.input_X2
             self.fusion_output_1 = tf.concat(
-                [self.input_X2, self.x2_inter_1, self.input_X2 - self.x2_inter_1, self.input_X2 * self.x2_inter_1,
+                [self.input_X2, self.x2_inter_1,
                  self.x2_label],
                 axis=-1)  # [Batch, len, 4 * dimension]
+            # self.fusion_output_1 = tf.concat(
+            #     [self.input_X2, self.x2_inter_1, self.input_X2 - self.x2_inter_1, self.input_X2 * self.x2_inter_1,
+            #      self.x2_label],
+            #     axis=-1)  # [Batch, len, 4 * dimension]
             self.fusion_output_1 = tf.layers.dense(inputs=self.fusion_output_1, units=self.config.mlp_output,
                                                    name='fusion-fnn')
             # self.fusion_output_1 = tf.layers.dropout(self.fusion_output_1,rate=self.dropout_rate)
@@ -124,14 +132,18 @@ class MultiGranularityCNNModel:
             # interaction = Interaction(12, self.output_x1_2, self.output_x2_2, self.ks_rep)
             # self.inter_2 = interaction.exeInteraction()
 
-            self.inter_2 = self.interaction2(self.output_x1_2,self.output_x2_2)
+            self.inter_2 = self.interaction(self.output_x1_2,self.output_x2_2)
             self.inter_rep_2 = tf.reshape(tf.keras.backend.repeat_elements(self.inter_2, rep=param.BaseConfig.word_dimension, axis=1),shape=[-1,self.config.Y_maxlen,param.BaseConfig.word_dimension])
 
         with tf.variable_scope("fusion-layer-2"):
             self.x2_inter_2 = self.inter_rep_2 * self.input_X2
             self.fusion_output_2 = tf.concat(
-                [self.input_X2, self.x2_inter_2, self.input_X2 - self.x2_inter_2, self.input_X2 * self.x2_inter_2, self.x2_label],
+                [self.input_X2, self.x2_inter_2,
+                 self.x2_label],
                 axis=-1)  # [Batch, len, 4 * dimension]
+            # self.fusion_output_2 = tf.concat(
+            #     [self.input_X2, self.x2_inter_2, self.input_X2 - self.x2_inter_2, self.input_X2 * self.x2_inter_2, self.x2_label],
+            #     axis=-1)  # [Batch, len, 4 * dimension]
             self.fusion_output_2 = tf.layers.dense(inputs=self.fusion_output_2, units=self.config.mlp_output,
                                                    name='fusion-fnn')
             # self.fusion_output_2 = tf.layers.dropout(self.fusion_output_2, rate=self.dropout_rate)
@@ -150,12 +162,13 @@ class MultiGranularityCNNModel:
             # interaction = Interaction(8, self.output_x1_3, self.output_x2_3, self.x2_label)
             # self.inter_3 = interaction.exeInteraction()
 
-            self.inter_3 = self.interaction2(self.output_x1_3,self.output_x2_3)
+            self.inter_3 = self.interaction(self.output_x1_3,self.output_x2_3)
             self.inter_rep_3 = tf.reshape(tf.keras.backend.repeat_elements(self.inter_3, rep=param.BaseConfig.word_dimension, axis=1),shape=[-1,self.config.Y_maxlen,param.BaseConfig.word_dimension])
 
         with tf.variable_scope("fusion-layer-3"):
             self.x2_inter_3 = self.inter_rep_3 * self.input_X2
-            self.fusion_output_3 = tf.concat([self.input_X2,self.x2_inter_3,self.input_X2 - self.x2_inter_3, self.input_X2 * self.x2_inter_3], axis=-1)  # [Batch, len, 2 + 4 * dimension]
+            self.fusion_output_3 = tf.concat([self.input_X2, self.x2_inter_3,self.x2_label],axis=-1)
+            # self.fusion_output_3 = tf.concat([self.input_X2,self.x2_inter_3,self.input_X2 - self.x2_inter_3, self.input_X2 * self.x2_inter_3], axis=-1)  # [Batch, len, 2 + 4 * dimension]
             self.fusion_output_3 = tf.layers.dense(inputs=self.fusion_output_3,units=self.config.mlp_output,name='fusion-fnn')
             # self.fusion_output_3 = tf.layers.dropout(self.fusion_output_3, rate=self.dropout_rate)
             self.fusion_output_max_3 = tf.reduce_max(self.fusion_output_3,axis=-1) #[B,l]
