@@ -67,6 +67,23 @@ class MultiGranularityCNNModel:
         self.build_model()
 
     def build_model(self):
+        with tf.variable_scope("zero-interaction-layer"):
+            # interaction = Interaction(14, self.input_X1, self.input_X2, self.ks_rep)
+            # self.inter_0 = interaction.exeInteraction()
+
+            self.inter_0 = self.interaction(self.input_X1,self.input_X2)
+            self.inter_rep_0 = tf.reshape(
+                tf.keras.backend.repeat_elements(self.inter_0, rep=param.BaseConfig.word_dimension, axis=1),
+                shape=[-1, self.config.Y_maxlen, param.BaseConfig.word_dimension])
+        with tf.variable_scope("fusion-layer-0"):
+            self.x2_inter_0 = self.inter_rep_0 * self.input_X2
+            self.fusion_output_0 = tf.concat(
+                [self.input_X2, self.x2_inter_0, self.input_X2 - self.x2_inter_0, self.input_X2 * self.x2_inter_0],
+                axis=-1)  # [Batch, len, 4 * dimension]
+            self.fusion_output_0 = tf.layers.dense(inputs=self.fusion_output_0, units=self.config.mlp_output,
+                                                   name='fusion-fnn')
+            # self.fusion_output_1 = tf.layers.dropout(self.fusion_output_1,rate=self.dropout_rate)
+            self.fusion_output_max_0 = tf.reduce_max(self.fusion_output_0, axis=-1)
         # with tf.variable_scope("mask"):
         #     self.q1_mask = tf.keras.backend.repeat_elements(tf.expand_dims(tf.sequence_mask(self.seq1_len, dtype=tf.float32), dim=-1),rep=param.BaseConfig.word_dimension,axis=-1)
         #     self.q2_mask = tf.keras.backend.repeat_elements(tf.expand_dims(tf.sequence_mask(self.seq2_len, dtype=tf.float32), dim=-1),rep=param.BaseConfig.word_dimension,axis=-1)
@@ -138,7 +155,7 @@ class MultiGranularityCNNModel:
             self.fusion_output_max_3 = tf.reduce_max(self.fusion_output_3,axis=-1) #[B,l]
 
         with tf.variable_scope("Augment-layer"):
-            self.fusion_output = tf.concat([self.fusion_output_max_1,self.fusion_output_max_2,self.fusion_output_max_3],
+            self.fusion_output = tf.concat([self.fusion_output_max_0, self.fusion_output_max_1,self.fusion_output_max_2,self.fusion_output_max_3],
                                             axis=-1) #[B,2l]
 
         # with tf.variable_scope("Augment-layer"):

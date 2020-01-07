@@ -11,7 +11,7 @@ import sys
 import pickle
 import numpy as np
 
-from models.MGCQ_23 import MultiGranularityCNNModel,MultiGraConfig   #修改处
+from models.MGCQ_16 import MultiGranularityCNNModel,MultiGraConfig   #修改处
 from preps.data_load import data_load_lawone,data_load_test_lawone
 from preps.data_load_generic import get_batch_data,get_batch_data_test
 from util.feedDict import feed_data_4 as feed_data_fun  #修改处
@@ -19,8 +19,8 @@ from util.evaluate import evaluate_1 as evaluate_fun
 
 import models.parameter as param
 
-save_dir = 'result/model/MGCQ_23'  #修改处
-param_des = 'v1'
+save_dir = 'result/model/MGCQ_16'  #修改处
+param_des = 'v4-addinter0layer-0'
 # param_des = 'initparam-qj'
 save_path = os.path.join(save_dir,param_des+'/checkpoints/best_validation')
 tensorboard_dir = os.path.join(save_dir,param_des+'/tensorboard')
@@ -266,6 +266,7 @@ def checkPrediction(pred_cls, target_y,probs):
 
 train()
 y_test_cls,y_pred_cls = test()
+
 
 # data_load_lawone(param.BaseConfig.trainPath,param.BaseConfig.valPath,param.BaseConfig.testPath,model,rfModel=rf,flag=qhj_label)
 # data_load_lawone(param.BaseConfig.trainPath,param.BaseConfig.valPath,param.BaseConfig.testPath,model,rfModel=rf,flag=qhj_label)

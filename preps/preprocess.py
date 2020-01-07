@@ -161,7 +161,7 @@ def setUp_inputs_QJ(trainPath = None, valPath = None, testPath = None, rfModel=N
         val = _setUp_inputs_QJ(valPath, wordEmbedding, wordVocab, rfModel, 0, 1000, flag=2)
 
     if testPath:
-        test = _setUp_inputs_QJ(testPath, wordEmbedding, wordVocab, rfModel, 0, 10, flag=2)
+        test = _setUp_inputs_QJ(testPath, wordEmbedding, wordVocab, rfModel, 0, 1000, flag=2)
 
     env = {'train': train, 'test': test, 'val': val}
     return env
