@@ -62,3 +62,15 @@ def feed_data_6(model, a_word,b_word,c_word,y_batch,dropout_rate):
     }
 
     return feed_dict
+
+def feed_data_7(model, a_word,b_word,align_matrix, x2_label_batch, y_batch,dropout_rate):
+    feed_dict = {
+        model.input_X1: a_word,
+        model.input_X2: b_word,
+        model.align_matrix: align_matrix,
+        model.x2_label: x2_label_batch,
+        model.y: y_batch,
+        model.dropout_rate: dropout_rate,
+    }
+    return feed_dict
+

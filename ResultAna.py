@@ -25,13 +25,13 @@ right_to_wrong = []
 predict_wrong = []
 count_right = 0
 count = 0
-for k,v in model1_result.items():
+for k,v in model2_result.items():
     true_y = []
     pred_y = []
     print('============================================')
     print('法条:'+k)
     for k_1, v_1 in v.items():
-        if v_1[1] != v_1[0] and v_1[1] == 1 and model2_result[k][k_1][0] == 1:
+        if v_1[1] != v_1[0] and v_1[1] == 1 and model1_result[k][k_1][0] == 1:
             print(k_1,v_1)
 
         # if v_1[1] == v_1[0] == 1:
@@ -42,8 +42,8 @@ for k,v in model1_result.items():
     # print('法条:'+k+'......')
     # print("Precision, Recall and F1-Score...")
     # print(metrics.classification_report(np.array(true_y), np.array(pred_y), digits=4))  # 直接计算准确率，召回率和f值
-    #
-    # # 混淆矩阵
+    # #
+    # # # 混淆矩阵
     # print("Confusion Matrix...")
     # cm = metrics.confusion_matrix(np.array(true_y), np.array(pred_y))
     # print(cm)
