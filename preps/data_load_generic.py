@@ -123,9 +123,8 @@ def computeAlign(inputX, inputY):
                 if (p == q).all():
                     temp = np.array(p) == np.zeros(shape=[128],dtype=float)
                     if not temp.all():
-                       line_line_align.append(1)
-                       print('align:'+str(i))
-                       continue
+                        line_line_align.append(1)
+                        continue
                 line_line_align.append(0)
             line_align.append(line_line_align)
         align.append(line_align)
