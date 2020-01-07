@@ -48,7 +48,7 @@ class MultiGranularityCNNModel:
             self.x2_inter_0 = self.inter_rep_0 * self.input_X2
             self.fusion_output_0 = tf.concat(
                 [self.input_X2, self.x2_inter_0, self.input_X2 - self.x2_inter_0, self.input_X2 * self.x2_inter_0,
-                 self.x2_label,self.align_sum],
+                 self.x2_label],
                 axis=-1)  # [Batch, len, 4 * dimension + 2 + ]
             self.fusion_output_0 = tf.layers.dense(inputs=self.fusion_output_0, units=self.config.mlp_output,
                                                    name='fusion-fnn')
@@ -69,8 +69,8 @@ class MultiGranularityCNNModel:
             self.x2_inter_1 = self.inter_rep_1 * self.input_X2
             self.fusion_output_1 = tf.concat(
                 [self.input_X2, self.x2_inter_1, self.input_X2 - self.x2_inter_1, self.input_X2 * self.x2_inter_1,
-                 self.x2_label],
-                axis=-1)  # [Batch, len, 4 * dimension]
+                 self.x2_label,self.align_sum],
+                 axis=-1)  # [Batch, len, 4 * dimension]
             self.fusion_output_1 = tf.layers.dense(inputs=self.fusion_output_1, units=self.config.mlp_output,
                                                    name='fusion-fnn')
             # self.fusion_output_1 = tf.layers.dropout(self.fusion_output_1,rate=self.dropout_rate)
