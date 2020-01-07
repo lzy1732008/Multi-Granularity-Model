@@ -25,10 +25,10 @@ def train(corpuspath,modelpath):
     for topic in lda.print_topics(num_words=100):
         termNumber = topic[0]
         listOfTerms = topic[1].split('+')
-        for term in listOfTerms:
-            listItems = term.split('*')
-            # print(listItems)
-            print('  ', listItems[1], '(', listItems[0], ')', sep='')
+        # for term in listOfTerms:
+        #     listItems = term.split('*')
+        #     # print(listItems)
+        #     print('  ', listItems[1], '(', listItems[0], ')', sep='')
         print_str += topic[1] + '\n'
     topic_words.write(print_str)
     topic_words.close()
