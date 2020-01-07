@@ -190,7 +190,7 @@ def test(test_data, Path):
     print(np.sum([np.prod(v.get_shape().as_list()) for v in tf.trainable_variables()]))
 
     print('Testing...')
-    loss_test, acc_test = evaluate_fun(model, session, test_x1_word, test_x2_word, test_align, test_x2_label, test_y)
+    loss_test, acc_test = evaluate_fun(model, session, test_x1_word, test_x2_word, test_align, test_x2_label, test_y, feed_data_fun)
     msg = 'Test Loss: {0:>6.2}, Test Acc: {1:>7.2%}'
     print(msg.format(loss_test, acc_test))
 
@@ -295,9 +295,9 @@ def run_mutli():
     # train_data, val_data, test_data = data_load(None, None,
     #                                             param.BaseConfig.testPath, model, rf)
     print('train data shape:{0}\n val data shape:{1}\n test data shape:{2}'.format(len(train_data), len(val_data), len(test_data)))
-    for i in range(5):
-        Path = basicPath(i)
-        train(train_data,val_data,Path)
+    # for i in range(5):
+    #     Path = basicPath(i)
+    #     train(train_data,val_data,Path)
 
 
 
