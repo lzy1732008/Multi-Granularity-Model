@@ -37,17 +37,19 @@ class MultiGranularityCNNModel:
     def build_model(self):
 
         with tf.variable_scope("zero-interaction-layer"):
-            self.inter_0 = self.interaction2(self.input_X1,self.input_X2, self.align_matrix)
+            self.inter_0 = self.interaction(self.input_X1,self.input_X2)
             self.inter_rep_0 = tf.reshape(
                 tf.keras.backend.repeat_elements(self.inter_0, rep=param.BaseConfig.word_dimension, axis=1),
                 shape=[-1, self.config.Y_maxlen, param.BaseConfig.word_dimension])
 
         with tf.variable_scope("fusion-layer-0"):
+            self.align_sum = tf.expand_dims(tf.reduce_sum(self.align_matrix,axis=1),axis=2) #[B,l2,1]
+
             self.x2_inter_0 = self.inter_rep_0 * self.input_X2
             self.fusion_output_0 = tf.concat(
                 [self.input_X2, self.x2_inter_0, self.input_X2 - self.x2_inter_0, self.input_X2 * self.x2_inter_0,
-                 self.x2_label],
-                axis=-1)  # [Batch, len, 4 * dimension]
+                 self.x2_label,self.align_sum],
+                axis=-1)  # [Batch, len, 4 * dimension + 2 + ]
             self.fusion_output_0 = tf.layers.dense(inputs=self.fusion_output_0, units=self.config.mlp_output,
                                                    name='fusion-fnn')
             self.fusion_output_max_0 = tf.reduce_max(self.fusion_output_0, axis=-1)
