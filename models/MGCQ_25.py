@@ -36,7 +36,7 @@ class MultiGranularityCNNModel:
 
     def build_model(self):
         with tf.variable_scope("align-sum-layer"):
-            self.align_sum = tf.reduce_sum(self.align_matrix, axis=1,keep_dims=True)  # [B,l2,1]
+            self.align_sum = tf.transpose(tf.reduce_sum(self.align_matrix, axis=1,keep_dims=True),perm=[0,2,1])  # [B,l2,1]
             self.align_input = tf.concat([tf.reduce_sum(self.input_X2,axis=-1,keep_dims=True),self.align_sum],axis=-1) #[B,l2,2]
             self.fusion_output_00 = tf.layers.dense(inputs=self.align_input, units=self.config.mlp_output,
                                                    name='align-fnn')
