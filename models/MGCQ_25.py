@@ -35,16 +35,18 @@ class MultiGranularityCNNModel:
         self.build_model()
 
     def build_model(self):
+        with tf.variable_scope("align-sum-layer"):
+            self.align_sum = tf.reduce_sum(self.align_matrix, axis=1)  # [B,l2,1]
 
         with tf.variable_scope("zero-interaction-layer"):
-            self.inter_0 = self.interaction(self.input_X1,self.input_X2)
+            alpha = tf.Variable(tf.random_normal(shape=[1], stddev=0, seed=2, dtype=tf.float32), trainable=True,
+                                name='alpha')
+            self.inter_0 = self.interaction(self.input_X1,self.input_X2) + alpha[0] * self.align_sum
             self.inter_rep_0 = tf.reshape(
                 tf.keras.backend.repeat_elements(self.inter_0, rep=param.BaseConfig.word_dimension, axis=1),
                 shape=[-1, self.config.Y_maxlen, param.BaseConfig.word_dimension])
 
         with tf.variable_scope("fusion-layer-0"):
-            self.align_sum = tf.expand_dims(tf.reduce_sum(self.align_matrix,axis=1),axis=2) #[B,l2,1]
-
             self.x2_inter_0 = self.inter_rep_0 * self.input_X2
             self.fusion_output_0 = tf.concat(
                 [self.input_X2, self.x2_inter_0, self.input_X2 - self.x2_inter_0, self.input_X2 * self.x2_inter_0,
@@ -69,7 +71,7 @@ class MultiGranularityCNNModel:
             self.x2_inter_1 = self.inter_rep_1 * self.input_X2
             self.fusion_output_1 = tf.concat(
                 [self.input_X2, self.x2_inter_1, self.input_X2 - self.x2_inter_1, self.input_X2 * self.x2_inter_1,
-                 self.x2_label,self.align_sum],
+                 self.x2_label],
                  axis=-1)  # [Batch, len, 4 * dimension]
             self.fusion_output_1 = tf.layers.dense(inputs=self.fusion_output_1, units=self.config.mlp_output,
                                                    name='fusion-fnn')
