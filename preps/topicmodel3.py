@@ -61,8 +61,8 @@ def train(corpuspath,modelpath):
 # output_w.write(output_lines)
 import os
 corpus_path = '../resource/facts_corpus.txt'
-model_path = '../result/lda/fact_lad.model'
-if not os.path.exists(model_path):
-    os.makedirs(model_path)
+model_path = '../result/lda/fact_lda.model'
+# if not os.path.exists(model_path):
+#     os.makedirs(model_path)
 train(corpus_path,model_path)
 
