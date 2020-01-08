@@ -5,13 +5,23 @@ from models.modules import Interaction
 
 class MultiGraConfig:
     # v1
+    # X_maxlen = 30
+    # Y_maxlen = 50
+    # dropout_rate = 0.5
+    # first_kernel_size = 2
+    # second_kernel_size = 4
+    # third_kernel_size = 8
+    # filters_num = 100
+    # mlp_output = 64
+
+    #v2
     X_maxlen = 30
     Y_maxlen = 50
     dropout_rate = 0.5
     first_kernel_size = 2
     second_kernel_size = 4
     third_kernel_size = 8
-    filters_num = 100
+    filters_num = 110
     mlp_output = 64
 
 
@@ -35,13 +45,6 @@ class MultiGranularityCNNModel:
         self.build_model()
 
     def build_model(self):
-        with tf.variable_scope("align-sum-layer"):
-            self.align_sum = tf.transpose(tf.reduce_sum(self.align_matrix, axis=1,keep_dims=True),perm=[0,2,1])  # [B,l2,1]
-            self.align_input = tf.concat([tf.reduce_sum(self.input_X2,axis=-1,keep_dims=True),self.align_sum],axis=-1) #[B,l2,2]
-            self.fusion_output_00 = tf.layers.dense(inputs=self.align_input, units=self.config.mlp_output,
-                                                   name='align-fnn')
-            self.fusion_output_max_00 = tf.reduce_max(self.fusion_output_00,axis=-1)
-
         with tf.variable_scope("zero-interaction-layer"):
             self.inter_0 = self.interaction(self.input_X1,self.input_X2)
             self.inter_rep_0 = tf.reshape(
@@ -117,7 +120,7 @@ class MultiGranularityCNNModel:
             self.fusion_output_max_3 = tf.reduce_max(self.fusion_output_3,axis=-1) #[B,mlp_output]
 
         with tf.variable_scope("Augment-layer"):
-            self.fusion_output = tf.concat([self.fusion_output_max_00, self.fusion_output_max_0, self.fusion_output_max_1,self.fusion_output_max_2,self.fusion_output_max_3],
+            self.fusion_output = tf.concat([self.fusion_output_max_0, self.fusion_output_max_1,self.fusion_output_max_2,self.fusion_output_max_3],
                                             axis=-1) #[B,4 * mlp_output]
 
         with tf.variable_scope("predict-layer"):
