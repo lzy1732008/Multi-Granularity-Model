@@ -17,10 +17,10 @@ def train(corpuspath,modelpath):
 
     dictionary = corpora.Dictionary(train)
     corpus = [dictionary.doc2bow(text) for text in train]
-    lda = LdaModel(corpus=corpus, id2word=dictionary, num_topics=5, passes=20)
+    lda = LdaModel(corpus=corpus, id2word=dictionary, num_topics=10, passes=20)
     lda.save(modelpath)
 
-    topic_words = open('result/lda/fact_lad_print.txt','w',encoding='utf-8')
+    topic_words = open('../result/lda/fact_lad_print-10.txt','w',encoding='utf-8')
     print_str = ''
     for topic in lda.print_topics(num_words=100):
         termNumber = topic[0]
@@ -59,27 +59,25 @@ def train(corpuspath,modelpath):
 #     fact_split = ' '.join(list(filter(lambda x:x not in stopwords,jieba.lcut(fact)))) + '\n'
 #     output_lines += fact_split
 # output_w.write(output_lines)
-# import os
-# corpus_path = '../resource/facts_corpus.txt'
-# model_path = '../result/lda/fact_lda.model'
-# # if not os.path.exists(model_path):
-# #     os.makedirs(model_path)
-# train(corpus_path,model_path)
+import os
+corpus_path = '../resource/facts_corpus.txt'
+model_path = '../result/lda/fact_lda-10.model'
+train(corpus_path,model_path)
 
 
-def predictTopic(input):
-    lda = LdaModel.load('../result/lda/fact_lda.model')
-    topic_words = open('../result/lda/fact_lad_print.txt', 'w', encoding='utf-8')
-    print_str = ''
-    for topic in lda.print_topics(num_words=100):
-        termNumber = topic[0]
-        listOfTerms = topic[1].split('+')
-        # for term in listOfTerms:
-        #     listItems = term.split('*')
-        #     # print(listItems)
-        #     print('  ', listItems[1], '(', listItems[0], ')', sep='')
-        print_str += topic[1] + '\n'
-    topic_words.write(print_str)
-    topic_words.close()
-
-predictTopic("")
+# def predictTopic(input):
+#     lda = LdaModel.load('../result/lda/fact_lda-10.model')
+#     topic_words = open('../result/lda/fact_lad_print-10.txt', 'w', encoding='utf-8')
+#     print_str = ''
+#     for topic in lda.print_topics(num_words=100):
+#         termNumber = topic[0]
+#         listOfTerms = topic[1].split('+')
+#         # for term in listOfTerms:
+#         #     listItems = term.split('*')
+#         #     # print(listItems)
+#         #     print('  ', listItems[1], '(', listItems[0], ')', sep='')
+#         print_str += topic[1] + '\n'
+#     topic_words.write(print_str)
+#     topic_words.close()
+#
+# predictTopic("")
