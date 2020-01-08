@@ -20,7 +20,7 @@ from util.evaluate import evaluate_1 as evaluate_fun
 import models.parameter as param
 
 save_dir = 'result/model/MGCQ_16'  #修改处
-param_des = 'v4-addinter0layer-0'
+param_des = 'v4-onlyinter0-0'
 # param_des = 'initparam-qj'
 save_path = os.path.join(save_dir,param_des+'/checkpoints/best_validation')
 tensorboard_dir = os.path.join(save_dir,param_des+'/tensorboard')
@@ -264,7 +264,7 @@ def checkPrediction(pred_cls, target_y,probs):
     with open('resource/预测结果分析/MGCQ_23-qj.json','w',encoding='utf-8') as fw:
         json.dump(law_result,fw)
 
-# train()
+train()
 y_test_cls,y_pred_cls = test()
 
 
