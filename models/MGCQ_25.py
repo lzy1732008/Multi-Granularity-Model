@@ -5,24 +5,24 @@ from models.modules import Interaction
 
 class MultiGraConfig:
     # v1
-    # X_maxlen = 30
-    # Y_maxlen = 50
-    # dropout_rate = 0.5
-    # first_kernel_size = 2
-    # second_kernel_size = 4
-    # third_kernel_size = 8
-    # filters_num = 100
-    # mlp_output = 64
-
-    #v2
     X_maxlen = 30
     Y_maxlen = 50
     dropout_rate = 0.5
     first_kernel_size = 2
     second_kernel_size = 4
     third_kernel_size = 8
-    filters_num = 110
+    filters_num = 100
     mlp_output = 64
+
+    #v2
+    # X_maxlen = 30
+    # Y_maxlen = 50
+    # dropout_rate = 0.5
+    # first_kernel_size = 2
+    # second_kernel_size = 4
+    # third_kernel_size = 8
+    # filters_num = 110
+    # mlp_output = 64
 
 
 
@@ -45,6 +45,9 @@ class MultiGranularityCNNModel:
         self.build_model()
 
     def build_model(self):
+        with tf.variable_scope("align-layer"):
+            self.align_sum = tf.reduce_sum(self.align_matrix,axis=1) #[B, l2]
+
         with tf.variable_scope("zero-interaction-layer"):
             self.inter_0 = self.interaction(self.input_X1,self.input_X2)
             self.inter_rep_0 = tf.reshape(
@@ -55,8 +58,8 @@ class MultiGranularityCNNModel:
             self.x2_inter_0 = self.inter_rep_0 * self.input_X2
             self.fusion_output_0 = tf.concat(
                 [self.input_X2, self.x2_inter_0, self.input_X2 - self.x2_inter_0, self.input_X2 * self.x2_inter_0,
-                 self.x2_label],
-                axis=-1)  # [Batch, len, 4 * dimension + 2 + ]
+                 self.x2_label, self.align_sum],
+                 axis=-1)  # [Batch, len, 4 * dimension + 2 ]
             self.fusion_output_0 = tf.layers.dense(inputs=self.fusion_output_0, units=self.config.mlp_output,
                                                    name='fusion-fnn')
             self.fusion_output_max_0 = tf.reduce_max(self.fusion_output_0, axis=-1)
@@ -109,8 +112,8 @@ class MultiGranularityCNNModel:
                                                 name='second-cnn2')
         with tf.variable_scope("third-interaction"):
             alpha = tf.Variable(tf.random_normal(shape=[1], stddev=0, seed=2, dtype=tf.float32), trainable=True,
-                                name='alpha')
-            self.inter_3 = self.interaction(self.output_x1_3,self.output_x2_3)
+                           name='alpha')
+            self.inter_3 = self.interaction(self.output_x1_3,self.output_x2_3) + self.align_sum * alpha[0]
             self.inter_rep_3 = tf.reshape(tf.keras.backend.repeat_elements(self.inter_3, rep=param.BaseConfig.word_dimension, axis=1),shape=[-1,self.config.Y_maxlen,param.BaseConfig.word_dimension])
 
         with tf.variable_scope("fusion-layer-3"):
