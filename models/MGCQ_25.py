@@ -36,7 +36,11 @@ class MultiGranularityCNNModel:
 
     def build_model(self):
         with tf.variable_scope("align-sum-layer"):
-            self.align_sum = tf.reduce_sum(self.align_matrix, axis=1)  # [B,l2]
+            self.align_sum = tf.reduce_sum(self.align_matrix, axis=1,keep_dims=True)  # [B,l2,1]
+            self.align_input = tf.concat([tf.reduce_sum(self.input_X2,axis=-1,keep_dims=True),self.align_sum],axis=-1) #[B,l2,2]
+            self.fusion_output_00 = tf.layers.dense(inputs=self.align_input, units=self.config.mlp_output,
+                                                   name='align-fnn')
+            self.fusion_output_max_00 = tf.reduce_max(self.fusion_output_00,axis=-1)
 
         with tf.variable_scope("zero-interaction-layer"):
             self.inter_0 = self.interaction(self.input_X1,self.input_X2)
@@ -103,18 +107,18 @@ class MultiGranularityCNNModel:
         with tf.variable_scope("third-interaction"):
             alpha = tf.Variable(tf.random_normal(shape=[1], stddev=0, seed=2, dtype=tf.float32), trainable=True,
                                 name='alpha')
-            self.inter_3 = self.interaction(self.output_x1_3,self.output_x2_3) + alpha[0] * self.align_sum
+            self.inter_3 = self.interaction(self.output_x1_3,self.output_x2_3)
             self.inter_rep_3 = tf.reshape(tf.keras.backend.repeat_elements(self.inter_3, rep=param.BaseConfig.word_dimension, axis=1),shape=[-1,self.config.Y_maxlen,param.BaseConfig.word_dimension])
 
         with tf.variable_scope("fusion-layer-3"):
             self.x2_inter_3 = self.inter_rep_3 * self.input_X2
             self.fusion_output_3 = tf.concat([self.input_X2,self.x2_inter_3,self.input_X2 - self.x2_inter_3, self.input_X2 * self.x2_inter_3], axis=-1)  # [Batch, len, 2 + 4 * dimension]
             self.fusion_output_3 = tf.layers.dense(inputs=self.fusion_output_3,units=self.config.mlp_output,name='fusion-fnn')
-            self.fusion_output_max_3 = tf.reduce_max(self.fusion_output_3,axis=-1) #[B,l]
+            self.fusion_output_max_3 = tf.reduce_max(self.fusion_output_3,axis=-1) #[B,mlp_output]
 
         with tf.variable_scope("Augment-layer"):
-            self.fusion_output = tf.concat([self.fusion_output_max_0, self.fusion_output_max_1,self.fusion_output_max_2,self.fusion_output_max_3],
-                                            axis=-1) #[B,4l]
+            self.fusion_output = tf.concat([self.fusion_output_max_00, self.fusion_output_max_0, self.fusion_output_max_1,self.fusion_output_max_2,self.fusion_output_max_3],
+                                            axis=-1) #[B,4 * mlp_output]
 
         with tf.variable_scope("predict-layer"):
             self.output_1 = tf.nn.relu(tf.layers.dense(inputs=self.fusion_output,units=self.config.mlp_output,name='fnn1'))
