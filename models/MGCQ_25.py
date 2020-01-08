@@ -114,7 +114,7 @@ class MultiGranularityCNNModel:
 
         with tf.variable_scope("Augment-layer"):
             self.fusion_output = tf.concat([self.fusion_output_max_0, self.fusion_output_max_1,self.fusion_output_max_2,self.fusion_output_max_3],
-                                            axis=-1) #[B,2l]
+                                            axis=-1) #[B,4l]
 
         with tf.variable_scope("predict-layer"):
             self.output_1 = tf.nn.relu(tf.layers.dense(inputs=self.fusion_output,units=self.config.mlp_output,name='fnn1'))
