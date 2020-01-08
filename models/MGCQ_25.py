@@ -46,7 +46,7 @@ class MultiGranularityCNNModel:
 
     def build_model(self):
         with tf.variable_scope("align-layer"):
-            self.align_sum = tf.reduce_sum(self.align_matrix,axis=1) #[B, l2]
+            self.align_sum = tf.transpose(tf.reduce_sum(self.align_matrix,axis=1,keep_dims=True),perm=[0,2,1]) #[B, l2]
 
         with tf.variable_scope("zero-interaction-layer"):
             self.inter_0 = self.interaction(self.input_X1,self.input_X2)
