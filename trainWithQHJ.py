@@ -243,7 +243,7 @@ def test(test_data, Path):
     print("Time usage:", time_dif)
 
 
-    checkPrediction(y_pred_cls,y_test_cls,probs)
+    # checkPrediction(y_pred_cls,y_test_cls,probs)
     # print("beta value", beta1,beta2,beta3)
     #check error prediction
     # print(y_pred_cls)
