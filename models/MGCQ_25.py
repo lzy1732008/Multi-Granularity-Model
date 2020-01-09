@@ -46,7 +46,7 @@ class MultiGranularityCNNModel:
 
     def build_model(self):
         with tf.variable_scope("align-layer"):
-            self.align_sum = tf.reduce_sum(self.align_matrix,axis=1)
+            self.align_sum = tf.transpose(tf.reduce_sum(self.align_matrix,axis=1,keep_dims=True),perm=[0,2,1]) #[B, l2]
 
         with tf.variable_scope("zero-interaction-layer"):
             self.inter_0 = self.interaction(self.input_X1,self.input_X2)
@@ -113,7 +113,7 @@ class MultiGranularityCNNModel:
         with tf.variable_scope("third-interaction"):
             alpha = tf.Variable(tf.random_normal(shape=[1], stddev=0, seed=2, dtype=tf.float32), trainable=True,
                            name='alpha')
-            self.inter_3 = self.interaction(self.output_x1_3,self.output_x2_3) + self.align_sum * alpha[0]
+            self.inter_3 = self.interaction(self.output_x1_3,self.output_x2_3) + tf.reduce_sum(self.align_matrix,axis=1) * alpha[0]
             self.inter_rep_3 = tf.reshape(tf.keras.backend.repeat_elements(self.inter_3, rep=param.BaseConfig.word_dimension, axis=1),shape=[-1,self.config.Y_maxlen,param.BaseConfig.word_dimension])
 
         with tf.variable_scope("fusion-layer-3"):
