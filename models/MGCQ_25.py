@@ -37,7 +37,7 @@ class MultiGranularityCNNModel:
         self.y = tf.placeholder(name="target_y", dtype=tf.int32, shape=[None, 2])
         self.x2_label = tf.placeholder(name="inputX2_label", dtype=tf.float32,
                                        shape=[None, self.config.Y_maxlen, 2])
-        self.align_matrix = tf.placeholder(name="align_maltrx",
+        self.align_matrix = tf.placeholder(name="align_matrix",
                                            shape=[None, self.config.X_maxlen, self.config.Y_maxlen],
                                            dtype=tf.float32)
         self.dropout_rate = tf.placeholder(tf.float32, name='keep_prob')

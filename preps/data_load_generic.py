@@ -80,19 +80,19 @@ def data_load(trainPath, valPath, testPath,model,rfModel):
         test = dataset['test']
 
         #==========输入：事实、法条、前后件信息、目标值================
-        # train = np.array(train[0]),np.array(train[1]),np.array(train[2]),np.array(train[3])
-        # val = np.array(val[0]), np.array(val[1]), np.array(val[2]), np.array(val[3])
-        # test = np.array(test[0]), np.array(test[1]), np.array(test[2]), np.array(test[3])
+        train = np.array(train[0]),np.array(train[1]),np.array(train[2]),np.array(train[3])
+        val = np.array(val[0]), np.array(val[1]), np.array(val[2]), np.array(val[3])
+        test = np.array(test[0]), np.array(test[1]), np.array(test[2]), np.array(test[3])
 
 
         #===========输入：事实、法条、前后件信息、对齐信息、目标值====================================
-        train_align = computeAlign(np.array(train[0]), np.array(train[1]))
-        test_align = computeAlign(np.array(test[0]), np.array(test[1]))
-        val_align = computeAlign(np.array(val[0]), np.array(val[1]))
-
-        train = np.array(train[0]), np.array(train[1]), np.array(train_align), np.array(train[2]), np.array(train[3])
-        val = np.array(val[0]), np.array(val[1]), np.array(val_align),np.array(val[2]), np.array(val[3])
-        test = np.array(test[0]), np.array(test[1]), np.array(test_align), np.array(test[2]), np.array(test[3])
+        # train_align = computeAlign(np.array(train[0]), np.array(train[1]))
+        # test_align = computeAlign(np.array(test[0]), np.array(test[1]))
+        # val_align = computeAlign(np.array(val[0]), np.array(val[1]))
+        #
+        # train = np.array(train[0]), np.array(train[1]), np.array(train_align), np.array(train[2]), np.array(train[3])
+        # val = np.array(val[0]), np.array(val[1]), np.array(val_align),np.array(val[2]), np.array(val[3])
+        # test = np.array(test[0]), np.array(test[1]), np.array(test_align), np.array(test[2]), np.array(test[3])
 
     return train,val, test
 

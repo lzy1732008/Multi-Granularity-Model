@@ -75,7 +75,7 @@ class MultiGranularityCNNModel:
             # interaction = Interaction(14, self.input_X1, self.input_X2, self.ks_rep)
             # self.inter_0 = interaction.exeInteraction()
 
-            self.inter_0 = self.interaction(self.input_X1,self.input_X2)
+            self.inter_0 = self.interaction3(self.input_X1,self.input_X2)
             self.inter_rep_0 = tf.reshape(
                 tf.keras.backend.repeat_elements(self.inter_0, rep=param.BaseConfig.word_dimension, axis=1),
                 shape=[-1, self.config.Y_maxlen, param.BaseConfig.word_dimension])
@@ -99,7 +99,7 @@ class MultiGranularityCNNModel:
             # self.inter_1 = interaction.exeInteraction()
 
             #=======================
-            self.inter_1 = self.interaction(self.output_x1_1, self.output_x2_1)
+            self.inter_1 = self.interaction3(self.output_x1_1, self.output_x2_1)
 
             self.inter_rep_1 = tf.reshape(
                 tf.keras.backend.repeat_elements(self.inter_1, rep=param.BaseConfig.word_dimension, axis=1),
@@ -124,7 +124,7 @@ class MultiGranularityCNNModel:
             # interaction = Interaction(12, self.output_x1_2, self.output_x2_2, self.ks_rep)
             # self.inter_2 = interaction.exeInteraction()
 
-            self.inter_2 = self.interaction(self.output_x1_2,self.output_x2_2)
+            self.inter_2 = self.interaction3(self.output_x1_2,self.output_x2_2)
             self.inter_rep_2 = tf.reshape(tf.keras.backend.repeat_elements(self.inter_2, rep=param.BaseConfig.word_dimension, axis=1),shape=[-1,self.config.Y_maxlen,param.BaseConfig.word_dimension])
 
         with tf.variable_scope("fusion-layer-2"):
@@ -150,7 +150,7 @@ class MultiGranularityCNNModel:
             # interaction = Interaction(8, self.output_x1_3, self.output_x2_3, self.x2_label)
             # self.inter_3 = interaction.exeInteraction()
 
-            self.inter_3 = self.interaction(self.output_x1_3,self.output_x2_3)
+            self.inter_3 = self.interaction3(self.output_x1_3,self.output_x2_3)
             self.inter_rep_3 = tf.reshape(tf.keras.backend.repeat_elements(self.inter_3, rep=param.BaseConfig.word_dimension, axis=1),shape=[-1,self.config.Y_maxlen,param.BaseConfig.word_dimension])
 
         with tf.variable_scope("fusion-layer-3"):
@@ -217,6 +217,24 @@ class MultiGranularityCNNModel:
 
         #计算x1每个词获取的总weight
         x1_weight = tf.reduce_sum(x2_2_x1,axis=2) #[Batch, len1]
+
+        #计算x2最后获取的每个词的总的weight
+        x1_weight_ = tf.expand_dims(x1_weight,axis=1) #[Batch, 1, len1]
+        x2_weight = tf.matmul(x1_weight_, x1_2_x2)  #[Batch, 1, len2]
+        x2_weight = tf.reshape(x2_weight,shape=[-1,len2])
+        return x2_weight
+
+
+    def interaction3(self,inputX1,inputX2):
+        len1 = inputX1.get_shape().as_list()[1]
+        len2 = inputX2.get_shape().as_list()[1]
+        dot_matrix = tf.matmul(inputX1,tf.transpose(inputX2,perm=[0,2,1])) #[Batch, len1,len2]
+        #首先分别做row and col softmax
+        x1_2_x2 = tf.nn.softmax(dot_matrix,axis=2) #x1对x2每个词的关注度
+        x2_2_x1 = tf.nn.softmax(dot_matrix,axis=1) #x2对x1每个词的关注度
+
+        #计算x1每个词获取的总weight
+        x1_weight = tf.reduce_max(x2_2_x1,axis=2) #[Batch, len1]
 
         #计算x2最后获取的每个词的总的weight
         x1_weight_ = tf.expand_dims(x1_weight,axis=1) #[Batch, 1, len1]

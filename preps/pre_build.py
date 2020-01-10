@@ -139,4 +139,10 @@ def buildDictQHJ():
             law_dict[law_name]={'qj':'。'.join(law_qj),'hj':'。'.join(law_hj),'whole':items[2][len(law_name) + 1:]}
     with open('../resource/law_qhj_dict.json','w',encoding='utf-8') as fw:
         json.dump(law_dict, fw)
+
+#统计交通肇事文书中所有的法条，及其正文
+def getAllFtInCase():
+    
+
+
 # buildDictQHJ()
