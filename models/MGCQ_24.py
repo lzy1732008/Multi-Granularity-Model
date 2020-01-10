@@ -124,7 +124,7 @@ class MultiGranularityCNNModel:
             # interaction = Interaction(12, self.output_x1_2, self.output_x2_2, self.ks_rep)
             # self.inter_2 = interaction.exeInteraction()
 
-            self.inter_2 = self.interaction3(self.output_x1_2,self.output_x2_2)
+            self.inter_2 = self.interaction(self.output_x1_2,self.output_x2_2)
             self.inter_rep_2 = tf.reshape(tf.keras.backend.repeat_elements(self.inter_2, rep=param.BaseConfig.word_dimension, axis=1),shape=[-1,self.config.Y_maxlen,param.BaseConfig.word_dimension])
 
         with tf.variable_scope("fusion-layer-2"):
