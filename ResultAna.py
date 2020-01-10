@@ -31,7 +31,7 @@ for k,v in model1_result.items():
     print('============================================')
     print('法条:'+k)
     for k_1, v_1 in v.items():
-        if v_1[1] != v_1[0] and v_1[1] == 1 and model2_result[k][k_1][0] == 1:
+        if v_1[1] != v_1[0] and v_1[1] == 0:
             print(k_1,v_1)
             # print('model2 predict:',model2_result[k][k_1][0])
 

@@ -19,7 +19,7 @@ from util.evaluate import evaluate_3 as evaluate_fun
 class basicPath:
     def __init__(self,time):
         self.save_dir = 'result/model/MGCQ_24'  # 修改处
-        self.param_des = 'v3-interaction3-' + str(time) +'times'
+        self.param_des = 'v3-addinter0-' + str(time) +'times'
         self.save_path = os.path.join(self.save_dir, self.param_des + '/checkpoints/best_validation')
         self.tensorboard_dir = os.path.join(self.save_dir, self.param_des + '/tensorboard')
 
@@ -302,8 +302,7 @@ def run_mutli():
     #     train(train_data,val_data,Path)
 
 
-
-    for j in range(5):
+    for j in range(2,3):
         print("the {0}nd testing......".format(str(j)))
         Path = basicPath(j)
         test(test_data, Path)
