@@ -4,6 +4,9 @@ import random
 import processLaw as psLaw
 import re
 import pickle
+import os
+
+from util.ws_fun import getFTList
 
 
 def rmLabel1InLaw():
@@ -141,8 +144,22 @@ def buildDictQHJ():
         json.dump(law_dict, fw)
 
 #统计交通肇事文书中所有的法条，及其正文
+
 def getAllFtInCase():
-    
+    dir_path = '/Users/wenny/nju/task/LawDocumentAna/2014filled/2014'
+    files = os.listdir(dir_path)
+    outputdir = '../resource/alljtzsft.json'
+    law_dict = {}
+    for file in files:
+        if not file.endswith('.xml'): continue
+        wspath = os.path.join(dir_path, file)
+        ftmcls, ftnrls = getFTList(wspath)
+        for mc, nr in zip(ftmcls,ftnrls):
+            if mc not in law_dict.keys() and nr.strip() != "NOT FOUND":
+                law_dict[mc] = nr
+            if str(nr).count("FOUND") > 0:
+                print("Here!")
 
+    fw = open(outputdir,'w',encoding='utf-8')
+    json.dump(law_dict,fw)
 
-# buildDictQHJ()
