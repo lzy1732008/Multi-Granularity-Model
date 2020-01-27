@@ -55,14 +55,17 @@ import numpy as np
 #
 # print((array_1 == array_3))
 
-import tensorflow as tf
-array_1 = tf.constant([[[2,3],[4,5],[6,7]],[[2,5],[7,8],[1,10]]],dtype=tf.float32)
-max_num = tf.reduce_max(array_1,axis=-1,keep_dims=True)
-max_num = tf.keras.backend.repeat_elements(max_num,axis=-1,rep=2)
-# mean,var = tf.nn.moments(array_1,axes=-1)
-# mean_rep = tf.reshape(tf.keras.backend.repeat_elements(mean,axis=-1,rep=2),shape=[-1,3,2])
-# var = tf.reshape(tf.keras.backend.repeat_elements(var,axis=-1,rep=2),shape=[-1,3,2])
-with tf.Session() as sess:
-    print('mean',sess.run(max_num))
+# import tensorflow as tf
+# array_1 = tf.constant([[[2,3],[4,5],[6,7]],[[2,5],[7,8],[1,10]]],dtype=tf.float32)
+# max_num = tf.reduce_max(array_1,axis=-1,keep_dims=True)
+# max_num = tf.keras.backend.repeat_elements(max_num,axis=-1,rep=2)
+# # mean,var = tf.nn.moments(array_1,axes=-1)
+# # mean_rep = tf.reshape(tf.keras.backend.repeat_elements(mean,axis=-1,rep=2),shape=[-1,3,2])
+# # var = tf.reshape(tf.keras.backend.repeat_elements(var,axis=-1,rep=2),shape=[-1,3,2])
+# with tf.Session() as sess:
+#     print('mean',sess.run(max_num))
+
+
+
 
 

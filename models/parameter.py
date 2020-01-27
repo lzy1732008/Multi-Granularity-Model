@@ -1,7 +1,7 @@
 class BaseConfig:
     trainPath = 'resource/train-init.txt'
     valPath = 'resource/val-init.txt'
-    testPath = 'resource/test-init-alter-4.txt'
+    testPath = 'resource/test-init-alter-5.txt'
     w2vModel = 'resource/word_embedding.json'
     w2vModel_ex = 'resource/word_embedding_extend.json'  #这个是加入标点符号的embedding
     rf_model_path = 'result/model/RandomForest/rf_rm2json-dict30bool-rules-v2.pkl'
@@ -23,6 +23,14 @@ class BaseConfig:
     num_epochs = 200
     save_per_batch = 100
     print_per_batch = 10
+
+class BasicConfig2(BaseConfig):
+    trainPath = 'resource/故意伤害罪训练数据集/train-init.txt'
+    valPath = 'resource/故意伤害罪训练数据集/val-init.txt'
+    testPath = 'resource/故意伤害罪训练数据集/test-init.txt'
+    w2vModel = 'resource/故意伤害罪训练数据集/词向量源文件/word_embedding.json'
+
+
 
 
 

@@ -5,8 +5,98 @@ import processLaw as psLaw
 import re
 import pickle
 import os
+import numpy as np
+import shutil
+import time
+from sklearn import metrics
+import gensim
+import json
 
-from util.ws_fun import getFTList
+
+from util.ws_fun import getFTList, getRDSS, getZKSS, getQWChildContent
+
+
+#输入：词向量训练的语料库以及词向量模型
+#输出：词向量字典，文件名word_embedding.json
+def load_models(model_path):
+    return gensim.models.Word2Vec.load(model_path)
+
+def vector(v,model):
+    try:
+        return model[v]
+    except:
+        return [0]*128
+
+def buildWordEmbeddingFile():
+    source_dir = '../resource/故意伤害罪/词向量源文件'
+    fw = open(os.path.join(source_dir, 'word_embedding.json'), 'w', encoding='utf-8')
+    fr = open(os.path.join(source_dir, 'corpus.txt'), 'r', encoding='utf-8')
+    model_path = os.path.join(source_dir, 'w2v_size128.model')
+    w2v_model = load_models(model_path)
+
+    corpus = fr.read().split('\n')
+    words_embedding = {}
+
+    for line in corpus:
+        line_words = line.split()
+        for word in line_words:
+            word = word.strip()
+            if word!= "" and word not in words_embedding.keys():
+                words_embedding[word] = '\t'.join(list(map(str, vector(word, w2v_model))))
+
+    words_embedding['<UNK>'] = '\t'.join(['0' for _ in range(param.BaseConfig.word_dimension)])
+    json.dump(words_embedding, fw)
+
+# buildWordEmbeddingFile()
+
+#建立训练集、测试集、验证集
+#输入：标注好的数据集:.json,数据格式为{'xml文件名': [[fact,law,label],[fact,law,label]]}
+#输出：train.txt,val.txt, test.txt
+
+def SplitDataSet(sourcePath,targetDir):
+    fr = open(sourcePath,'r',encoding='utf-8')
+    all_data_set = json.load(fr)
+
+
+    #随机选择训练集：验证集：测试集=90%：5%:5%
+    all_keys = list(all_data_set.keys())
+    test_num, val_num = int(0.05 * len(all_keys)), int(0.05 * len(all_keys))
+    test_index = random.sample([i for i in range(len(all_keys))], test_num)
+    remained_keys = list(map(lambda y: all_keys[y], list(filter(lambda x: x not in test_index, [i for i in range(len(all_keys))]))))
+    val_index = random.sample([i for i in range(len(remained_keys))], val_num)
+    train_index = list(filter(lambda x: x not in val_index, [i for i in range(len(remained_keys))]))
+    print('随机得到的训练集：{0},验证集:{1},测试集:{2}'.format(len(train_index), len(val_index), len(test_index)))
+
+    train_set, val_set, test_set = set(train_index), set(val_index), set(test_index)
+    assert len(train_set & val_set) == 0, ValueError("随机生成有重复元素")
+
+    #根据随机生成的下标建立每个数据集的init.txt文件
+    fw_train = open(targetDir+'/train-init.txt','w',encoding='utf-8')
+    fw_test = open(targetDir + '/test-init.txt','w',encoding='utf-8')
+    fw_val = open(targetDir + '/val-init.txt', 'w', encoding='utf-8')
+
+    def createFile(all_data_set, selected_file, fw):
+        train_output = []
+        for file in selected_file:
+            key_samples = all_data_set[file]
+            for s in key_samples:
+                #去除掉事实和法条里面的'\n'字符
+                fact = str(s[0]).replace('\n','')
+                law = str(s[1]).replace('\n','')
+                line = '|'.join([file, fact, law, str(s[2])])
+                train_output.append(line)
+        print('样本个数:{0}'.format(len(train_output)))
+        fw.write('\n'.join(train_output))
+
+    # 首先建立训练集
+    train_files = list(map(lambda x: remained_keys[x], train_index))
+    test_files = list(map(lambda x: all_keys[x], test_index))
+    val_files = list(map(lambda x: remained_keys[x], val_index))
+
+    createFile(all_data_set, train_files, fw_train)
+    createFile(all_data_set, test_files, fw_test)
+    createFile(all_data_set, val_files, fw_val)
+
 
 
 def rmLabel1InLaw():
@@ -109,6 +199,10 @@ def shuffleLaw(times_default, shuffle_num_default):
     open('../resource/train-qj-augment-rminit.txt', 'w', encoding='utf-8').write('\n'.join(newlines))
 
 # shuffleLaw(times_default=2,shuffle_num_default=2)
+
+
+
+
 import json
 #建立一个词典，里面存放每个法条的前后件信息
 def buildDictQHJ():
@@ -162,4 +256,187 @@ def getAllFtInCase():
 
     fw = open(outputdir,'w',encoding='utf-8')
     json.dump(law_dict,fw)
+
+
+#对故意伤害罪案由进行标注========================================================
+#随机选择500篇文书
+def chooseWsRandom(dir_path, target_path):
+    files = os.listdir(dir_path)
+    files = list(filter(lambda x:str(x).endswith('.xml'), files))
+    chose_file = []
+    while len(chose_file) < 500:
+        index = random.randint(0,len(files) - 1)
+        if files[index] not in chose_file:
+            chose_file.append(files[index])
+    for file in chose_file:
+        shutil.copy(src=os.path.join(dir_path, file), dst=target_path)
+
+# dir_path = '/Users/wenny/nju/task/文书整理/故意伤害罪/2013填充'
+# target_path = '../resource/原始数据/故意伤害罪'
+# chooseWsRandom(dir_path,target_path)
+
+def labelInferenceData(src_path, store_dir_path):
+    store_file_name = 'jtzs_inference_labeleddata_0.json'
+    store_path = os.path.join(store_dir_path,store_file_name)
+    file_num = 0
+    if os.path.exists(store_path):
+        print("文件已存在！请输入新文件序号！")
+        file_num = int(input())
+        store_file_name = 'jtzs_inference_labeleddata_' + str(file_num) + '.json'
+    store_path = os.path.join(store_dir_path, store_file_name)
+    fw = open(store_path, 'w', encoding='utf-8')
+
+    labeled_data_dict = {}
+    start_time = time.time()
+
+    files = os.listdir(src_path)
+    total_label_count = 0
+    for index in range(file_num, len(files)):
+        file = files[index]
+        print("处理到第{0}个文书,文书名为{1}.........".format(index, file))
+        path = os.path.join(src_path, file)
+
+        cpfxdl = getQWChildContent(path, 'CPFXGC')
+        fact_str = getRDSS(path)
+        fact_str += getZKSS(path)
+        fact_split = list(set(list(filter(lambda x: x != "", list(map(lambda x:x.strip(), re.split(r'[。；]',fact_str)))))))
+        ftnamelist, ftnrlist = getFTList(path)
+        print("该文书共有{0}个待标注数据".format(len(fact_split) * len(ftnamelist)))
+        labeled_count = 0
+        labeled_sample = []
+        for ftname, ftnr in zip(ftnamelist,ftnrlist):
+            for fact in fact_split:
+                print("事实:\n{0}\n法条:\n{1}".format(fact, ftname + ':' + ftnr))
+                while 1:
+                    print('请标注.........')
+                    label = input()
+                    if label == 'h':
+                        print('裁判分析段落为:\n'+cpfxdl+'\n')
+                        continue
+                    if label == 's':
+                        end_time = time.time()
+                        print('正在停止本次标注........')
+                        json.dump(labeled_data_dict, fw)
+                        print('保存本次标注成功！')
+                        print('本次共标注{0}条数据，耗时{1}s,标注到第{2}篇文书'.format(total_label_count, end_time - start_time, index))
+                        print('退出程序！')
+                        return
+
+                    if label in ['0','1','2']:
+                        labeled_count += 1
+                        labeled_sample.append([fact, ftname + ':' + ftnr, int(label)])
+                        break
+        total_label_count += labeled_count
+        labeled_data_dict[file] = labeled_sample
+        print("该文书标注处理完毕！")
+
+    end_time = time.time()
+    print('正在停止本次标注........')
+    json.dump(labeled_data_dict, fw)
+    print('保存本次标注成功！')
+    print('本次共标注{0}条数据，耗时{1}s'.format(total_label_count, end_time - start_time))
+    print('退出程序！ ')
+    return
+
+# src_path = '../resource/原始数据/故意伤害罪文书'
+# store_path = '../resource/原始数据/故意伤害罪标注数据'
+# labelInferenceData(src_path, store_path)
+
+# files = os.listdir(store_path)
+# count = 0
+# pos = 0
+# neg = 0
+# for file in files:
+#     file_path = os.path.join(store_path, file)
+#     fr = open(file_path,'r',encoding='utf-8')
+#     labeled_data = json.load(fr)
+#     for k , v in labeled_data.items():
+#         for v_ in v:
+#             if v_[-1] == 0:
+#                 neg += 1
+#             else:
+#                 pos += 1
+# print(neg,pos)
+# print('总数为:',count)
+
+# fr = open(os.path.join(store_path,'jtzs_inference_labeleddata_155.json'),'r',encoding='utf-8')
+# labeled_data = json.load(fr)
+# print(labeled_data['632683.xml'])
+
+
+#统计学的方法
+#以50%的概率随机猜测
+
+#基于每个法条的正负例比例随机预测
+def getRatio():
+    ratio_dict = {}
+    lines = open('../resource/预测结果分析/训练集中每个法条正负例分布.txt','r',encoding='utf-8').read().split('\n')
+    for line in lines:
+        line = line.strip()
+        if line != "":
+            split = line.split(' [')
+            assert len(split) == 2, ValueError("The number of line is wrong, "+ line)
+            ratio = split[-1][:-1].split(', ')
+            negtive = int(ratio[0])
+            positive = int(ratio[1])
+            total = negtive + positive
+            neg_prob, pos_prob = 0, 0
+            if total !=0 :
+                neg_prob = negtive/ total
+                pos_prob = positive/ total
+            ratio_dict[split[0]] = [neg_prob, pos_prob]
+    fw = open('../resource/法条正负分布比例.json','w',encoding='utf-8')
+    json.dump(ratio_dict, fw)
+
+# getRatio()
+
+#使用上一步得到的法条正负例分布比率进行预测
+def statisticsPredict(targetFile):
+    fr = open('../resource/法条正负分布比例.json','r',encoding='utf-8')
+    law_ratio = json.load(fr)
+
+    lines = open(targetFile,'r',encoding='utf-8').read().split('\n')
+
+    predict_y = []
+    target_y = []
+    for line in lines:
+        line = line.strip()
+        if line == "":continue
+        split = line.split('|')
+        law_content = split[2]
+        ratio = [0.7137,0.2862]
+        if law_content in law_ratio.keys():
+           ratio = law_ratio[law_content]
+        predict_y.append(getRandomSample(number_list=[0,1], pro_list=ratio))
+        target_y.append(int(split[-1]))
+
+    print(metrics.classification_report(target_y, predict_y, digits=4))  # 直接计算准确率，召回率和f值
+
+    # 混淆矩阵
+    print("Confusion Matrix...")
+    cm = metrics.confusion_matrix(target_y, predict_y)
+    print(cm)
+
+def getRandomSample(number_list, pro_list):
+    x = random.uniform(0, 1)
+    # 累积概率
+    cum_pro = 0.0
+    # 将可迭代对象打包成元组列表
+    for number, number_pro in zip(number_list, pro_list):
+        cum_pro += number_pro
+        if x < cum_pro:
+            # 返回值
+            return number
+
+# targetFile = '../resource/test-init-alter-5.txt'
+# statisticsPredict(targetFile)
+
+
+# if __name__ == "__main__":
+    # sourcePath = '../resource/原始标注数据/故意伤害罪标注数据/合并-new-v2.json'
+    # targetDir = '../resource/故意伤害罪训练数据集'
+    # SplitDataSet(sourcePath, targetDir)
+
+
+
 

@@ -21,7 +21,22 @@ def getRDSS(path):
                                         if zjfzchild.tag == 'RDSS':
                                             content = zjfzchild.attrib['value']
     return content
-#指控段落
+#指控事实
+def getZKSS(path):
+    content = ''
+    qw = getQW(path)
+    for qwchild in qw:
+        if qwchild.tag == 'AJJBQK':
+            for ajjbqkchild in qwchild:
+                if ajjbqkchild.tag == 'ZKDL':
+                    for zkdlchild in ajjbqkchild:
+                        if zkdlchild.tag == 'ZKSS':
+                           content = zkdlchild.attrib['value']
+
+    return content
+
+
+# 指控段落
 def getZKDL(path):
     content = ''
     qw = getQW(path)
@@ -30,6 +45,7 @@ def getZKDL(path):
             for ajjbqkchild in qwchild:
                 if ajjbqkchild.tag == 'ZKDL':
                     content = ajjbqkchild.attrib['value']
+
     return content
 
 #从新填充了法条内容的文书里提取法条列表
@@ -50,8 +66,9 @@ def getFTList(path):
                             flnr = flnrfzchild.attrib['value']
                             flag += 2
                         if flag == 2 and flmc and flnr and flnr != 'NOT FOUND':
-                            ftnamelist.append(flmc)
-                            ftnrlist.append(flnr)
+                            if flmc not in ftnamelist:
+                               ftnamelist.append(flmc)
+                               ftnrlist.append(flnr)
 
     return ftnamelist,ftnrlist
 

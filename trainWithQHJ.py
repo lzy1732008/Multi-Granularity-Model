@@ -12,14 +12,14 @@ import pickle
 
 from models.MGCQ_24 import *
 from preps.data_load_generic import *
-import models.parameter as param
+from models.parameter import BasicConfig2
 from util.feedDict import feed_data_1 as feed_data_fun
 from util.evaluate import evaluate_3 as evaluate_fun
 
 class basicPath:
     def __init__(self,time):
-        self.save_dir = 'result/model/MGCQ_24'  # 修改处
-        self.param_des = 'v3-addinter0-' + str(time) +'times'
+        self.save_dir = 'result/model/gyshz/MGCQ_24'  # 修改处
+        self.param_des = 'v3-' + str(time) +'times'
         self.save_path = os.path.join(self.save_dir, self.param_des + '/checkpoints/best_validation')
         self.tensorboard_dir = os.path.join(self.save_dir, self.param_des + '/tensorboard')
 
@@ -123,22 +123,22 @@ def train(train_data, val_data,Path):
     require_improvement = 1000  # 如果超过2000轮未提升，提前结束训练
 
     flag = False
-    for epoch in range(param.BaseConfig.num_epochs):
+    for epoch in range(BasicConfig2.num_epochs):
         print('Epoch:', epoch + 1)
         # batch_train = get_batch_data(train_x1_word, train_x2_word, train_align, train_x2_label, train_y, batch_size=param.BaseConfig.batch_size)
         batch_train = get_batch_data(train_x1_word, train_x2_word, train_x2_label, train_y,
-                                     batch_size=param.BaseConfig.batch_size)
+                                     batch_size=BasicConfig2.batch_size)
 
         for a_word_batch, b_word_batch, c_word_batch, y_batch in batch_train:
             feed_dict = feed_data_fun(model,a_word_batch, b_word_batch, c_word_batch,y_batch,model.config.dropout_rate)
         # for a_word_batch, b_word_batch, c_word_batch, d_word_batch, y_batch in batch_train:
         #     feed_dict = feed_data_fun(model,a_word_batch, b_word_batch, c_word_batch,d_word_batch, y_batch,model.config.dropout_rate)
-            if total_batch % param.BaseConfig.save_per_batch == 0:
+            if total_batch % BasicConfig2.save_per_batch == 0:
                 # 每多少轮次将训练结果写入tensorboard scalar
                 s = session.run(merged_summary, feed_dict=feed_dict)
                 writer.add_summary(s, total_batch)
 
-            if total_batch % param.BaseConfig.print_per_batch == 0:
+            if total_batch % BasicConfig2.print_per_batch == 0:
                 # 每多少轮次输出在训练集和验证集上的性能
 
                 feed_dict[model.dropout_rate] = 1.0
@@ -175,7 +175,7 @@ def test(test_data, Path):
     #载入随机森林模型
 
     print("Loading test data...")
-    start_time = time.time()
+
 
     test_x1_word,  test_x2_word, test_x2_label, test_y = test_data
     # test_x1_word, test_x2_word, test_align, test_x2_label, test_y = test_data
@@ -196,7 +196,7 @@ def test(test_data, Path):
     msg = 'Test Loss: {0:>6.2}, Test Acc: {1:>7.2%}'
     print(msg.format(loss_test, acc_test))
 
-    batch_size = param.BaseConfig.batch_size
+    batch_size = BasicConfig2.batch_size
     data_len = len(test_x1_word)
     num_batch = int((data_len) / batch_size)
     # num_batch = 1
@@ -241,8 +241,7 @@ def test(test_data, Path):
     cm = metrics.confusion_matrix(y_test_cls, y_pred_cls)
     print(cm)
 
-    time_dif = get_time_dif(start_time)
-    print("Time usage:", time_dif)
+
 
 
     # checkPrediction(y_pred_cls,y_test_cls,probs)
@@ -291,22 +290,25 @@ def checkPrediction(pred_cls, target_y,probs):
 
 def run_mutli():
     # 载入随机森林模型
-    with open(param.BaseConfig.rf_model_path, 'rb') as fr:
+    start_time = time.time()
+    with open(BasicConfig2.rf_model_path, 'rb') as fr:
         rf = pickle.load(fr)
-    # train_data, val_data, test_data = data_load(param.BaseConfig.trainPath, param.BaseConfig.valPath, param.BaseConfig.testPath, model, rf)
-    train_data, val_data, test_data = data_load(None, None,
-                                                param.BaseConfig.testPath, model, rf)
-    print('train data shape:{0}\n val data shape:{1}\n test data shape:{2}'.format(len(train_data), len(val_data), len(test_data)))
-    # for i in range(5):
+    train_data, val_data, test_data = data_load(BasicConfig2.trainPath, BasicConfig2.valPath, BasicConfig2.testPath, model, rf)
+    # train_data, val_data, test_data = data_load(None, None,
+    #                                             BasicConfig2.testPath, model, rf)
+    # print('train data shape:{0}\n val data shape:{1}\n test data shape:{2}'.format(len(train_data), len(val_data), len(test_data)))
+    # for i in range(3):
     #     Path = basicPath(i)
     #     train(train_data,val_data,Path)
 
 
-    for j in range(2,3):
-        print("the {0}nd testing......".format(str(j)))
-        Path = basicPath(j)
-        test(test_data, Path)
-
+    # for j in range(3):
+    #     print("the {0}nd testing......".format(str(j)))
+    #     Path = basicPath(j)
+    #     test(test_data, Path)
+    #
+    time_dif = get_time_dif(start_time)
+    print("Time usage:", time_dif)
 
 #
 run_mutli()
