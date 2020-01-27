@@ -74,7 +74,7 @@ def data_load(trainPath, valPath, testPath,model,rfModel):
     #================================================================================
 
     # with open('resource/dataset50-addstp-fixpadding.json', 'r', encoding='utf-8') as fr:
-    with open('resource/gyshz_traindata/dataset50-addstp-fixpadding.json', 'r', encoding='utf-8') as fr:
+    with open('resource/gyshz_traindata/dataset50-addstp-fixpadding.json ', 'r', encoding='utf-8') as fr:
         dataset = json.load(fr)
         train = dataset['train']
         val = dataset['val']
