@@ -1,6 +1,6 @@
 #该文件的目标是获取三个数据，1、词向量 2、字向量 ==>3、输入数据的向量化表示，这些内容都存放在一个json文件中
 import sys
-import models.parameter as param
+from models.parameter import BasicConfig2 as basic_config
 import processLaw as psLaw
 import json
 import jieba
@@ -11,10 +11,10 @@ import random
 #step prepare input
 def setUp_inputs(trainPath = None, valPath = None, testPath = None):
     #read word info
-    f_word = open(param.BaseConfig.w2vModel, 'r', encoding='utf-8')
+    f_word = open(basic_config.w2vModel, 'r', encoding='utf-8')
     wordEmbedding = json.load(f_word)
     if '<UNK>' not in wordEmbedding.keys():
-        wordEmbedding['<UNK>'] = '\t'.join(['0' for _ in range(param.BaseConfig.word_dimension)])
+        wordEmbedding['<UNK>'] = '\t'.join(['0' for _ in range(basic_config.word_dimension)])
     wordVocab = wordEmbedding.keys()
 
     assert '<UNK>' in wordEmbedding.keys(), ValueError('space and unk not in word dict')
@@ -58,14 +58,14 @@ q3 = Queue()
 
 def setUp_inputs_QHJ(trainPath = None, valPath = None, testPath = None, rfModel=None):
     #read word info
-    f_word = open(param.BaseConfig.w2vModel, 'r', encoding='utf-8')
+    f_word = open(basic_config.w2vModel, 'r', encoding='utf-8')
     wordEmbedding = json.load(f_word)
     if '<UNK>' not in wordEmbedding.keys():
-        wordEmbedding['<UNK>'] = '\t'.join(['0' for _ in range(param.BaseConfig.word_dimension)])
+        wordEmbedding['<UNK>'] = '\t'.join(['0' for _ in range(basic_config.word_dimension)])
     wordVocab = wordEmbedding.keys()
 
     assert '<UNK>' in wordEmbedding.keys(), ValueError('space and unk not in word dict')
-    # assert len(wordVocab) == param.BaseConfig.word_vocab_size, ValueError('the number of word vocab is wrong, {0}'.format(len(wordVocab)))
+    # assert len(wordVocab) == config.word_vocab_size, ValueError('the number of word vocab is wrong, {0}'.format(len(wordVocab)))
 
     train = []
     test = []
@@ -81,7 +81,7 @@ def setUp_inputs_QHJ(trainPath = None, valPath = None, testPath = None, rfModel=
         # while not q1.empty():
         #     train += list(q1.get())
 
-        train = _setUp_inputs_QHJ(trainPath, wordEmbedding, wordVocab, rfModel, 0, 2,3)
+        train = _setUp_inputs_QHJ(trainPath, wordEmbedding, wordVocab, rfModel, 0, 10000,3)
 
     if valPath:
         # args = []
@@ -94,7 +94,7 @@ def setUp_inputs_QHJ(trainPath = None, valPath = None, testPath = None, rfModel=
         # while not q3.empty():
         #     val += list(q3.get())
 
-        val = _setUp_inputs_QHJ(valPath, wordEmbedding, wordVocab, rfModel, 0, 2,3)
+        val = _setUp_inputs_QHJ(valPath, wordEmbedding, wordVocab, rfModel, 0, 500,3)
 
     if testPath:
         # args = []
@@ -107,7 +107,7 @@ def setUp_inputs_QHJ(trainPath = None, valPath = None, testPath = None, rfModel=
         # while not q2.empty():
         #     test += list(q2.get())
 
-        test = _setUp_inputs_QHJ(testPath, wordEmbedding, wordVocab, rfModel, 0, 2,2)
+        test = _setUp_inputs_QHJ(testPath, wordEmbedding, wordVocab, rfModel, 0, 500,2)
 
     env = {'train': train, 'test': test, 'val': val}
     return env
@@ -115,14 +115,14 @@ def setUp_inputs_QHJ(trainPath = None, valPath = None, testPath = None, rfModel=
 #只使用前件或者后件的正文
 def setUp_inputs_QHJ_lawone(trainPath = None, valPath = None, testPath = None, rfModel=None,flag=0):
     #read word info
-    f_word = open(param.BaseConfig.w2vModel, 'r', encoding='utf-8')
+    f_word = open(basic_config.w2vModel, 'r', encoding='utf-8')
     wordEmbedding = json.load(f_word)
     if '<UNK>' not in wordEmbedding.keys():
-        wordEmbedding['<UNK>'] = '\t'.join(['0' for _ in range(param.BaseConfig.word_dimension)])
+        wordEmbedding['<UNK>'] = '\t'.join(['0' for _ in range(basic_config.word_dimension)])
     wordVocab = wordEmbedding.keys()
 
     assert '<UNK>' in wordEmbedding.keys(), ValueError('space and unk not in word dict')
-    # assert len(wordVocab) == param.BaseConfig.word_vocab_size, ValueError('the number of word vocab is wrong, {0}'.format(len(wordVocab)))
+    # assert len(wordVocab) == basic_config.word_vocab_size, ValueError('the number of word vocab is wrong, {0}'.format(len(wordVocab)))
 
     train = []
     test = []
@@ -142,14 +142,14 @@ def setUp_inputs_QHJ_lawone(trainPath = None, valPath = None, testPath = None, r
 #没有法条前后件信息：输入的法条是完整法条或者或者前件
 def setUp_inputs_QJ(trainPath = None, valPath = None, testPath = None, rfModel=None):
     #read word info
-    f_word = open(param.BaseConfig.w2vModel, 'r', encoding='utf-8')
+    f_word = open(basic_config.w2vModel, 'r', encoding='utf-8')
     wordEmbedding = json.load(f_word)
     if '<UNK>' not in wordEmbedding.keys():
-        wordEmbedding['<UNK>'] = '\t'.join(['0' for _ in range(param.BaseConfig.word_dimension)])
+        wordEmbedding['<UNK>'] = '\t'.join(['0' for _ in range(basic_config.word_dimension)])
     wordVocab = wordEmbedding.keys()
 
     assert '<UNK>' in wordEmbedding.keys(), ValueError('space and unk not in word dict')
-    # assert len(wordVocab) == param.BaseConfig.word_vocab_size, ValueError('the number of word vocab is wrong, {0}'.format(len(wordVocab)))
+    # assert len(wordVocab) == basic_config.word_vocab_size, ValueError('the number of word vocab is wrong, {0}'.format(len(wordVocab)))
 
     train = []
     test = []
@@ -168,7 +168,7 @@ def setUp_inputs_QJ(trainPath = None, valPath = None, testPath = None, rfModel=N
 
 
 def _setUp_inputs_QHJ_lawone(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,flag):
-    stp = list(map(lambda x: x.strip(), open(param.BaseConfig.stpPath, 'r', encoding='utf-8').read().split('\n')))
+    stp = list(map(lambda x: x.strip(), open(basic_config.stpPath, 'r', encoding='utf-8').read().split('\n')))
     with open(sourcePath,'r',encoding='utf-8') as fr:
         lines = fr.readlines()
     result = []
@@ -207,7 +207,7 @@ def _setUp_inputs_QHJ_lawone(sourcePath, wordEmbedding, wordVocab,rfModel,start,
 
 def _setUp_inputs_QHJ(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,flag):
     stp = []
-    stp = list(map(lambda x: x.strip(), open(param.BaseConfig.stpPath, 'r', encoding='utf-8').read().split('\n')))
+    stp = list(map(lambda x: x.strip(), open(basic_config.stpPath, 'r', encoding='utf-8').read().split('\n')))
     with open(sourcePath,'r',encoding='utf-8') as fr:
         lines = fr.readlines()
     result = []
@@ -227,7 +227,7 @@ def _setUp_inputs_QHJ(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,fla
                    print("Ignore fact!")
                    continue
                 else:
-                    fact_input = [[0 for _ in range(param.BaseConfig.word_dimension)]]
+                    fact_input = [[0 for _ in range(basic_config.word_dimension)]]
                     print("None fact")
 
             law_units = items[2].split(':')
@@ -255,7 +255,7 @@ def _setUp_inputs_QHJ(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,fla
 
 #不添加前后件信息,也不对输入法条文本进行过滤一些不属于前后件的词
 def _setUp_inputs_QJ(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,flag):
-    stp = list(map(lambda x: x.strip(), open(param.BaseConfig.stpPath, 'r', encoding='utf-8').read().split('\n')))
+    stp = list(map(lambda x: x.strip(), open(basic_config.stpPath, 'r', encoding='utf-8').read().split('\n')))
     with open(sourcePath,'r',encoding='utf-8') as fr:
         lines = fr.readlines()
     result = []
@@ -275,7 +275,7 @@ def _setUp_inputs_QJ(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,flag
                    print("Ignore fact!")
                    continue
                 else:
-                    fact_input = ['\t'.join(['0' for _ in range(param.BaseConfig.word_dimension)])]
+                    fact_input = ['\t'.join(['0' for _ in range(basic_config.word_dimension)])]
                     print("None fact")
             law_content = items[2]
             law_input = processTextWithoutDict(law_content, wordEmbedding,wordVocab)
@@ -288,7 +288,7 @@ def _setUp_inputs_QJ(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,flag
 
 #不添加前后件信息
 def _setUp_inputs_QHJ_2(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,flag):
-    stp = list(map(lambda x: x.strip(), open(param.BaseConfig.stpPath, 'r', encoding='utf-8').read().split('\n')))
+    stp = list(map(lambda x: x.strip(), open(basic_config.stpPath, 'r', encoding='utf-8').read().split('\n')))
     #
     with open(sourcePath,'r',encoding='utf-8') as fr:
         lines = fr.readlines()
@@ -325,14 +325,14 @@ def _setUp_inputs_QHJ_2(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,f
 
 def setUp_inputs_QHJ_lawtwo(trainPath = None, valPath = None, testPath = None, rfModel=None,flag=0):
     #read word info
-    f_word = open(param.BaseConfig.w2vModel, 'r', encoding='utf-8')
+    f_word = open(basic_config.w2vModel, 'r', encoding='utf-8')
     wordEmbedding = json.load(f_word)
     if '<UNK>' not in wordEmbedding.keys():
-        wordEmbedding['<UNK>'] = '\t'.join(['0' for _ in range(param.BaseConfig.word_dimension)])
+        wordEmbedding['<UNK>'] = '\t'.join(['0' for _ in range(basic_config.word_dimension)])
     wordVocab = wordEmbedding.keys()
 
     assert '<UNK>' in wordEmbedding.keys(), ValueError('space and unk not in word dict')
-    # assert len(wordVocab) == param.BaseConfig.word_vocab_size, ValueError('the number of word vocab is wrong, {0}'.format(len(wordVocab)))
+    # assert len(wordVocab) == basic_config.word_vocab_size, ValueError('the number of word vocab is wrong, {0}'.format(len(wordVocab)))
 
     train = []
     test = []
@@ -350,7 +350,7 @@ def setUp_inputs_QHJ_lawtwo(trainPath = None, valPath = None, testPath = None, r
     return env
 #不添加法条的前后件信息，将法条的前件作为一个输入，法条的后件作为一个输入
 def _setUp_inputs_QHJ_split(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,flag):
-    stp = list(map(lambda x:x.strip(),open(param.BaseConfig.stpPath,'r',encoding='utf-8').read().split('\n')))
+    stp = list(map(lambda x:x.strip(),open(basic_config.stpPath,'r',encoding='utf-8').read().split('\n')))
 
     with open(sourcePath,'r',encoding='utf-8') as fr:
         lines = fr.readlines()
@@ -474,9 +474,9 @@ def processWord(word, word_embedding, vocabs):
 #下面是处理具有先验知识===============================
 import numpy as np
 def _setUp_inputs_QHJ_KS(sourcePath, wordEmbedding, wordVocab,rfModel,start,end):
-    stp = open(param.BaseConfig.stpPath,'r',encoding='utf-8').read().split('\n')
-    fr_lawks = open(param.BaseConfig.lawKsPath,'r',encoding='utf-8')
-    ft_qhj_json = open(param.BaseConfig.lawQHJPath,'r',encoding='utf-8')
+    stp = open(basic_config.stpPath,'r',encoding='utf-8').read().split('\n')
+    fr_lawks = open(basic_config.lawKsPath,'r',encoding='utf-8')
+    ft_qhj_json = open(basic_config.lawQHJPath,'r',encoding='utf-8')
     ft_qhj = json.load(ft_qhj_json)
     lawks_dict = json.load(fr_lawks)
 
@@ -531,7 +531,7 @@ def _setUp_inputs_QHJ_KS(sourcePath, wordEmbedding, wordVocab,rfModel,start,end)
             law_ks_vector = []
 
             for ks in law_ks:
-                if ks == '': ks_vector = [0 for _ in range(param.BaseConfig.word_dimension)]
+                if ks == '': ks_vector = [0 for _ in range(basic_config.word_dimension)]
                 else:
                     vector_str = processTextWithoutDict(ks,wordEmbedding,wordVocab)
                     vectors = []

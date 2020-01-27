@@ -63,7 +63,7 @@ def data_load(trainPath, valPath, testPath,model,rfModel):
 
 
 
-    with open('resource/故意伤害罪训练数据集/dataset50-addstp-fixpadding.json ','w',encoding='utf-8') as fw:
+    with open('resource/gyshz_traindata/dataset50-addstp-fixpadding.json ','w',encoding='utf-8') as fw:
         dataset = {}
         dataset['train'] = [train[0].tolist(), train[1].tolist(), train[2].tolist(), train[3].tolist()]
         dataset['val'] = [val[0].tolist(), val[1].tolist(), val[2].tolist(), val[3].tolist()]

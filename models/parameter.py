@@ -25,10 +25,10 @@ class BaseConfig:
     print_per_batch = 10
 
 class BasicConfig2(BaseConfig):
-    trainPath = 'resource/故意伤害罪训练数据集/train-init.txt'
-    valPath = 'resource/故意伤害罪训练数据集/val-init.txt'
-    testPath = 'resource/故意伤害罪训练数据集/test-init.txt'
-    w2vModel = 'resource/故意伤害罪训练数据集/词向量源文件/word_embedding.json'
+    trainPath = 'resource/gyshz_traindata/train-init.txt'
+    valPath = 'resource/gyshz_traindata/val-init.txt'
+    testPath = 'resource/gyshz_traindata/test-init.txt'
+    w2vModel = 'resource/gyshz_traindata/word2vec/word_embedding.json'
 
 
 
