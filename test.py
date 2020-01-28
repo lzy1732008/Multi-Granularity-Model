@@ -66,6 +66,29 @@ import numpy as np
 #     print('mean',sess.run(max_num))
 
 
+# import json
+#
+# def vector(v,model):
+#     try:
+#         return model[v]
+#     except:
+#         return [0]*128
+#
+# fr1 = open('resource/gyshz_traindata/word2vec/word_embedding.json','r',encoding='utf-8')
+# fr2 = open('resource/gyshz_traindata/word2vec/vocab.txt','r',encoding='utf-8')
+# word_dict = json.load(fr1)
+# vocab = fr2.read().split('\n')
+# output = []
+# for v in vocab:
+
+
+
+
+#
+# fw = open('resource/gyshz_traindata/word2vec/vocab.txt','w',encoding='utf-8')
+# fw.write('\n'.join(words))
+
+
 
 
 
