@@ -6,9 +6,9 @@ from util import rules
 import random
 import re
 
-fr = open('../resource/gyshz_lawDataSet.json', 'r', encoding='utf-8')
+fr = open('../resource/lawDataSet.json', 'r', encoding='utf-8')
 env = json.load(fr)
-data = env['dataSet']
+data = env['testSet']
 count = 0
 qr = rules.QRulesEx()
 hr = rules.HRulesEx()
@@ -39,6 +39,8 @@ for sample in data:
 
     if y == target_y:
         count += 1
+    else:
+        print(line)
 
     target_ys.append(target_y)
     pred_ys.append(y)

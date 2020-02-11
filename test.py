@@ -12,10 +12,6 @@
 # # gather_output = tf.gather_nd(inputArray,indices=splitArray[:,:2])
 # # concat = tf.stack([inputArray1,inputArray2],axis=-1)
 #
-# topK = tf.nn.top_k(inputArray1,sorted=False,k = 2)
-# with tf.Session() as sess:
-#     t = sess.run(topK[0])
-#     print(t)
 
 
 #统计0，1分类0.7966
@@ -66,27 +62,25 @@ import numpy as np
 #     print('mean',sess.run(max_num))
 
 
-# import json
-#
-# def vector(v,model):
-#     try:
-#         return model[v]
-#     except:
-#         return [0]*128
-#
+import json
+
 # fr1 = open('resource/gyshz_traindata/word2vec/word_embedding.json','r',encoding='utf-8')
 # fr2 = open('resource/gyshz_traindata/word2vec/vocab.txt','r',encoding='utf-8')
 # word_dict = json.load(fr1)
 # vocab = fr2.read().split('\n')
 # output = []
 # for v in vocab:
-
-
-
-
+#     if v == '<UNK>':
+#         continue
+#     vector = ['0' for _ in range(128)]
+#     if v in word_dict.keys():
+#        vector = word_dict[v].split('\t')
+#     output.append(' '.join([v] + vector))
 #
-# fw = open('resource/gyshz_traindata/word2vec/vocab.txt','w',encoding='utf-8')
-# fw.write('\n'.join(words))
+# #
+# fw = open('resource/gyshz_traindata/word2vec/vector_w2v.txt','w',encoding='utf-8')
+# fw.write('\n'.join(output))
+
 
 
 
