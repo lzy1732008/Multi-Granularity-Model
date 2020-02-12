@@ -10,7 +10,7 @@ import os
 import sys
 import pickle
 
-from models.cmpModel.model_2 import *
+from models.cmpModel.model_3 import *
 from preps.data_load_generic import *
 from models.parameter import BaseConfig as basic_config
 from util.feedDict import feed_data_1 as feed_data_fun
@@ -293,13 +293,13 @@ def run_mutli():
     start_time = time.time()
     with open(basic_config.rf_model_path, 'rb') as fr:
         rf = pickle.load(fr)
-    # train_data, val_data, test_data = data_load(basic_config.trainPath, basic_config.valPath, basic_config.testPath, model, rf)
-    train_data, val_data, test_data = data_load(None, None,
-                                                basic_config.testPath, model, rf)
+    train_data, val_data, test_data = data_load(basic_config.trainPath, basic_config.valPath, basic_config.testPath, model, rf)
+    # train_data, val_data, test_data = data_load(None, None,
+    #                                             basic_config.testPath, model, rf)
     print('train data shape:{0}\n val data shape:{1}\n test data shape:{2}'.format(len(train_data), len(val_data), len(test_data)))
-    # for i in range(3):
-    #     Path = basicPath(i)
-    #     train(train_data,val_data,Path)
+    for i in range(3):
+        Path = basicPath(i)
+        train(train_data,val_data,Path)
 
 
     for j in range(3):

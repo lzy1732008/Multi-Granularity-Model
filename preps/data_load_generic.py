@@ -33,24 +33,24 @@ def get_batch_data(*data, batch_size = 64):
 import json
 
 def data_load(trainPath, valPath, testPath,model,rfModel):
-    env = pre.setUp_inputs_QHJ(trainPath=trainPath,valPath=valPath,testPath=testPath,rfModel=rfModel)
-    train_data = env['train']
-    test_data = env['test']
-    val_data = env['val']
-    train = []
-    test = []
-    val = []
-    # # # #
-    # len_lst = [model.config.X_maxlen,model.config.Y_maxlen,3]
-    if trainPath:
-       # train = processInitDataWithoutQHJ_Generic(train_data,len_lst)
-       train = processInitData2(train_data,model)
-    if valPath:
-       # val = processInitDataWithoutQHJ_Generic(val_data,len_lst)
-       val = processInitData2(val_data,model)
-    if testPath:
-       # test = processInitDataWithoutQHJ_Generic(test_data,len_lst)
-       test = processInitData2(test_data,model)
+    # env = pre.setUp_inputs_QHJ(trainPath=trainPath,valPath=valPath,testPath=testPath,rfModel=rfModel)
+    # train_data = env['train']
+    # test_data = env['test']
+    # val_data = env['val']
+    # train = []
+    # test = []
+    # val = []
+    # # # # #
+    # # len_lst = [model.config.X_maxlen,model.config.Y_maxlen,3]
+    # if trainPath:
+    #    # train = processInitDataWithoutQHJ_Generic(train_data,len_lst)
+    #    train = processInitData2(train_data,model)
+    # if valPath:
+    #    # val = processInitDataWithoutQHJ_Generic(val_data,len_lst)
+    #    val = processInitData2(val_data,model)
+    # if testPath:
+    #    # test = processInitDataWithoutQHJ_Generic(test_data,len_lst)
+    #    test = processInitData2(test_data,model)
 
     # train_align = computeAlign(np.array(train[0]), np.array(train[1]))
     # test_align = computeAlign(np.array(test[0]), np.array(test[1]))
@@ -73,17 +73,17 @@ def data_load(trainPath, valPath, testPath,model,rfModel):
 
     #================================================================================
 
-    # with open('resource/dataset50-addstp-fixpadding.json', 'r', encoding='utf-8') as fr:
-    # # with open('resource/gyshz_traindata/dataset50-addstp-fixpadding.json ', 'r', encoding='utf-8') as fr:
-    #     dataset = json.load(fr)
-    #     train = dataset['train']
-    #     val = dataset['val']
-    #     test = dataset['test']
-    #
-    #     #==========输入：事实、法条、前后件信息、目标值================
-    #     train = np.array(train[0]),np.array(train[1]),np.array(train[2]),np.array(train[3])
-    #     val = np.array(val[0]), np.array(val[1]), np.array(val[2]), np.array(val[3])
-    #     test = np.array(test[0]), np.array(test[1]), np.array(test[2]), np.array(test[3])
+    with open('resource/dataset50-addstp-fixpadding.json', 'r', encoding='utf-8') as fr:
+    # with open('resource/gyshz_traindata/dataset50-addstp-fixpadding.json ', 'r', encoding='utf-8') as fr:
+        dataset = json.load(fr)
+        train = dataset['train']
+        val = dataset['val']
+        test = dataset['test']
+
+        #==========输入：事实、法条、前后件信息、目标值================
+        train = np.array(train[0]),np.array(train[1]),np.array(train[2]),np.array(train[3])
+        val = np.array(val[0]), np.array(val[1]), np.array(val[2]), np.array(val[3])
+        test = np.array(test[0]), np.array(test[1]), np.array(test[2]), np.array(test[3])
 
 
         #===========输入：事实、法条、前后件信息、对齐信息、目标值====================================
