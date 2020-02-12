@@ -250,7 +250,7 @@ def _setUp_inputs_QHJ(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,fla
             label = items[3]
             result.append([fact_input, law_input, law_label_input, label])
             count += 1
-            print("precessing {0}/{1} samples".format(count,len(lines)))
+            # print("precessing {0}/{1} samples".format(count,len(lines)))
     return result
 
 #不添加前后件信息,也不对输入法条文本进行过滤一些不属于前后件的词
