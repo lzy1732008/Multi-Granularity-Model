@@ -18,7 +18,7 @@ from util.evaluate import evaluate_3 as evaluate_fun
 
 class basicPath:
     def __init__(self,time):
-        self.save_dir = 'result/model/cmp/model2'  # 修改处
+        self.save_dir = 'result/model/cmp/model3'  # 修改处
         self.param_des = 'v1-' + str(time) +'times'
         self.save_path = os.path.join(self.save_dir, self.param_des + '/checkpoints/best_validation')
         self.tensorboard_dir = os.path.join(self.save_dir, self.param_des + '/tensorboard')
@@ -293,13 +293,13 @@ def run_mutli():
     start_time = time.time()
     with open(basic_config.rf_model_path, 'rb') as fr:
         rf = pickle.load(fr)
-    # train_data, val_data, test_data = data_load(basic_config.trainPath, basic_config.valPath, basic_config.testPath, model, rf)
-    train_data, val_data, test_data = data_load(None, None,
-                                                basic_config.testPath, model, rf)
-    # print('train data shape:{0}\n val data shape:{1}\n test data shape:{2}'.format(len(train_data), len(val_data), len(test_data)))
-    # for i in range(3):
-    #     Path = basicPath(i)
-    #     train(train_data,val_data,Path)
+    train_data, val_data, test_data = data_load(basic_config.trainPath, basic_config.valPath, basic_config.testPath, model, rf)
+    # train_data, val_data, test_data = data_load(None, None,
+    #                                             basic_config.testPath, model, rf)
+    print('train data shape:{0}\n val data shape:{1}\n test data shape:{2}'.format(len(train_data), len(val_data), len(test_data)))
+    for i in range(3):
+        Path = basicPath(i)
+        train(train_data,val_data,Path)
 
 
     for j in range(3):
