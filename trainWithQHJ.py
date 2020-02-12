@@ -10,7 +10,7 @@ import os
 import sys
 import pickle
 
-from models.cmpModel.model_9 import *
+from models.cmpModel.model_10 import *
 from preps.data_load_generic import *
 from models.parameter import BaseConfig as basic_config
 from util.feedDict import feed_data_1 as feed_data_fun
@@ -18,7 +18,7 @@ from util.evaluate import evaluate_3 as evaluate_fun
 
 class basicPath:
     def __init__(self,time):
-        self.save_dir = 'result/model/cmp/model9'  # 修改处
+        self.save_dir = 'result/model/cmp/model10'  # 修改处
         self.param_des = 'v1-' + str(time) +'times'
         self.save_path = os.path.join(self.save_dir, self.param_des + '/checkpoints/best_validation')
         self.tensorboard_dir = os.path.join(self.save_dir, self.param_des + '/tensorboard')
