@@ -1,6 +1,6 @@
 #该文件的目标是获取三个数据，1、词向量 2、字向量 ==>3、输入数据的向量化表示，这些内容都存放在一个json文件中
 import sys
-from models.parameter import BasicConfig2 as basic_config
+from models.parameter import BaseConfig as basic_config
 import processLaw as psLaw
 import json
 import jieba
@@ -107,7 +107,7 @@ def setUp_inputs_QHJ(trainPath = None, valPath = None, testPath = None, rfModel=
         # while not q2.empty():
         #     test += list(q2.get())
 
-        test = _setUp_inputs_QHJ(testPath, wordEmbedding, wordVocab, rfModel, 0, 500,2)
+        test = _setUp_inputs_QHJ(testPath, wordEmbedding, wordVocab, rfModel, 0, 1000,2)
 
     env = {'train': train, 'test': test, 'val': val}
     return env
