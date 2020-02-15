@@ -42,20 +42,20 @@ def get_batch_data(a_word,b_word,y,batch_size = 64):
 
 
 def data_load_lawone(trainPath, valPath, testPath,model,rfModel,flag=0):
-    # env = pre.setUp_inputs_QJ(trainPath=trainPath, valPath=valPath, testPath=testPath, rfModel=rfModel)
-    # train_data = env['train']
-    # test_data = env['test']
-    # val_data = env['val']
+    env = pre.setUp_inputs_QJ(trainPath=trainPath, valPath=valPath, testPath=testPath, rfModel=rfModel)
+    train_data = env['train']
+    test_data = env['test']
+    val_data = env['val']
     train = []
     test = []
     val = []
 
 
-    with open('resource/dataset50-withstp-qj-tagBefore.json', 'r', encoding='utf-8') as fr:
-          dataset = json.load(fr)
-          train_data = dataset['train']
-          val_data = dataset['val']
-          test_data = dataset['test']
+    # with open('resource/dataset50-withstp-qj-tagBefore.json', 'r', encoding='utf-8') as fr:
+    #       dataset = json.load(fr)
+    #       train_data = dataset['train']
+    #       val_data = dataset['val']
+    #       test_data = dataset['test']
 
     # with open('resource/dataset50-withstp-qj-tagBefore-augdata.json', 'w', encoding='utf-8') as fw:
     #     dataset = {}

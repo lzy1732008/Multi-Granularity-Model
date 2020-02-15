@@ -11,7 +11,7 @@ import sys
 import pickle
 import numpy as np
 
-from models.MGCQ_16 import MultiGranularityCNNModel,MultiGraConfig   #修改处
+from models.baselines.Arc_2 import modelConfig, ARC2model  #修改处
 from preps.data_load import data_load_lawone,data_load_test_lawone
 from preps.data_load_generic import get_batch_data,get_batch_data_test
 from util.feedDict import feed_data_4 as feed_data_fun  #修改处
@@ -19,24 +19,24 @@ from util.evaluate import evaluate_1 as evaluate_fun
 
 import models.parameter as param
 
-save_dir = 'result/model/MGCQ_16'  #修改处
-param_des = 'v4-onlyinter0-0'
+save_dir = 'result/model/Arc_2'  #修改处
+param_des = 'times1'
 # param_des = 'initparam-qj'
 save_path = os.path.join(save_dir,param_des+'/checkpoints/best_validation')
 tensorboard_dir = os.path.join(save_dir,param_des+'/tensorboard')
 
-
-model = MultiGranularityCNNModel()
+model_config = modelConfig()
+model = ARC2model(model_config)
 
 with open(param.BaseConfig.rf_model_path, 'rb') as fr:
     rf = pickle.load(fr)
 
 qhj_label = 0
 
-if not os.path.exists(save_path):
-    os.makedirs(save_path)
-if not os.path.exists(tensorboard_dir):
-    os.makedirs(tensorboard_dir)
+# if not os.path.exists(save_path):
+#     os.makedirs(save_path)
+# if not os.path.exists(tensorboard_dir):
+#     os.makedirs(tensorboard_dir)
 
 
 def get_time_dif(start_time):
@@ -125,7 +125,7 @@ def train():
                 # 每多少轮次输出在训练集和验证集上的性能
 
                 feed_dict[model.dropout_rate] = 1.0
-                loss_train, acc_train,pre_y, logit, true_y, = session.run([model.loss, model.acc,model.pred_y,model.logit,model.y], feed_dict=feed_dict)
+                loss_train, acc_train,pre_y, true_y, = session.run([model.loss, model.acc,model.pred_y,model.y], feed_dict=feed_dict)
                 # loss_val, acc_val = evaluate(session, val_x1_word,  val_x2_word, val_seq_1, val_seq_2, val_y )  # 验证当前会话中的模型的loss和acc
                 # loss_val, acc_val = evaluate_fun(model,session, val_x1_word, val_x2_word, val_align, val_y,feed_data_fun)
                 loss_val, acc_val = evaluate_fun(model, session, val_x1_word, val_x2_word, val_y,feed_data_fun)
@@ -198,7 +198,7 @@ def test():
 
         feed_dict = feed_data_fun(model, test_x1_word[start_id:end_id], test_x2_word[start_id:end_id],test_y, 1.0)
 
-        y_pred_cls[start_id:end_id],probs[start_id:end_id] = session.run([model.pred_y,model.logit], feed_dict=feed_dict)   #将所有批次的预测结果都存放在y_pred_cls中
+        y_pred_cls[start_id:end_id] = session.run(model.pred_y, feed_dict=feed_dict)   #将所有批次的预测结果都存放在y_pred_cls中
         # inter_3,logit = session.run([model.fusion_output_max_3,model.logit],
         #                                                                 feed_dict=feed_dict)
         # print('inter.......')
@@ -265,7 +265,7 @@ def checkPrediction(pred_cls, target_y,probs):
         json.dump(law_result,fw)
 
 # train()
-# y_test_cls,y_pred_cls = test()
+y_test_cls,y_pred_cls = test()
 
 
 # data_load_lawone(param.BaseConfig.trainPath,param.BaseConfig.valPath,param.BaseConfig.testPath,model,rfModel=rf,flag=qhj_label)
