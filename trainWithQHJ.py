@@ -10,15 +10,16 @@ import os
 import sys
 import pickle
 
-from models.cmpModel.model_19 import *
+from models.cmpModel.model_12 import *
 from preps.data_load_generic import *
 from models.parameter import BaseConfig as basic_config
 from util.feedDict import feed_data_1 as feed_data_fun
 from util.evaluate import evaluate_3 as evaluate_fun
+from util.evaluate import wsevaluate
 
 class basicPath:
     def __init__(self,time):
-        self.save_dir = 'result/model/cmp/model19'  # 修改处
+        self.save_dir = 'result/model/cmp/model12'  # 修改处
         self.param_des = 'v1-' + str(time) +'times'
         self.save_path = os.path.join(self.save_dir, self.param_des + '/checkpoints/best_validation')
         self.tensorboard_dir = os.path.join(self.save_dir, self.param_des + '/tensorboard')
@@ -287,25 +288,45 @@ def checkPrediction(pred_cls, target_y,probs):
     # print('prediction is wrong')
     # print('\n'.join(wrong))
 
+def getwslist():
+    lines = open(param.BaseConfig.testPath).read().split('\n')
+    namels = []
+    # max_idx = int(len(lines) / model.config.batch_size) * model.config.batch_size
+    # print('max_idx:',max_idx)
+    for i in range(len(lines)):
+        line = lines[i]
+        if line.strip() == "":
+            continue
+        array = line.split('|')
+
+        if len(array) < 4:
+            continue
+
+        namels.append(array[0])
+    return namels
 
 def run_mutli():
     # 载入随机森林模型
     start_time = time.time()
     with open(basic_config.rf_model_path, 'rb') as fr:
         rf = pickle.load(fr)
-    train_data, val_data, test_data = data_load(basic_config.trainPath, basic_config.valPath, basic_config.testPath, model, rf)
-    # train_data, val_data, test_data = data_load(None, None,
-    #                                             basic_config.testPath, model, rf)
+    # train_data, val_data, test_data = data_load(basic_config.trainPath, basic_config.valPath, basic_config.testPath, model, rf)
+    train_data, val_data, test_data = data_load(None, None,
+                                                basic_config.testPath, model, rf)
     print('train data shape:{0}\n val data shape:{1}\n test data shape:{2}'.format(len(train_data), len(val_data), len(test_data)))
-    for i in range(3):
-        Path = basicPath(i)
-        train(train_data,val_data,Path)
+    # for i in range(3):
+    #     Path = basicPath(i)
+    #     train(train_data,val_data,Path)
+
+    wslist = getwslist()
+    for j in range(3):
+        print("the {0}nd testing......".format(str(j)))
+        Path = basicPath(j)
+        y_test_cls, y_pred_cls = test(test_data, Path)
+        assert len(y_test_cls) == len(wslist), ValueError("The number of ws is not equal to the model predict")
+        wsevaluate(y_pred_cls=y_pred_cls,y_test_cls=y_test_cls,wslist=wslist)
 
 
-    # for j in range(3):
-    #     print("the {0}nd testing......".format(str(j)))
-    #     Path = basicPath(j)
-    #     test(test_data, Path)
     #
     time_dif = get_time_dif(start_time)
     print("Time usage:", time_dif)

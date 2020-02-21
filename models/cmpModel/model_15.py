@@ -1,4 +1,4 @@
-# 对比试验：只使用融合层2的结果输入到预测层中
+# 对比试验：只使用融合层3的结果输入到预测层中
 import tensorflow as tf
 import models.parameter as param
 from models.modules import Interaction
