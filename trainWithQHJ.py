@@ -289,10 +289,8 @@ def checkPrediction(pred_cls, target_y,probs):
     # print('\n'.join(wrong))
 
 def getwslist():
-    lines = open(param.BaseConfig.testPath).read().split('\n')
+    lines = open(param.BaseConfig.testPath,'r',encoding='utf-8').read().split('\n')
     namels = []
-    # max_idx = int(len(lines) / model.config.batch_size) * model.config.batch_size
-    # print('max_idx:',max_idx)
     for i in range(len(lines)):
         line = lines[i]
         if line.strip() == "":
