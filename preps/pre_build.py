@@ -371,7 +371,7 @@ def labelInferenceData(src_path, store_dir_path):
 #基于每个法条的正负例比例随机预测
 def getRatio():
     ratio_dict = {}
-    lines = open('../resource/预测结果分析/训练集中每个法条正负例分布.txt','r',encoding='utf-8').read().split('\n')
+    lines = open('../resource/ana/故意伤害罪_法条正负样本分布.txt','r',encoding='utf-8').read().split('\n')
     for line in lines:
         line = line.strip()
         if line != "":
@@ -386,14 +386,14 @@ def getRatio():
                 neg_prob = negtive/ total
                 pos_prob = positive/ total
             ratio_dict[split[0]] = [neg_prob, pos_prob]
-    fw = open('../resource/法条正负分布比例.json','w',encoding='utf-8')
+    fw = open('../resource/ana/故意伤害罪_法条正负分布比例.json','w',encoding='utf-8')
     json.dump(ratio_dict, fw)
 
 # getRatio()
 
 #使用上一步得到的法条正负例分布比率进行预测
 def statisticsPredict(targetFile):
-    fr = open('../resource/法条正负分布比例.json','r',encoding='utf-8')
+    fr = open('../resource/ana/故意伤害罪_法条正负分布比例.json','r',encoding='utf-8')
     law_ratio = json.load(fr)
 
     lines = open(targetFile,'r',encoding='utf-8').read().split('\n')
@@ -405,7 +405,8 @@ def statisticsPredict(targetFile):
         if line == "":continue
         split = line.split('|')
         law_content = split[2]
-        ratio = [0.7137,0.2862]
+        # ratio = [0.7137,0.2862] #交通肇事罪
+        ratio = [0.6806,0.3193] #故意伤害罪
         if law_content in law_ratio.keys():
            ratio = law_ratio[law_content]
         predict_y.append(getRandomSample(number_list=[0,1], pro_list=ratio))
@@ -445,16 +446,19 @@ def getwslist():
         namels.append(array[0])
     return namels
 
-# if __name__ == "__main__":
+if __name__ == "__main__":
     # sourcePath = '../resource/原始标注数据/故意伤害罪标注数据/合并-new-v2.json'
     # targetDir = '../resource/故意伤害罪训练数据集'
     # SplitDataSet(sourcePath, targetDir)
 
+#使用统计方法预测
+    # getRatio()
     # targetFile = '../resource/gyshz_traindata/test-init.txt'
     # predict_y, target_y = statisticsPredict(targetFile)
     # wslist = getwslist()
     # assert len(predict_y) == len(wslist), ValueError("The number of ws is not equal to the model predict")
     # wsevaluate(predict_y, target_y,wslist)
+
 
 
 
