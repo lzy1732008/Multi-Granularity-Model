@@ -11,6 +11,7 @@ import time
 from sklearn import metrics
 import gensim
 import json
+import jieba.analyse as ana
 
 
 
@@ -446,6 +447,51 @@ def getwslist():
         namels.append(array[0])
     return namels
 
+
+# =======================================
+# 为使用RF以及SVM进行预测建立特征集合
+# 基于TF-IDF抽取事实、法条正文关键词
+# 对于事实选取频次大于30的，对于法条正文保留全部关键词
+def setup_feature_set(source_dir):
+    all_files =os.listdir(source_dir)
+    #随机选择10000篇裁判文书
+    indexs = random.sample([_ for _ in range(len(all_files))], 10000)
+    files = [all_files[i] for i in indexs]
+
+
+    word_dict = {}
+    laws = []
+    law_words = []
+    for file in files:
+        path = os.path.join(source_dir,file)
+        fact = getZKSS(path) + getRDSS(path)
+        ftmclist, ftnrlist = getFTList(path)
+
+        #对事实进行处理
+        fact_key_words = ana.extract_tags(sentence=fact,topK=10, allowPOS=['n','v','a'])
+        for w in fact_key_words:
+            if w not in word_dict.keys(): word_dict[w] = 0
+            word_dict[w] += 1
+
+        for ft,nr in zip(ftmclist,ftnrlist):
+            if ft not in laws:
+                laws.append(ft)
+                ft_key_words = ana.extract_tags(sentence=nr,topK=15)
+                law_words += ft_key_words
+
+    #去除频次小于30的事实关键词
+    fact_words = sorted(word_dict.items(),key=lambda x:x[1], reverse=True)
+    output_words = []
+    for w, v in fact_words:
+        if v < 30:
+            break
+        output_words.append(w)
+
+    output_words += law_words
+    print('共有{0}个词语'.format(len(output_words)))
+    open('../resource/gyshz_feature_set.txt','w',encoding='utf-8').write('\n'.join(output_words))
+
+
 if __name__ == "__main__":
     # sourcePath = '../resource/原始标注数据/故意伤害罪标注数据/合并-new-v2.json'
     # targetDir = '../resource/故意伤害罪训练数据集'
@@ -458,6 +504,11 @@ if __name__ == "__main__":
     # wslist = getwslist()
     # assert len(predict_y) == len(wslist), ValueError("The number of ws is not equal to the model predict")
     # wsevaluate(predict_y, target_y,wslist)
+
+# 为RF和SVM建立特征集合
+#     source_dir = '/Users/wenny/nju/task/LawDocumentAna/2014filled/法条内容填充2014/2014'
+    source_dir = '/Users/wenny/nju/task/文书整理/故意伤害罪/2013填充'
+    setup_feature_set(source_dir)
 
 
 

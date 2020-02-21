@@ -6,7 +6,7 @@ from sklearn.svm import SVC
 import json
 import pickle
 
-# X,Y = buildDataSetForRF(train=True,val=True,test=False)
+X,Y = buildDataSetForRF(train=True,val=True,test=False)
 # X,Y = np.array(X), np.array(Y)
 # rf = RandomForestClassifier(n_estimators=100)
 # rf.fit(X,Y)
