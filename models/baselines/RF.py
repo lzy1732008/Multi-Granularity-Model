@@ -8,7 +8,7 @@ from util.evaluate import wsevaluate
 from util.file_fun import getwslist
 
 def vector_text(input):
-    features = open('../../resource/jtzs_feature_set.txt','r',encoding='utf-8').read().split('\n')
+    features = open('../../resource/gyshz_feature_set.txt','r',encoding='utf-8').read().split('\n')
     vector = []
     for w in features:
         vector.append(str(input).count(w))
@@ -69,8 +69,8 @@ def SVM(train_path, test_path, model_path):
 
 
 if __name__=="__main__":
-    train_path, test_path, model_path = '../../resource/train-init.txt','../../resource/test-init-alter-5.txt','../../result/model/jtzs_SVM_NLI.pkl'
-    SVM(train_path, test_path, model_path)
+    train_path, test_path, model_path = '../../resource/gyshz_traindata/train-init.txt','../../resource/gyshz_traindata/test-init.txt','../../result/model/gyshz_RF_NLI.pkl'
+    RF(train_path, test_path, model_path)
 
 
 
