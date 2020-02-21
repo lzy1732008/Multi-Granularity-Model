@@ -13,6 +13,6 @@ def showClassNum(content):
     print('0:',class_0)
     print('1:',class_1)
 #
-f = open('../resource/test-init-alter-5.txt','r',encoding='utf-8')
-lines = f.read()
-showClassNum(lines)
+# f = open('../resource/val-init.txt','r',encoding='utf-8')
+# lines = f.read()
+# showClassNum(lines)

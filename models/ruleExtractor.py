@@ -1,6 +1,6 @@
 from sklearn import metrics
 import numpy as np
-from processLaw import buildDataSetForRF
+# from processLaw import buildDataSetForRF
 import json
 from util import rules
 import random
@@ -8,6 +8,7 @@ import re
 
 fr = open('../resource/lawDataSet.json', 'r', encoding='utf-8')
 env = json.load(fr)
+# data = env['dataSet']
 data = env['testSet']
 count = 0
 qr = rules.QRulesEx()
@@ -29,6 +30,19 @@ for sample in data:
     else:
         input = array[1]
 
+    # if qr.predict_merge(input, line):
+    #     y = 0
+    # elif hr.predict_merge(input, line):
+    #     y = 1
+    # else:
+    #     ran = random.Random()
+    #     y = ran.randint(0,1)
+    #
+    # if hr.predict_s(input, line):
+    #     y = 1
+    # else:
+    #     y = 0
+
     if qr.predict3(input,line):
         y = 0
     elif hr.predict3(input,line):
@@ -36,6 +50,7 @@ for sample in data:
     else:
         ran = random.Random()
         y = ran.randint(0,1)
+
 
     if y == target_y:
         count += 1

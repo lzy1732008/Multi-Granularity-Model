@@ -376,12 +376,14 @@ def extendWordVocabs():
 #下面是为了传统机器学习分类器做法条预处理
 #首先建立法条正文文本的字典
 def buildLawDict():
+    stopwords = list(map(lambda x: x.strip(), open('resource/stopwords.txt', 'r', encoding='utf-8').read().split('\n')))
     dictionary = {}
     fr = open('resource/corpus_law.txt','r',encoding='utf-8')
     lines = fr.readlines()
     for line in lines:
         words = list(map(lambda x: x.strip(),list(filter(lambda x: x.strip()!="",line.split()))))
         for w in words:
+            if w in stopwords:continue
             if w in dictionary.keys():
                 dictionary[w] += 1
             else:
@@ -389,13 +391,15 @@ def buildLawDict():
     dictionary = sorted(dictionary.items(),key=lambda x:x[1],reverse=True)
     remainedWords = []
     for w, n in dictionary:
-        if n > 40:
+        if n > 30:
             remainedWords.append(w)
-    print('\n'.join(remainedWords))
+    print(' '.join(remainedWords[:100]))
     print('总共词语为：'+str(len(remainedWords)))
 
 
 # buildLawDict()
+
+
 from util import rules
 def processLawText2id(line,dictionary):
     initContent = line.strip()

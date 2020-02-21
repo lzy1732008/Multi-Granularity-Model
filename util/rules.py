@@ -108,6 +108,32 @@ class QRulesEx(QRules):
             return True
         return False
 
+    def predict_s(self,input,line):
+        #对规则一~规则三覆盖效果进行检查
+        # return self.rule1(input)
+
+        # #对规则六覆盖效果进行检查
+        # if line[0] == 'S':
+        #     return True
+        #
+        # index = str(line).index(input)
+        # if line[index - 1] in ['。', '；']:
+        #     return True
+
+
+        #对规则八覆盖效果进行检查
+        index = str(line).index(input)
+        pre = line[:index]
+        rule = Rules(input)
+        if self.predict(pre) and rule.rule1(["或者", "并且", "但是"]):
+            return True
+
+        return False
+
+    def predict_merge(self,input,line):
+        return self.rule1(input) or self.rule2(input) or self.rule3(input)
+
+
 
 
 class HRulesEx(HRules):
@@ -135,3 +161,22 @@ class HRulesEx(HRules):
             return True
         return False
 
+    def predict_s(self,input,line):
+        #检查规则四五
+        # return self.rule2(input)
+
+        #检查规则七
+        # if line[-1] == 'E' and not str(input).endswith("除外"):
+        #     return True
+        # return False
+
+        #检查规则八
+        index = str(line).index(input)
+        pre = line[:index]
+        rule = Rules(input)
+        if self.predict(pre) and rule.rule1(["或者", "并且", "但是"]):
+            return True
+        return False
+
+    def predict_merge(self,input,line):
+        return self.rule1(input) or self.rule2(input)
