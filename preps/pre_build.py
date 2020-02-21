@@ -13,8 +13,9 @@ import gensim
 import json
 
 
-from util.ws_fun import getFTList, getRDSS, getZKSS, getQWChildContent
 
+from util.ws_fun import getFTList, getRDSS, getZKSS, getQWChildContent
+from util.evaluate import wsevaluate
 
 #输入：词向量训练的语料库以及词向量模型
 #输出：词向量字典，文件名word_embedding.json
@@ -413,9 +414,10 @@ def statisticsPredict(targetFile):
     print(metrics.classification_report(target_y, predict_y, digits=4))  # 直接计算准确率，召回率和f值
 
     # 混淆矩阵
-    print("Confusion Matrix...")
-    cm = metrics.confusion_matrix(target_y, predict_y)
-    print(cm)
+    # print("Confusion Matrix...")
+    # cm = metrics.confusion_matrix(target_y, predict_y)
+    # print(cm)
+    return predict_y, target_y
 
 def getRandomSample(number_list, pro_list):
     x = random.uniform(0, 1)
@@ -428,14 +430,31 @@ def getRandomSample(number_list, pro_list):
             # 返回值
             return number
 
-# targetFile = '../resource/test-init-alter-5.txt'
-# statisticsPredict(targetFile)
+def getwslist():
+    lines = open('../resource/gyshz_traindata/test-init.txt','r',encoding='utf-8').read().split('\n')
+    namels = []
+    for i in range(len(lines)):
+        line = lines[i]
+        if line.strip() == "":
+            continue
+        array = line.split('|')
 
+        if len(array) < 4:
+            continue
+
+        namels.append(array[0])
+    return namels
 
 # if __name__ == "__main__":
     # sourcePath = '../resource/原始标注数据/故意伤害罪标注数据/合并-new-v2.json'
     # targetDir = '../resource/故意伤害罪训练数据集'
     # SplitDataSet(sourcePath, targetDir)
+
+    # targetFile = '../resource/gyshz_traindata/test-init.txt'
+    # predict_y, target_y = statisticsPredict(targetFile)
+    # wslist = getwslist()
+    # assert len(predict_y) == len(wslist), ValueError("The number of ws is not equal to the model predict")
+    # wsevaluate(predict_y, target_y,wslist)
 
 
 
