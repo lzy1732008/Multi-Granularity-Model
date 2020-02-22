@@ -231,6 +231,11 @@ def test(test_data, Path):
         # print('inter 1.....')
         # print(inter_1)
 
+    print('beta.....')
+    print(session.run(model.beta_1))
+    print(session.run(model.beta_2))
+    print(session.run(model.beta_3))
+
 
 
     # print(y_pred_cls)
@@ -255,7 +260,7 @@ def test(test_data, Path):
 
 import json
 def checkPrediction(pred_cls, target_y,probs):
-    test_content = open('resource/test-init-alter-4.txt','r',encoding='utf-8').read()
+    test_content = open('resource/test-init-alter-5.txt','r',encoding='utf-8').read()
     lines = test_content.split('\n')
     index = 0
     right = []
@@ -308,21 +313,21 @@ def run_mutli():
     start_time = time.time()
     with open(basic_config.rf_model_path, 'rb') as fr:
         rf = pickle.load(fr)
-    train_data, val_data, test_data = data_load(basic_config.trainPath, basic_config.valPath, basic_config.testPath, model, rf)
-    # train_data, val_data, test_data = data_load(None, None,
-    #                                             basic_config.testPath, model, rf)
+    # train_data, val_data, test_data = data_load(basic_config.trainPath, basic_config.valPath, basic_config.testPath, model, rf)
+    train_data, val_data, test_data = data_load(None, None,
+                                                basic_config.testPath, model, rf)
     print('train data shape:{0}\n val data shape:{1}\n test data shape:{2}'.format(len(train_data), len(val_data), len(test_data)))
-    for i in range(3):
-        Path = basicPath(i)
-        train(train_data,val_data,Path)
+    # for i in range(3):
+    #     Path = basicPath(i)
+    #     train(train_data,val_data,Path)
 
-    # wslist = getwslist()
-    # for j in range(3):
-    #     print("the {0}nd testing......".format(str(j)))
-    #     Path = basicPath(j)
-    #     y_test_cls, y_pred_cls = test(test_data, Path)
-    #     assert len(y_test_cls) == len(wslist), ValueError("The number of ws is not equal to the model predict")
-    #     wsevaluate(y_pred_cls=y_pred_cls,y_test_cls=y_test_cls,wslist=wslist)
+    wslist = getwslist()
+    for j in range(3):
+        print("the {0}nd testing......".format(str(j)))
+        Path = basicPath(j)
+        y_test_cls, y_pred_cls = test(test_data, Path)
+        assert len(y_test_cls) == len(wslist), ValueError("The number of ws is not equal to the model predict")
+        wsevaluate(y_pred_cls=y_pred_cls,y_test_cls=y_test_cls,wslist=wslist)
 
 
     #
