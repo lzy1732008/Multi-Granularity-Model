@@ -1,6 +1,6 @@
 #该文件的目标是获取三个数据，1、词向量 2、字向量 ==>3、输入数据的向量化表示，这些内容都存放在一个json文件中
 import sys
-from models.parameter import BaseConfig as basic_config
+from models.parameter import BasicConfig2 as basic_config
 import processLaw as psLaw
 import json
 import jieba
