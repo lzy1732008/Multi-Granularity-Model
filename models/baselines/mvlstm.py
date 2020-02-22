@@ -43,7 +43,7 @@ class MVLSTM(object):
                                        name='input_x2')
         self.x2_label = tf.placeholder(name="inputX2_label", dtype=tf.int32,
                                        shape=[None, self.config.Y_maxlen])
-        self.y = tf.placeholder(tf.int32, [None, 2], name='input_y')
+        self.y = tf.placeholder(tf.int32, [None, self.config.Y_maxlen, 2], name='input_y')
         self.dropout_rate = tf.placeholder(tf.float32, name='keep_prob')
 
         self.mv_lstm()
