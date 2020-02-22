@@ -41,7 +41,7 @@ class MVLSTM(object):
         self.input_X2 = tf.placeholder(tf.float32,
                                        [None, self.config.Y_maxlen, param.BaseConfig.word_dimension],
                                        name='input_x2')
-        self.input_y = tf.placeholder(tf.int32, [None, 2], name='input_y')
+        self.y = tf.placeholder(tf.int32, [None, 2], name='input_y')
         self.dropout_rate = tf.placeholder(tf.float32, name='keep_prob')
 
         self.mv_lstm()
@@ -71,14 +71,14 @@ class MVLSTM(object):
         with tf.name_scope("optimize"):
             # 损失函数，交叉熵
             cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=fc2,
-                                                                    labels=self.input_y)  # 对logits进行softmax操作后，做交叉墒，输出的是一个向量
+                                                                    labels=self.y)  # 对logits进行softmax操作后，做交叉墒，输出的是一个向量
             self.loss = tf.reduce_mean(cross_entropy)  # 将交叉熵向量求和，即可得到交叉熵
             # 优化器
             self.optim = tf.train.AdamOptimizer(learning_rate=param.BaseConfig.lr).minimize(self.loss)
 
         with tf.name_scope("accuracy"):
             # 准确率
-            correct_pred = tf.equal(tf.argmax(self.input_y, 1),self.y_pred_cls)  # 由于input_y也是onehot编码，因此，调用tf.argmax(self.input_y)得到的是1所在的下表
+            correct_pred = tf.equal(tf.argmax(self.y, 1),self.pred_y)  # 由于input_y也是onehot编码，因此，调用tf.argmax(self.input_y)得到的是1所在的下表
             self.acc = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
 
 
@@ -115,7 +115,7 @@ class MVLSTM(object):
             v1 = tf.get_variable('v1',
                                  initializer=tf.truncated_normal_initializer(mean=0.0, stddev=0.1, dtype=tf.float32),
                                  dtype=tf.float32,
-                                 shape=[4 * self.config.HIDDEN_DIM, self.config.y_maxlen, self.config.OUTPUT_DIM],trainable=True)
+                                 shape=[4 * self.config.HIDDEN_DIM, self.config.Y_maxlen, self.config.OUTPUT_DIM],trainable=True)
 
             forward_result1 = []
             for i in range(self.config.OUTPUT_DIM):
