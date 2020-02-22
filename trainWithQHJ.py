@@ -143,7 +143,7 @@ def train(train_data, val_data,Path):
                 # 每多少轮次输出在训练集和验证集上的性能
 
                 feed_dict[model.dropout_rate] = 1.0
-                loss_train, acc_train,pre_y, logit, true_y = session.run([model.loss, model.acc,model.pred_y,model.logit,model.y], feed_dict=feed_dict)
+                loss_train, acc_train,pre_y, true_y = session.run([model.loss, model.acc,model.pred_y,model.y], feed_dict=feed_dict)
                 # loss_val, acc_val = evaluate_fun(model, session, val_x1_word,  val_x2_word,  val_align, val_x2_label, val_y,feed_data_fun)  # 验证当前会话中的模型的loss和acc
                 loss_val, acc_val = evaluate_fun(model, session, val_x1_word, val_x2_word, val_x2_label, val_y, feed_data_fun)  # 验证当前会话中的模型的loss和acc
 
