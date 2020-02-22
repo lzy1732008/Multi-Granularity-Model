@@ -24,7 +24,7 @@ import tensorflow as tf
 class ModelConfig:
     # v1
     X_maxlen = 30
-    Y_maxlen = 50
+    Y_maxlen = 30
     dropout_rate = 0.5
     HIDDEN_DIM = 50
     num_layers = 1
