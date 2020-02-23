@@ -11,7 +11,7 @@ import sys
 import pickle
 import numpy as np
 
-from models.baselines.Arc_2 import modelConfig, ARC2model  #修改处
+from models.arc_1 import MultiGraConfig, MultiGranularityCNNModel  #修改处
 from preps.data_load import data_load_lawone,data_load_test_lawone
 from preps.data_load_generic import get_batch_data,get_batch_data_test
 from util.feedDict import feed_data_4 as feed_data_fun  #修改处
@@ -20,14 +20,14 @@ from util.evaluate import wsevaluate
 from models.parameter import BaseConfig as basic_config
 
 
-save_dir = 'result/model/Arc_2'  #修改处
+save_dir = 'result/model/Arc_1'  #修改处
 param_des = 'jtzs-times1'
 # param_des = 'initparam-qj'
 save_path = os.path.join(save_dir,param_des+'/checkpoints/best_validation')
 tensorboard_dir = os.path.join(save_dir,param_des+'/tensorboard')
 
-model_config = modelConfig()
-model = ARC2model(modelConfig)
+model_config = MultiGraConfig()
+model = MultiGranularityCNNModel()
 
 with open(basic_config.rf_model_path, 'rb') as fr:
     rf = pickle.load(fr)
