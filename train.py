@@ -16,8 +16,9 @@ from preps.data_load import data_load_lawone,data_load_test_lawone
 from preps.data_load_generic import get_batch_data,get_batch_data_test
 from util.feedDict import feed_data_4 as feed_data_fun  #修改处
 from util.evaluate import evaluate_1 as evaluate_fun
+from util.evaluate import wsevaluate
+from models.parameter import BasicConfig2 as basic_config
 
-import models.parameter as param
 
 save_dir = 'result/model/Arc_2'  #修改处
 param_des = 'times1'
@@ -28,7 +29,7 @@ tensorboard_dir = os.path.join(save_dir,param_des+'/tensorboard')
 model_config = modelConfig()
 model = ARC2model(model_config)
 
-with open(param.BaseConfig.rf_model_path, 'rb') as fr:
+with open(basic_config.rf_model_path, 'rb') as fr:
     rf = pickle.load(fr)
 
 qhj_label = 0
@@ -67,7 +68,7 @@ def train():
     print("Loading training and validation data...")
     # 载入训练集与验证集
     start_time = time.time()
-    train_data, test_data, val_data = data_load_lawone(param.BaseConfig.trainPath,param.BaseConfig.valPath,param.BaseConfig.testPath,model,rfModel=rf,flag=qhj_label)
+    train_data, test_data, val_data = data_load_lawone(basic_config.trainPath,basic_config.valPath,basic_config.testPath,model,rfModel=rf,flag=qhj_label)
     # train_data, test_data, val_data = data_load(param.BaseConfig.trainPath, param.BaseConfig.valPath, None,
     #                                                    model)
 
@@ -101,12 +102,12 @@ def train():
     require_improvement = 1000  # 如果超过1000轮未提升，提前结束训练
 
     flag = False
-    for epoch in range(param.BaseConfig.num_epochs):
+    for epoch in range(basic_config.num_epochs):
         print('Epoch:', epoch + 1)
         # batch_train = get_batch_data(train_x1_word, train_x2_word, train_align, train_y,
         #                              batch_size=param.BaseConfig.batch_size)
         batch_train = get_batch_data(train_x1_word, train_x2_word, train_y,
-                                     batch_size=param.BaseConfig.batch_size)
+                                     batch_size=basic_config.batch_size)
         # batch_train = get_batch_data(train_x1_word, train_x2_word,  train_seq_1, train_seq_2, train_y, batch_size=param.BaseConfig.batch_size)
 
 
@@ -116,12 +117,12 @@ def train():
             # feed_dict = feed_data(model,a_word_batch,b_word_batch,seq_1_batch,seq_2_batch,y_batch,model.config.dropout_rate)
             feed_dict = feed_data_fun(model, a_word_batch, b_word_batch, y_batch,model.config.dropout_rate)
             # feed_dict = feed_data_fun(model, a_word_batch, b_word_batch, c_batch, y_batch, model.config.dropout_rate)
-            if total_batch % param.BaseConfig.save_per_batch == 0:
+            if total_batch % basic_config.save_per_batch == 0:
                 # 每多少轮次将训练结果写入tensorboard scalar
                 s = session.run(merged_summary, feed_dict=feed_dict)
                 writer.add_summary(s, total_batch)
 
-            if total_batch % param.BaseConfig.print_per_batch == 0:
+            if total_batch % basic_config.print_per_batch == 0:
                 # 每多少轮次输出在训练集和验证集上的性能
 
                 feed_dict[model.dropout_rate] = 1.0
@@ -179,15 +180,13 @@ def test():
     msg = 'Test Loss: {0:>6.2}, Test Acc: {1:>7.2%}'
     print(msg.format(loss_test, acc_test))
 
-    batch_size = param.BaseConfig.batch_size
+    batch_size = basic_config.batch_size
     data_len = len(test_x1_word)
     num_batch = int((data_len) / batch_size)
     # num_batch = 1
 
     y_test_cls = np.argmax(test_y, 1)
     y_pred_cls = np.zeros(shape=data_len, dtype=np.int32)  # 保存预测结果
-    probs = np.zeros(shape=[data_len,2], dtype=np.float32)
-    inter_1,inter_2,inter_3 = [],[],[]
     for i in range(num_batch):  # 逐批次处理
         start_id = i * batch_size
         end_id = min((i + 1) * batch_size, data_len)
@@ -214,25 +213,6 @@ def test():
     print("Confusion Matrix...")
     cm = metrics.confusion_matrix(y_test_cls, y_pred_cls)
     print(cm)
-
-    # print('prediction...')
-    # print(y_pred_cls)
-
-    # time_dif = get_time_dif(start_time)
-    # print("Time usage:", time_dif)
-    #
-    # print('predict..')
-    # print(y_pred_cls)
-    #
-    # print('inetr1...')
-    # print(inter_1)
-    #
-    # print('inter2...')
-    # print(inter_2)
-    #
-    # print('inter3....')
-    # print(inter_3)
-    # checkPrediction(y_pred_cls,y_test_cls,probs)
     return y_test_cls,y_pred_cls
 import json
 def checkPrediction(pred_cls, target_y,probs):
@@ -264,12 +244,28 @@ def checkPrediction(pred_cls, target_y,probs):
     with open('resource/预测结果分析/MGCQ_23-qj.json','w',encoding='utf-8') as fw:
         json.dump(law_result,fw)
 
-# train()
+
+def getwslist():
+    lines = open(basic_config.testPath,'r',encoding='utf-8').read().split('\n')
+    namels = []
+    for i in range(len(lines)):
+        line = lines[i]
+        if line.strip() == "":
+            continue
+        array = line.split('|')
+
+        if len(array) < 4:
+            continue
+
+        namels.append(array[0])
+    return namels
+
+train()
 y_test_cls,y_pred_cls = test()
 
 
 # data_load_lawone(param.BaseConfig.trainPath,param.BaseConfig.valPath,param.BaseConfig.testPath,model,rfModel=rf,flag=qhj_label)
 # data_load_lawone(param.BaseConfig.trainPath,param.BaseConfig.valPath,param.BaseConfig.testPath,model,rfModel=rf,flag=qhj_label)
 
-# wsnamels = getwslist(model=model)
-# wsevaluate(y_test_cls, y_pred_cls,wsnamels)
+wsnamels = getwslist()
+wsevaluate(y_pred_cls, y_test_cls,wsnamels)
