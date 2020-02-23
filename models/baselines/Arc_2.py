@@ -1,28 +1,27 @@
 import tensorflow as tf
 
 class modelConfig(object):
-    def __init__(self):
-        self.EMBDDING_DIM = 128
-        self.X_maxlen = 30
-        self.Y_maxlen = 30
+    EMBDDING_DIM = 128
+    X_maxlen = 30
+    Y_maxlen = 30
 
-        self.FILTERS = 30
-        self.KERNEL_SIZE = 3  # 卷积核尺寸
-        self.LAYER_NUM  = 2
-        self.filters_2d = [256, 128]
-        self.kernel_size_2d = [[3, 3], [3, 3]]
-        self.mpool_size_2d = [[2, 2], [2, 2]]
+    FILTERS = 30
+    KERNEL_SIZE = 3  # 卷积核尺寸
+    LAYER_NUM = 2
+    filters_2d = [256, 128]
+    kernel_size_2d = [[3, 3], [3, 3]]
+    mpool_size_2d = [[2, 2], [2, 2]]
 
+    LAYER_UNITS = 100
+    NUM_CLASS = 2
 
-        self.LAYER_UNITS = 100
-        self.NUM_CLASS = 2
+    LEARNING_RATE = 0.001
+    batch_size = 64
+    num_epochs = 200
+    save_per_batch = 10
+    print_per_batch = 10
+    dropout_rate = 0.5
 
-        self.LEARNING_RATE = 0.001
-        self.batch_size = 64
-        self.num_epochs = 200
-        self.save_per_batch = 10
-        self.print_per_batch = 10
-        self.dropout_rate = 0.5
 
 
 class ARC2model(object):
