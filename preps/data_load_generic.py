@@ -2,7 +2,7 @@ from __future__ import print_function
 import numpy as np
 from preps import preprocess as pre
 import tensorflow.contrib.keras as kr
-import models.parameter as param
+from models.parameter import BasicConfig2 as basic_config
 
 def get_batch_data_test(*data, batch_size=64):
     data_len = len(data[0])
@@ -99,7 +99,7 @@ def data_load(trainPath, valPath, testPath,model,rfModel):
 
 def data_load_test(model,rfModel):
     env = pre.setUp_inputs_QHJ(trainPath=None, valPath=None,
-                            testPath=param.BaseConfig.testPath,rfModel=rfModel)
+                            testPath=basic_config.testPath,rfModel=rfModel)
     test_data = env['test']
     test = processInitData(test_data,model)
     return test

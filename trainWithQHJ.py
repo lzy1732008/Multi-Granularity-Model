@@ -10,7 +10,7 @@ import os
 import sys
 import pickle
 
-from models.baselines.Arc_2 import *
+from models.MGCQ_24 import *
 from preps.data_load_generic import *
 from models.parameter import BasicConfig2 as basic_config
 from util.feedDict import feed_data_1 as feed_data_fun
@@ -19,7 +19,7 @@ from util.evaluate import wsevaluate
 
 class basicPath:
     def __init__(self,time):
-        self.save_dir = 'result/model/baseline/Arc2'  # 修改处
+        self.save_dir = 'result/model/MGCQ_24'  # 修改处
         self.param_des = 'gyshz-v1-' + str(time) +'times'
         self.save_path = os.path.join(self.save_dir, self.param_des + '/checkpoints/best_validation')
         self.tensorboard_dir = os.path.join(self.save_dir, self.param_des + '/tensorboard')
@@ -31,8 +31,8 @@ class basicPath:
 
 
 
-config = modelConfig()
-model = ARC2model(config)
+config = MultiGraConfig()
+model = MultiGranularityCNNModel()
 
 
 
@@ -289,7 +289,7 @@ def checkPrediction(pred_cls, target_y,probs):
     # print('\n'.join(wrong))
 
 def getwslist():
-    lines = open(param.BasicConfig2.testPath,'r',encoding='utf-8').read().split('\n')
+    lines = open(basic_config.testPath,'r',encoding='utf-8').read().split('\n')
     namels = []
     for i in range(len(lines)):
         line = lines[i]
@@ -331,5 +331,3 @@ def run_mutli():
 
 #
 run_mutli()
-# wsnamels = getwslist(model=model)
-# wsevaluate(y_test_cls, y_pred_cls,wsnamels)
