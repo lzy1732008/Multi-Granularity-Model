@@ -51,7 +51,7 @@ def RF(train_path, test_path, model_path):
 
 def SVM(train_path, test_path, model_path):
     input_vectors, target_y = preprocess_dataset(train_path)
-    rf = SVC(kernel='linear')
+    rf = SVC(kernel='rbf')
     rf.fit(input_vectors, target_y)
     with open(model_path, 'wb') as fw:
         pickle.dump(rf, fw)
@@ -70,7 +70,7 @@ def SVM(train_path, test_path, model_path):
 
 if __name__=="__main__":
     train_path, test_path, model_path = '../../resource/gyshz_traindata/train-init.txt','../../resource/gyshz_traindata/test-init.txt','../../result/model/gyshz_SVC_NLI.pkl'
-    SVC(train_path, test_path, model_path)
+    SVM(train_path, test_path, model_path)
 
 
 
