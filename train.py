@@ -21,7 +21,7 @@ from models.parameter import BasicConfig2 as basic_config
 
 
 save_dir = 'result/model/Arc_2'  #修改处
-param_des = 'times2'
+param_des = 'times3'
 # param_des = 'initparam-qj'
 save_path = os.path.join(save_dir,param_des+'/checkpoints/best_validation')
 tensorboard_dir = os.path.join(save_dir,param_des+'/tensorboard')
