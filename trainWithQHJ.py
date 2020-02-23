@@ -314,10 +314,12 @@ def run_mutli():
     # train_data, val_data, test_data = data_load(None, None,
     #                                             basic_config.testPath, model, rf)
     # print('train data shape:{0}\n val data shape:{1}\n test data shape:{2}'.format(len(train_data), len(val_data), len(test_data)))
-    train_data = np.array(list(train_data_jtzs) + list(train_data_gyshz))
-    val_data = np.array(list(val_data_jtzs) + list(val_data_gyshz))
+    train_data = np.array(list(train_data_jtzs[0]) + list(train_data_gyshz[0])),np.array(list(train_data_jtzs[1]) + list(train_data_gyshz[1])),\
+                 np.array(list(train_data_jtzs[2]) + list(train_data_gyshz[2])),np.array(list(train_data_jtzs[3]) + list(train_data_gyshz[3]))
+    val_data = np.array(list(val_data_jtzs[0]) + list(val_data_gyshz[0])),np.array(list(val_data_jtzs[1]) + list(val_data_gyshz[1])),\
+                 np.array(list(val_data_jtzs[2]) + list(val_data_gyshz[2])),np.array(list(val_data_jtzs[3]) + list(val_data_gyshz[3]))
     # test_data = np.array(list(test_data_jtzs) + list(test_data_gyshz))
-    
+
     for i in range(3):
         Path = basicPath(i)
         train(train_data,val_data,Path)
