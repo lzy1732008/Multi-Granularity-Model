@@ -96,7 +96,7 @@ def wsevaluate(y_pred_cls,y_test_cls,wslist):
         else:
             recall = pred_true[wsname.strip()] / (positive[wsname.strip()])
             if pred_pos[wsname.strip()] == 0:
-               preciosn = 0
+               precision = 0
             else:
                precision = pred_true[wsname.strip()]/(pred_pos[wsname.strip()])
             if recall + precision == 0:
