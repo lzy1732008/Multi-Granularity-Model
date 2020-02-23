@@ -10,7 +10,7 @@ import os
 import sys
 import pickle
 
-from models.cmpModel.model_2 import *
+from models.MGCQ_24 import *
 from preps.data_load_generic import *
 from models.parameter import BaseConfig as basic_config
 from util.feedDict import feed_data_1 as feed_data_fun
@@ -19,8 +19,8 @@ from util.evaluate import wsevaluate
 
 class basicPath:
     def __init__(self,time):
-        self.save_dir = 'result/model/cmp/model2'  # 修改处
-        self.param_des = 'v1-' + str(time) +'times'
+        self.save_dir = 'result/model/MGCQ_24'  # 修改处
+        self.param_des = 'merge-v1-' + str(time) +'times'
         # self.param_des = 'v3-addinter0-2times'
         self.save_path = os.path.join(self.save_dir, self.param_des + '/checkpoints/best_validation')
         self.tensorboard_dir = os.path.join(self.save_dir, self.param_des + '/tensorboard')
@@ -309,21 +309,26 @@ def run_mutli():
     start_time = time.time()
     with open(basic_config.rf_model_path, 'rb') as fr:
         rf = pickle.load(fr)
-    # train_data, val_data, test_data = data_load(basic_config.trainPath, basic_config.valPath, basic_config.testPath, model, rf)
-    train_data, val_data, test_data = data_load(None, None,
-                                                basic_config.testPath, model, rf)
-    print('train data shape:{0}\n val data shape:{1}\n test data shape:{2}'.format(len(train_data), len(val_data), len(test_data)))
-    # for i in range(3):
-    #     Path = basicPath(i)
-    #     train(train_data,val_data,Path)
+    train_data_jtzs, val_data_jtzs, test_data_jtzs = data_load(basic_config.trainPath, basic_config.valPath, basic_config.testPath, model, rf,flag=0)
+    train_data_gyshz, val_data_gyshz, test_data_gyshz = data_load(param.BasicConfig2.trainPath, param.BasicConfig2.valPath, param.BasicConfig2.testPath, model, rf,flag=1)
+    # train_data, val_data, test_data = data_load(None, None,
+    #                                             basic_config.testPath, model, rf)
+    # print('train data shape:{0}\n val data shape:{1}\n test data shape:{2}'.format(len(train_data), len(val_data), len(test_data)))
+    train_data = np.array(list(train_data_jtzs) + list(train_data_gyshz))
+    val_data = np.array(list(val_data_jtzs) + list(val_data_gyshz))
+    # test_data = np.array(list(test_data_jtzs) + list(test_data_gyshz))
+    
+    for i in range(3):
+        Path = basicPath(i)
+        train(train_data,val_data,Path)
 
-    wslist = getwslist()
-    for j in range(3):
-        print("the {0}nd testing......".format(str(j)))
-        Path = basicPath(j)
-        y_test_cls, y_pred_cls = test(test_data, Path)
-        assert len(y_test_cls) == len(wslist), ValueError("The number of ws is not equal to the model predict")
-        wsevaluate(y_pred_cls=y_pred_cls,y_test_cls=y_test_cls,wslist=wslist)
+    # wslist = getwslist()
+    # for j in range(3):
+    #     print("the {0}nd testing......".format(str(j)))
+    #     Path = basicPath(j)
+    #     y_test_cls, y_pred_cls = test(test_data, Path)
+    #     assert len(y_test_cls) == len(wslist), ValueError("The number of ws is not equal to the model predict")
+    #     wsevaluate(y_pred_cls=y_pred_cls,y_test_cls=y_test_cls,wslist=wslist)
 
 
     #
