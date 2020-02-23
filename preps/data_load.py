@@ -98,7 +98,7 @@ def data_load_lawone(trainPath, valPath, testPath,model,rfModel,flag=0):
 
 def data_load_test_lawone(model,rfModel,flag=0):
     env = pre.setUp_inputs_QJ(trainPath=None, valPath=None,
-                            testPath=param.BaseConfig.testPath,rfModel=rfModel)
+                            testPath=param.BasicConfig2.testPath,rfModel=rfModel)
     test_data = env['test']
     # test = generic.processInitDataWithoutQHJOutputLength(test_data,model)
     test = generic.processInitDataWithoutQHJ(test_data,model)

@@ -260,7 +260,7 @@ def getwslist():
         namels.append(array[0])
     return namels
 
-train()
+# train()
 y_test_cls,y_pred_cls = test()
 
 
@@ -268,4 +268,5 @@ y_test_cls,y_pred_cls = test()
 # data_load_lawone(param.BaseConfig.trainPath,param.BaseConfig.valPath,param.BaseConfig.testPath,model,rfModel=rf,flag=qhj_label)
 
 wsnamels = getwslist()
+assert len(wsnamels) == len(y_pred_cls),ValueError("len(wsnamels) != len(y_pred_cls)")
 wsevaluate(y_pred_cls, y_test_cls,wsnamels)
