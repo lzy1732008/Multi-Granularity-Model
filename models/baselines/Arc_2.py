@@ -34,6 +34,8 @@ class ARC2model(object):
                                        name='input_x2')
         self.y = tf.placeholder(tf.int32, [None, self.config.NUM_CLASS],
                                       name='input_y')
+        self.x2_label = tf.placeholder(name="inputX2_label", dtype=tf.float32,
+                                       shape=[None, self.config.Y_maxlen, 2])
         self.dropout_rate = tf.placeholder(tf.float32, name='keep_prob')
 
         self.cnn()

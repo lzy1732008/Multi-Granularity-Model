@@ -10,7 +10,7 @@ import os
 import sys
 import pickle
 
-from models.baselines.mvlstm import *
+from models.baselines.Arc_2 import *
 from preps.data_load_generic import *
 from models.parameter import BasicConfig2 as basic_config
 from util.feedDict import feed_data_1 as feed_data_fun
@@ -19,7 +19,7 @@ from util.evaluate import wsevaluate
 
 class basicPath:
     def __init__(self,time):
-        self.save_dir = 'result/model/baseline/mvlstm'  # 修改处
+        self.save_dir = 'result/model/baseline/Arc2'  # 修改处
         self.param_des = 'gyshz-v1-' + str(time) +'times'
         self.save_path = os.path.join(self.save_dir, self.param_des + '/checkpoints/best_validation')
         self.tensorboard_dir = os.path.join(self.save_dir, self.param_des + '/tensorboard')
@@ -31,8 +31,8 @@ class basicPath:
 
 
 
-config = ModelConfig()
-model = MVLSTM(config)
+config = modelConfig()
+model = ARC2model(config)
 
 
 
@@ -308,13 +308,13 @@ def run_mutli():
     start_time = time.time()
     with open(basic_config.rf_model_path, 'rb') as fr:
         rf = pickle.load(fr)
-    # train_data, val_data, test_data = data_load(basic_config.trainPath, basic_config.valPath, basic_config.testPath, model, rf)
-    train_data, val_data, test_data = data_load(None, None,
-                                                basic_config.testPath, model, rf)
+    train_data, val_data, test_data = data_load(basic_config.trainPath, basic_config.valPath, basic_config.testPath, model, rf)
+    # train_data, val_data, test_data = data_load(None, None,
+    #                                             basic_config.testPath, model, rf)
     print('train data shape:{0}\n val data shape:{1}\n test data shape:{2}'.format(len(train_data), len(val_data), len(test_data)))
-    # for i in range(3):
-    #     Path = basicPath(i)
-    #     train(train_data,val_data,Path)
+    for i in range(3):
+        Path = basicPath(i)
+        train(train_data,val_data,Path)
 
     wslist = getwslist()
     for j in range(3):
