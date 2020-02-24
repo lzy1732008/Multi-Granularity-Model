@@ -19,7 +19,7 @@ from util.evaluate import wsevaluate
 
 class basicPath:
     def __init__(self,time):
-        self.save_dir = 'result/model/gyshz/MGCQ_24'  # 修改处
+        self.save_dir = 'result/model/MGCQ_24'  # 修改处
         # self.param_des = 'v3-' + str(time) + 'times'
         self.param_des = 'merge-v1-' + str(time) +'times'
         # self.param_des = 'v3-addinter0-2times'
