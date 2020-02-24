@@ -310,9 +310,9 @@ def run_mutli():
     with open(basic_config.rf_model_path, 'rb') as fr:
         rf = pickle.load(fr)
     # train_data_jtzs, val_data_jtzs, test_data_jtzs = data_load(basic_config.trainPath, basic_config.valPath, basic_config.testPath, model, rf,flag=0)
-    # train_data_gyshz, val_data_gyshz, test_data_gyshz = data_load(param.BasicConfig2.trainPath, param.BasicConfig2.valPath, param.BasicConfig2.testPath, model, rf,flag=1)
-    train_data, val_data, test_data = data_load(None, None,
-                                                basic_config.testPath, model, rf,flag=0)
+    train_data, val_data, test_data = data_load(param.BasicConfig2.trainPath, param.BasicConfig2.valPath, param.BasicConfig2.testPath, model, rf,flag=1)
+    # train_data, val_data, test_data = data_load(None, None,
+    #                                             basic_config.testPath, model, rf,flag=0)
     # print('train data shape:{0}\n val data shape:{1}\n test data shape:{2}'.format(len(train_data), len(val_data), len(test_data)))
     # train_data = np.array(list(train_data_jtzs[0]) + list(train_data_gyshz[0])),np.array(list(train_data_jtzs[1]) + list(train_data_gyshz[1])),\
     #              np.array(list(train_data_jtzs[2]) + list(train_data_gyshz[2])),np.array(list(train_data_jtzs[3]) + list(train_data_gyshz[3]))
