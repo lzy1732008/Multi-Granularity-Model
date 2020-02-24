@@ -247,7 +247,7 @@ def test(test_data, Path):
 
 
 
-    checkPrediction(y_pred_cls,y_test_cls,probs)
+    # checkPrediction(y_pred_cls,y_test_cls,probs)
     # print("beta value", beta1,beta2,beta3)
     #check error prediction
     # print(y_pred_cls)
@@ -291,7 +291,7 @@ def checkPrediction(pred_cls, target_y,probs):
     # print('\n'.join(wrong))
 
 def getwslist():
-    lines = open(param.BasicConfig2.testPath,'r',encoding='utf-8').read().split('\n')
+    lines = open(param.BaseConfig.testPath,'r',encoding='utf-8').read().split('\n')
     namels = []
     for i in range(len(lines)):
         line = lines[i]
@@ -331,8 +331,8 @@ def run_mutli():
         print("the {0}nd testing......".format(str(j)))
         Path = basicPath(j)
         y_test_cls, y_pred_cls = test(test_data, Path)
-        print(y_test_cls)
-        print(y_pred_cls)
+        # print(y_test_cls)
+        # print(y_pred_cls)
         assert len(y_test_cls) == len(wslist), ValueError("The number of ws is not equal to the model predict")
         wsevaluate(y_pred_cls=y_pred_cls,y_test_cls=y_test_cls,wslist=wslist)
 
