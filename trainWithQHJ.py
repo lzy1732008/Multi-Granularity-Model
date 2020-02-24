@@ -310,10 +310,10 @@ def run_mutli():
     start_time = time.time()
     with open(basic_config.rf_model_path, 'rb') as fr:
         rf = pickle.load(fr)
-    train_data, val_data, test_data = data_load(basic_config.trainPath, basic_config.valPath, basic_config.testPath, model, rf,flag=0)
+    # train_data, val_data, test_data = data_load(basic_config.trainPath, basic_config.valPath, basic_config.testPath, model, rf,flag=0)
     # train_data, val_data, test_data = data_load(param.BasicConfig2.trainPath, param.BasicConfig2.valPath, param.BasicConfig2.testPath, model, rf,flag=1)
-    # train_data, val_data, test_data = data_load(None, None,
-    #                                             basic_config.testPath, model, rf,flag=0)
+    train_data, val_data, test_data = data_load(None, None,
+                                                basic_config.testPath, model, rf,flag=0)
     # print('train data shape:{0}\n val data shape:{1}\n test data shape:{2}'.format(len(train_data), len(val_data), len(test_data)))
     # train_data = np.array(list(train_data_jtzs[0]) + list(train_data_gyshz[0])),np.array(list(train_data_jtzs[1]) + list(train_data_gyshz[1])),\
     #              np.array(list(train_data_jtzs[2]) + list(train_data_gyshz[2])),np.array(list(train_data_jtzs[3]) + list(train_data_gyshz[3]))
@@ -321,20 +321,20 @@ def run_mutli():
     #              np.array(list(val_data_jtzs[2]) + list(val_data_gyshz[2])),np.array(list(val_data_jtzs[3]) + list(val_data_gyshz[3]))
 
 
-    for i in range(3):
-        Path = basicPath(i)
-        train(train_data,val_data,Path)
+    # for i in range(3):
+    #     Path = basicPath(i)
+    #     train(train_data,val_data,Path)
 
 
-    # wslist = getwslist()
-    # for j in range(1):
-    #     print("the {0}nd testing......".format(str(j)))
-    #     Path = basicPath(j)
-    #     y_test_cls, y_pred_cls = test(test_data, Path)
-    #     print(y_test_cls)
-    #     print(y_pred_cls)
-        # assert len(y_test_cls) == len(wslist), ValueError("The number of ws is not equal to the model predict")
-        # wsevaluate(y_pred_cls=y_pred_cls,y_test_cls=y_test_cls,wslist=wslist)
+    wslist = getwslist()
+    for j in range(1):
+        print("the {0}nd testing......".format(str(j)))
+        Path = basicPath(j)
+        y_test_cls, y_pred_cls = test(test_data, Path)
+        print(y_test_cls)
+        print(y_pred_cls)
+        assert len(y_test_cls) == len(wslist), ValueError("The number of ws is not equal to the model predict")
+        wsevaluate(y_pred_cls=y_pred_cls,y_test_cls=y_test_cls,wslist=wslist)
 
     time_dif = get_time_dif(start_time)
     print("Time usage:", time_dif)
