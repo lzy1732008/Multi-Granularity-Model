@@ -254,8 +254,8 @@ def _setUp_inputs_QHJ(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,fla
     return result
 
 def _setUp_inputs_QHJ_use_dict(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,flag):
-    fr = open('resource/law_qhj_dict.json', 'r', encoding='utf-8')
-    law_qhj_dict = json.load(fr)
+    law_fr = open('resource/law_qhj_dict.json', 'r', encoding='utf-8')
+    law_qhj_dict = json.load(law_fr)
 
     stp = list(map(lambda x: x.strip(), open(basic_config.stpPath, 'r', encoding='utf-8').read().split('\n')))
     with open(sourcePath,'r',encoding='utf-8') as fr:
