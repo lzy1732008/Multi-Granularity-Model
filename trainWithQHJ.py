@@ -10,7 +10,7 @@ import os
 import sys
 import pickle
 
-from models.MGCQ_24 import *
+from models.baselines.Arc_2 import *
 from preps.data_load_generic import *
 from models.parameter import BaseConfig as basic_config
 from util.feedDict import feed_data_1 as feed_data_fun
@@ -19,7 +19,7 @@ from util.evaluate import wsevaluate
 
 class basicPath:
     def __init__(self,time):
-        self.save_dir = 'result/model/MGCQ_24'  # 修改处
+        self.save_dir = 'result/baseline/ARC-2'  # 修改处
         # self.param_des = 'v3-' + str(time) + 'times'
         self.param_des = 'dataaug-v1-' + str(time) +'times'
         # self.param_des = 'v3-addinter0-2times'
@@ -33,8 +33,10 @@ class basicPath:
 
 
 
-config = MultiGraConfig()
-model = MultiGranularityCNNModel()
+# config = MultiGraConfig()
+# model = MultiGranularityCNNModel()
+config = modelConfig()
+model = ARC2model(config)
 
 
 
