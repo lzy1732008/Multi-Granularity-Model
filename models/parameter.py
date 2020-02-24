@@ -1,5 +1,5 @@
 class BaseConfig:
-    trainPath = 'resource/train-init.txt'
+    trainPath = 'resource/train-augment-wholecontent.txt'
     valPath = 'resource/val-init.txt'
     testPath = 'resource/test-init-alter-5.txt'
     w2vModel = 'resource/word_embedding.json'
