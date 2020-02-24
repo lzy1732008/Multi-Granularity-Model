@@ -16,6 +16,7 @@ from models.parameter import BaseConfig as basic_config
 from util.feedDict import feed_data_1 as feed_data_fun
 from util.evaluate import evaluate_3 as evaluate_fun
 from util.evaluate import wsevaluate
+import models.parameter as param
 
 class basicPath:
     def __init__(self,time):
@@ -323,9 +324,9 @@ def run_mutli():
     #              np.array(list(val_data_jtzs[2]) + list(val_data_gyshz[2])),np.array(list(val_data_jtzs[3]) + list(val_data_gyshz[3]))
 
 
-    # for i in range(3):
-    #     Path = basicPath(i)
-    #     train(train_data,val_data,Path)
+    for i in range(3):
+        Path = basicPath(i)
+        train(train_data,val_data,Path)
 
 
     wslist = getwslist()

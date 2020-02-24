@@ -69,15 +69,17 @@ def SVM(train_path, test_path, model_path):
 
 
 if __name__=="__main__":
-    # train_path, test_path, model_path = '../../resource/gyshz_traindata/train-init.txt','../../resource/gyshz_traindata/test-init.txt','../../result/model/gyshz_SVC_NLI.pkl'
+    # train_path, test_path, model_path = '../../resource/train-augment-wholecontent.txt','../../resource/test-init-alter-5.txt','../../result/model/jtzs_RF_NLI_dataaug.pkl'
     # RF(train_path, test_path, model_path)
-    test_path = '../../resource/test-init-alter-5.txt'
-    test_vectors, test_y=preprocess_dataset(test_path)
 
-    model_path = '../../result/model/jtzs_RF_NLI.pkl'
-    with open(model_path,'rb') as fr:
-        rf = pickle.load(fr)
-        pred_y = rf.predict(test_vectors)
-        print(pred_y)
+    #predict
+    # test_path = '../../resource/test-init-alter-5.txt'
+    # test_vectors, test_y=preprocess_dataset(test_path)
+    #
+    # model_path = '../../result/model/jtzs_RF_NLI.pkl'
+    # with open(model_path,'rb') as fr:
+    #     rf = pickle.load(fr)
+    #     pred_y = rf.predict(test_vectors)
+    #     print(pred_y)
 
 
