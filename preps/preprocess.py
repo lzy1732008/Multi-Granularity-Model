@@ -81,7 +81,7 @@ def setUp_inputs_QHJ(trainPath = None, valPath = None, testPath = None, rfModel=
         # while not q1.empty():
         #     train += list(q1.get())
 
-        train = _setUp_inputs_QHJ(trainPath, wordEmbedding, wordVocab, rfModel, 0, 11000,3)
+        train = _setUp_inputs_QHJ_use_dict(trainPath, wordEmbedding, wordVocab, rfModel, 0, 11000,3)
 
     if valPath:
         # args = []
@@ -94,7 +94,7 @@ def setUp_inputs_QHJ(trainPath = None, valPath = None, testPath = None, rfModel=
         # while not q3.empty():
         #     val += list(q3.get())
 
-        val = _setUp_inputs_QHJ(valPath, wordEmbedding, wordVocab, rfModel, 0, 1000,3)
+        val = _setUp_inputs_QHJ_use_dict(valPath, wordEmbedding, wordVocab, rfModel, 0, 1000,3)
 
     if testPath:
         # args = []
@@ -244,6 +244,65 @@ def _setUp_inputs_QHJ(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,fla
             for law_label,content in zip(law_labels,content_split):
                 content_vector = processTextWithoutDict(content, wordEmbedding,wordVocab)
                 law_input.extend(content_vector)
+                law_label_input+= [law_label for _ in range(len(content_vector))]
+            assert len(law_input) == len(law_label_input), ValueError("law:{0},label:{1}".format(len(law_input),len(law_label_input)))
+            assert items[3] in ['0', '1'], ValueError("Label is not in [0,1]!")
+            label = items[3]
+            result.append([fact_input, law_input, law_label_input, label])
+            count += 1
+            # print("precessing {0}/{1} samples".format(count,len(lines)))
+    return result
+
+def _setUp_inputs_QHJ_use_dict(sourcePath, wordEmbedding, wordVocab,rfModel,start,end,flag):
+    fr = open('resource/law_qhj_dict.json', 'r', encoding='utf-8')
+    law_qhj_dict = json.load(fr)
+
+    stp = list(map(lambda x: x.strip(), open(basic_config.stpPath, 'r', encoding='utf-8').read().split('\n')))
+    with open(sourcePath,'r',encoding='utf-8') as fr:
+        lines = fr.readlines()
+
+    result = []
+    count = 0
+    if start >= len(lines):
+        return
+    end = min(len(lines), end)
+
+    for line in lines[start:end]:
+        line = line.strip()
+        if line != '':
+            items = line.split('|')
+            assert len(items) == 4, ValueError("The number of items in this line is less than 4, content:" + line)
+            fact_input = processTextWithStpDict(items[1],wordEmbedding, wordVocab,stp)
+            if len(fact_input) == 0:
+                if flag != 2:
+                   print("Ignore fact!")
+                   continue
+                else:
+                    fact_input = [[0 for _ in range(basic_config.word_dimension)]]
+                    print("None fact")
+
+            law_units = items[2].split(':')
+            law_name = law_units[0]
+            law_content = items[2][len(law_name) + 1:]
+            # law_content, law_input_vector = psLaw.processLawForRf(law_content)
+            #接下来预测每句话的label,并将其映射到每个词上
+            # law_labels = rfModel.predict(law_input_vector)
+            content_split = re.split(r"[，；。：]",law_content)
+            content_split = list(filter(lambda x: x != "", list(map(lambda x: x.lstrip().rstrip(), content_split))))
+
+            law_qj_array = [s.lstrip().rstrip() for s in law_qhj_dict[law_name]['qj'].split('。')]
+
+
+            law_input = []
+            law_label_input = []
+            # assert len(content_split) == len(law_labels), ValueError("content_split:{0}, law_label:{1}, line:{3}".format(len(content_split), len(law_label), line))
+            for content in content_split:
+                if content == '但是' or content == '其中':continue
+                content_vector = processTextWithoutDict(content, wordEmbedding,wordVocab)
+                law_input.extend(content_vector)
+                law_label = 1
+                if content in law_qj_array:
+                    law_label = 0
                 law_label_input+= [law_label for _ in range(len(content_vector))]
             assert len(law_input) == len(law_label_input), ValueError("law:{0},label:{1}".format(len(law_input),len(law_label_input)))
             assert items[3] in ['0', '1'], ValueError("Label is not in [0,1]!")

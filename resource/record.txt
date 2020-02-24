@@ -4,6 +4,8 @@
 dataset50-withstp-qj-tagBefore.json：事实法条长度分别为30-50、使用了停用词、只使用法条前件、setUp_inputs_QHJ_lawone的输出
 dataset50-withstp-qj-tagBefore-augdata.json： 事实法条长度分别为30-50、使用了停用词、只使用法条前件、setUp_inputs_QHJ_lawone的输出，存储的是train-qj-augment.txt的数据：times= 2， shuffle_num=2
 
+../resource/train-augment-wholecontent.txt：对整个法条正文中的前件与其前一个前件交换的方式达到乱序，总共样本数由10489变为20617====对应的json文件是resource/data_aug/jtzs_aug_with_whole.json
+
 500篇文书设计法律法条分布统计
 
 中华人民共和国刑法 103 有

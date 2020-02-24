@@ -170,11 +170,12 @@ def countPreNum():
 
 #数据集扩增：通过对法条增加两条乱序
 def shuffleLaw(times_default, shuffle_num_default):
-    lines = open('../resource/train-qj.txt', 'r', encoding='utf-8').read().split('\n')
+
+    lines = open('../resource/train-init.txt', 'r', encoding='utf-8').read().split('\n')
     newlines = []
     count = 0
 
-    #对每个法条都增加几个乱序，存储在字典里面
+    #对每个法条都增加几个乱序，
 
     for line in lines:
         line = line.strip()
@@ -202,7 +203,55 @@ def shuffleLaw(times_default, shuffle_num_default):
 
 # shuffleLaw(times_default=2,shuffle_num_default=2)
 
+#基于整个法条全文乱序，通过交换前件与前件来乱序
+def shuffle_law_whole_content(times_default, shuffle_num_default):
+    fr = open('../resource/law_qhj_dict.json', 'r', encoding='utf-8')
+    law_qhj_dict = json.load(fr)
 
+    lines = open('../resource/train-init.txt', 'r', encoding='utf-8').read().split('\n')
+    newlines = []
+    count = 0
+
+    # 对每个法条都增加几个乱序，
+
+    for line in lines:
+        line = line.strip()
+        if line != "":
+            count += 1
+            items = line.split('|')
+            law_units = items[2].split(':')
+            law_name = law_units[0]
+
+            law_qj = law_qhj_dict[law_name]['qj']
+            law_content = law_qhj_dict[law_name]['whole']
+
+            # 乱序前件
+            law_qj_array = law_qj.split('。')
+            law_content_array = re.split(r"[，；。：]", law_content)
+
+            law_qj_array = [str(law).lstrip().rstrip() for law in law_qj_array]
+            law_content_array = [str(law).lstrip().rstrip() for law in law_content_array]
+
+            shuffle_num = min(shuffle_num_default, int(len(law_qj_array) / 2))
+            times = times_default
+
+            if len(law_qj_array) < 2:
+                newlines.append(line)
+                continue
+
+            for i in range(times):
+                shuffled_law = list(law_content_array)
+                for j in range(shuffle_num):
+                    index_qj = random.randint(1, len(law_qj_array) - 1)
+                    if law_qj_array[index_qj] not in law_content_array: print(law_content_array,law_qj_array[index_qj])
+                    index_whole = law_content_array.index(law_qj_array[index_qj])
+                    if law_content_array[index_whole - 1] in law_qj_array:
+                        shuffled_law[index_whole - 1], shuffled_law[index_whole] = \
+                            shuffled_law[index_whole], shuffled_law[index_whole - 1]
+                newlines.append('|'.join([items[0], items[1], law_name+':'+'。'.join(shuffled_law), items[-1]]))
+
+    print('总共样本数由{0}变为{1}'.format(count, len(newlines)))
+    open('../resource/train-augment-wholecontent.txt', 'w', encoding='utf-8').write('\n'.join(newlines))
 
 
 import json
@@ -394,7 +443,7 @@ def getRatio():
 
 #使用上一步得到的法条正负例分布比率进行预测
 def statisticsPredict(targetFile):
-    fr = open('../resource/ana/故意伤害罪_法条正负分布比例.json','r',encoding='utf-8')
+    fr = open('../resource/法条正负分布比例.json','r',encoding='utf-8')
     law_ratio = json.load(fr)
 
     lines = open(targetFile,'r',encoding='utf-8').read().split('\n')
@@ -406,8 +455,8 @@ def statisticsPredict(targetFile):
         if line == "":continue
         split = line.split('|')
         law_content = split[2]
-        # ratio = [0.7137,0.2862] #交通肇事罪
-        ratio = [0.6806,0.3193] #故意伤害罪
+        ratio = [0.7137,0.2862] #交通肇事罪
+        # ratio = [0.6806,0.3193] #故意伤害罪
         if law_content in law_ratio.keys():
            ratio = law_ratio[law_content]
         predict_y.append(getRandomSample(number_list=[0,1], pro_list=ratio))
@@ -499,16 +548,21 @@ if __name__ == "__main__":
 
 #使用统计方法预测
     # getRatio()
-    # targetFile = '../resource/gyshz_traindata/test-init.txt'
+    # targetFile = '../resource/test-133.txt'
     # predict_y, target_y = statisticsPredict(targetFile)
+    # print(predict_y)
+    # print(target_y)
     # wslist = getwslist()
     # assert len(predict_y) == len(wslist), ValueError("The number of ws is not equal to the model predict")
     # wsevaluate(predict_y, target_y,wslist)
 
 # 为RF和SVM建立特征集合
 #     source_dir = '/Users/wenny/nju/task/LawDocumentAna/2014filled/法条内容填充2014/2014'
-    source_dir = '/Users/wenny/nju/task/文书整理/故意伤害罪/2013填充'
-    setup_feature_set(source_dir)
+#     source_dir = '/Users/wenny/nju/task/文书整理/故意伤害罪/2013填充'
+#     setup_feature_set(source_dir)
+
+    #乱序增加数据集
+    shuffle_law_whole_content(times_default=2, shuffle_num_default=2)
 
 
 

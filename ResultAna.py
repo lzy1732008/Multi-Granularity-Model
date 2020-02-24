@@ -8,10 +8,10 @@ import math
 #     exp_sum = sum(exp_input)
 #     return [float(x)/exp_sum for x in exp_input]
 
-fr1 = open('resource/预测结果分析/MGCQ_24predictAna.json','r',encoding='utf-8')
-fr2 = open('resource/预测结果分析/simpleModel_predictAna.json','r',encoding='utf-8')
+fr1 = open('resource/ana/MGCQ_24predict.json','r',encoding='utf-8')
+# fr2 = open('resource/预测结果分析/simpleModel_predictAna.json','r',encoding='utf-8')
 model1_result = json.load(fr1)
-model2_result = json.load(fr2)
+# model2_result = json.load(fr2)
 
 #分析模型2 对比 模型1中各类概率增大
 # enhanced_1 = []
