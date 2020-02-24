@@ -327,7 +327,7 @@ def run_mutli():
 
 
     wslist = getwslist()
-    for j in range(1):
+    for j in range(3):
         print("the {0}nd testing......".format(str(j)))
         Path = basicPath(j)
         y_test_cls, y_pred_cls = test(test_data, Path)
