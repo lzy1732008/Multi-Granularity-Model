@@ -290,7 +290,7 @@ def checkPrediction(pred_cls, target_y,probs):
     # print('\n'.join(wrong))
 
 def getwslist():
-    lines = open(basic_config.testPath,'r',encoding='utf-8').read().split('\n')
+    lines = open(param.BasicConfig2.testPath,'r',encoding='utf-8').read().split('\n')
     namels = []
     for i in range(len(lines)):
         line = lines[i]
